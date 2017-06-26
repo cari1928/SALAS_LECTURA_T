@@ -1,0 +1,29 @@
+{include file='header.html'} 
+{$ruta}
+{if isset($msg)}{include file='../mensajes.html'}{/if}
+
+{if isset($mensajes)}
+  <table class='table table-striped display' cellspacing="0" width="100%">
+		<tr>    
+      <th><center>ASUNTO</center></th>
+      <th><center>TIPO</center></th>
+      <th><center>FECHA</center></th>
+      <th><center>EXPIRA</center></th>
+      <th><center>VISUALIZAR</center></th>
+    </tr>
+    {foreach $mensajes as $msj}
+    <tr>
+      <td><center>{$msj.introduccion}</center></td>
+      <td><center>{$msj.descripcion}</center></td>
+      <td><center>{$msj.fecha}</center></td>
+      <td><center>{$msj.expira}</center></td>
+      <td><center><a href="msj.php?accion=leer&info={$msj.cvemsj}">
+        <img src="../Images/leer.png">
+      </a></center></td>
+    </tr>
+  {/foreach}
+	</table>
+
+{/if}
+
+{include file='footer.html'}

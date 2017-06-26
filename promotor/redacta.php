@@ -20,11 +20,9 @@ if ($periodo == "") {
 if (isset($_GET['info'])) {
   $para = $_GET['info'];
 }
-
 if (isset($_GET['periodo'])) {
   $periodo = $_GET['periodo'];
 }
-
 if (isset($_GET['accion'])) {
   $accion = $_GET['accion'];
 }
@@ -109,7 +107,8 @@ switch ($accion) {
     $datos = $web->DB->GetAll($sql, $letra);
     $letra = $datos[0]['cve'];
     if (isset($_POST)) {
-      $sql   = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, cveletra, cveperiodo) VALUES (?, ?,'G', ?,'" . date('Y-m-j') . "', ?, ?, ?)";
+      $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, cveletra, cveperiodo)
+      VALUES (?, ?,'G', ?,'" . date('Y-m-j') . "', ?, ?, ?)";
       $datos = $web->DB->GetAll($sql, array(
         $_POST['introduccion'],
         $_POST['descripcion'],
@@ -144,14 +143,18 @@ switch ($accion) {
 
     if (isset($datos[0])) {
       if (isset($_POST)) {
-        $sql   = "INSERT INTO msj (introduccion, descripcion, tipo, emisor, fecha, expira, receptor) VALUES (?, ?,'I', ?,'" . date('Y-m-j') . "', ?, ?)";
-        $datos = $web->DB->GetAll($sql, array(
+        $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, receptor, cveletra, cveperiodo)
+        VALUES (?, ?,'I', ?,'" . date('Y-m-j') . "', ?, ?, ?, ?)";
+        $parameters = array(
           $_POST['introduccion'],
           $_POST['descripcion'],
           $_SESSION['cveUser'],
           $_POST['expira'],
           $receptor,
-        ));
+          $cveletra,
+          $periodo,
+        );
+        $web->query($sql, $parameters);
       } else {
         $web->smarty->assign('msj', "No se pudo mandar el mensaje");
         $web->smarty->display('redacta.html');
@@ -183,7 +186,8 @@ switch ($accion) {
       ));
       $web->smarty->assign('datos', $datos);
 
-      $sql = "SELECT cvemsj, introduccion, tipomsj.descripcion AS tipo, e.nombre AS nombree, r.nombre AS nombrer, fecha, expira
+      $sql = "SELECT cvemsj, introduccion, tipomsj.descripcion AS tipo, e.nombre AS nombree,
+        r.nombre AS nombrer, fecha, expira
         FROM msj
         INNER JOIN usuarios e ON e.cveusuario = msj.emisor
         INNER JOIN tipomsj ON tipomsj.cvetipomsj = msj.tipo
