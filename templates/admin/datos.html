@@ -1,0 +1,139 @@
+{include file='header.html'}
+{$ruta} 
+{if isset($msg)}
+	<div class="alert alert-{$alert} alert-dismissible" role="alert">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <strong>¡Aviso!</strong> {$msg}
+	</div>
+{/if}
+<div class="container-fluid">
+  <div class="main row">
+    <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
+{if isset($promotores)}
+  <form action="datos.php?accion=update" method="post">  
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            Actualizar Administrador - RFC: {$promotores.cveusuario}
+          </h3>
+        </div>
+        <div class="panel-body">
+          {if isset($promotores)}
+            <input type="hidden" name="cveusuario" value="{$promotores.cveusuario}">
+          {/if}
+          <div class="form-group">
+            <label>Nombre Completo:</label>
+            <input class="form-control" placeholder="Nombre y Apellidos" name="datos[nombre]"  required
+            {if isset($promotores)} value="{$promotores.nombreUsuario}" {/if}>
+          </div>
+          <div class="form-group">
+            <label>Especialidad:</label>
+            <label id="l4" style="display:{if $promotores.cveespecialidad eq 'O'}block{else}none{/if}">Carrera</label>
+            <input id="r4" type="radio" class="btn btn-default" value='true' name="datos[especialidad]" style="display:{if $promotores.cveespecialidad eq 'O'}block{else}none{/if}" onclick="otro()">
+            <div id="carrera" class="form-group" style="display:{if $promotores.cveespecialidad ne 'O'}block{else}none{/if}">
+              {$combito}
+            </div>
+            <label id="l3" style="display:{if $promotores.cveespecialidad ne 'O'}block{else}none{/if}">Otro</label>
+            <input id="r3" type="radio" value='false' name="datos[especialidad]" style="display:{if $promotores.cveespecialidad ne 'O'}block{else}none{/if}" onclick="otro()">
+            <div id="especialidad" class="form-group" style="display:{if $promotores.cveespecialidad eq 'O'}block{else}none{/if}">
+              <label>¿Cual otro?</label>
+              <input class="form-control" placeholder="Escriba Cual" name="datos[otro]"
+              {if isset($promotores)} value="{$promotores.otro}" {/if}>
+            </div>
+          </div>
+          {if !isset($promotores)}
+          <div class="form-group">
+            <label>RFC: </label>
+            <input class="form-control" placeholder="RFC" name="datos[usuario]" maxlength="13" required>
+          </div>
+          {/if}
+          <div class="form-group">
+            <label>Correo: </label>
+            <input type="email" class="form-control" placeholder="Correo" name="datos[correo]" maxlength="75" required
+            {if isset($promotores)} value="{$promotores.correo}" {/if}>
+          </div>
+          {if !isset($promotores)}
+          <div class="form-group">
+            <label>Contraseña:</label>
+            <input type="password" class="form-control" placeholder="Contraseña" name="datos[contrasena]" required>
+          </div>
+          <div class="form-group">
+            <label>Confirmar contraseña:</label>
+            <input type="password" class="form-control" id="exampleInputPassword3" placeholder="Confirmar contraseña" name="datos[confcontrasena]" id="producto" required>
+          </div>
+          {/if}
+          {if isset($promotores)}
+            <div id='js' class="form-group">
+              <label id="l1">Modificar contraseña</label>
+              <input id="r1" type="radio" class="btn btn-default" value='true' name="datos[pass]" onclick="mostrar()">
+              <label id ="l2" style="display:none">Mantener contraseña original</label>
+              <input id="r2" type="radio"  class="btn btn-default" value='false' name="datos[pass]" onclick="mostrar()" checked style="display:none">
+            </div>
+            <div id='oculto' class="form-group" style="display:none">
+              <div class="form-group">
+                <label>Contraseña:</label>
+                <input type="password" class="form-control" placeholder="Contraseña" name="datos[contrasena]">
+              </div>
+              <div class="form-group">
+                <label>Nueva contraseña:</label>
+                <input type="password" class="form-control" placeholder="Nueva contraseña" name="datos[contrasenaN]">
+              </div>
+              <div class="form-group">
+                <label>Confirmar Nueva contraseña:</label>
+                <input type="password" class="form-control" placeholder="Confirmar nueva contraseña" name="datos[confcontrasenaN]">
+              </div>
+            </div>
+            {/if}
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        {if isset($promotores)} Actualizar 
+        {else} Guardar {/if}
+      </button>
+  </form>
+{/if}
+    </nav>
+  </div>
+</div>  
+<script>
+  var bandera = 0;
+    function mostrar()
+    {
+      var test = document.getElementsByName('datos[pass]');
+       if(test[0].checked == true) {
+          document.getElementById('oculto').style.display="block";
+          document.getElementById('r2').style.display="inline";
+          document.getElementById('l2').style.display="inline";
+          document.getElementById('r1').style.display="none";
+          document.getElementById('l1').style.display="none";
+        }
+        if(test[1].checked == true) {
+          document.getElementById('oculto').style.display="none";
+          document.getElementById('r2').style.display="none";
+          document.getElementById('l2').style.display="none";
+          document.getElementById('r1').style.display="inline";
+          document.getElementById('l1').style.display="inline";
+        }
+    }
+    
+    function otro(){
+      var test = document.getElementsByName('datos[especialidad]');
+      if(test[0].checked == false) {
+        document.getElementById('carrera').style.display="none";
+        document.getElementById('especialidad').style.display="block";
+        document.getElementById('r3').style.display="none";
+        document.getElementById('l3').style.display="none";
+        document.getElementById('r4').style.display="inline";
+        document.getElementById('l4').style.display="inline";
+      }
+      else{
+        document.getElementById('carrera').style.display="block";
+        document.getElementById('especialidad').style.display="none";
+        document.getElementById('r3').style.display="inline";
+        document.getElementById('l3').style.display="inline";
+        document.getElementById('r4').style.display="none";
+        document.getElementById('l4').style.display="none";
+      }
+    }
+</script>
+{include file='footer.html'}

@@ -1,0 +1,69 @@
+{include file="header.html"}
+{$ruta} 
+{if isset($msg)}{include file='../mensajes.html'}{/if}
+
+{if isset($tablegrupos)}
+	<table class="table table-hover">
+		
+		<tr class='info'>
+			<th style="vertical-align:middle"><center>GRUPO</center></th>
+			<th style="vertical-align:middle"><center>SALA</center></th>
+			{if isset($table)}
+			  {if $table eq 'grupos'}<th><center>PROMOTOR</center></th>{/if}
+			{/if}
+			<th style="vertical-align:middle"><center>UBICACIÓN</center></th>
+			<th style="vertical-align:middle" width="150"><center>LIBRO GRUPAL</center></th>
+			<th style="vertical-align:middle" width="300"><center>HORARIO</center></th>
+			{if isset($bandera)}{if $bandera eq 'historial'}
+		    <th width='140'><center>REPORTE GRUPAL</center></th>
+		  {/if}{/if}
+		  {if isset($bandera)}{if $bandera eq 'index_grupos'}
+				<th style="vertical-align:middle"><center>ELIMINAR</center></th>
+	    {/if}{/if}
+		</tr>
+
+		{foreach $tablegrupos as $grupo}
+			<tr>
+				<td style="vertical-align:middle"><center>
+				  {if $bandera eq 'historial'}
+				    {$grupo.letra}
+          {else}
+  				  <a 
+  				  	href="grupo.php?accion={if isset($bandera)}{$bandera}{/if}&info1={$grupo.letra}{if isset($cveusuario)}&info2={$cveusuario}{else}{if $bandera eq 'alumnos' || $bandera eq 'grupos'}&info2={$grupo.nocontrol}{/if}{/if}">{$grupo.letra}</a>
+				  {/if}
+			  </center></td>
+
+				<td style="vertical-align:middle"><center>{$grupo.nombre}</center></td>
+
+				{if isset($table)}{if $table eq 'grupos'}
+				  <td style="vertical-align:middle">
+				    <center>{$grupo.nombre_promotor}</center>
+			    </td>
+  			{/if}{/f}
+
+				<td style="vertical-align:middle"><center>{$grupo.ubicacion}</center></td>
+				<td style="vertical-align:middle"><center>{$grupo.titulo}</center></td>
+				<td style="vertical-align:middle"><center>{$grupo.horario}</center></td>
+
+				{if isset($bandera)}{if $bandera eq 'historial'}
+			    <td style="vertical-align:middle" colspan='4' align='right'><center>
+  					<a 
+  						href='reporte_pdf.php?accion=grupo&info1=1&info2={$cveperiodo}&info3={$cveusuario}&info4={$grupo.letra}'>
+  					<img src='../Images/pdf.png' title='Reporte Promotor-Grupo'/></a>
+  				<center></td>
+			  {/if}{/if}
+
+			  {if isset($bandera)}{if $bandera eq 'index_grupos'}
+		      <td><center>
+  					<a class="delete" href="grupos.php?accion=delete&info1={$grupo.letra}">
+  						<img src="../Images/cancelar.png">
+  					</a>
+  				</center></td>
+		    {/if}{/if}
+			</tr>
+		{/foreach}
+
+	</table>
+{/if}
+
+{include file="footer.html"}

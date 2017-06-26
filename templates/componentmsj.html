@@ -1,0 +1,31 @@
+
+{if isset ($datos)}
+    <div class="marquee">  
+      {foreach $datos as $dato}
+        <p><a href="mensaje.php?msj={$dato[1]}">{$dato[0]}</a></p>
+      {/foreach}
+	</div>
+{/if}
+
+{if isset($msj)}
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<label>Fecha de publicacion: {$msj[0][6]}</label><br/>
+							<label>Tipo de mensaje: {if $msj[0][3] eq 'PU'}Púbrico{/if}{if $msj[0][3] eq 'PR'}Privadao{/if}{if $msj[0][3] eq 'G'}Grupal{/if}</label><br/>
+							<label>Emisor: {$promotor[0][0]}</label><br/>
+							<label>Expira: {$msj[0][7]}</label><br/>
+						</div>
+					</div>
+				</div>
+				<p>
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<b>Titulo:</b> {$msj[0][1]}<br/><br/>
+							<hr size="8px" color="blue" />
+							<b>Cuerpo:</b> {$msj[0][2]}
+						</div>
+					</div>
+					</div>
+				</p>
+{/if}

@@ -1,0 +1,51 @@
+{include file='header.html'}
+{$ruta}
+
+{if isset($msg)}{include file='mensajes.html'}{/if}
+
+<div class="container-fluid">
+  <div class="main row">
+    <nav class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-md-push-4">
+      
+      <form action='login.php' method='post' enctype='multipart/form-data' accept-charset='utf-8'>
+        <div class="panel panel-default">
+          
+          <div class="panel-heading">
+            <h3 class="panel-title"><center>Inicio de Sesión</center></h3>
+          </div>
+          
+          <div class="panel-body">
+            <div class="form-group">
+              <label>Usuario:</label>
+              <input  class="form-control" placeholder="NoControl / RFC" name="datos[cveUsuario]" required maxlength="13">
+            </div>
+            <div class="form-group">
+              <label>Contraseña:</label>
+              <input type="password" class="form-control" placeholder="Password" name="datos[contrasena]" required >
+            </div>
+            <div align="right">
+              Recordar esta cuenta
+              <input type="checkbox">
+            </div>
+            
+            {if isset($usuario_clave)}
+              <input type="hidden" name="usuario_clave" value="{$usuario_clave}" />
+            {/if}
+            
+            {if isset($validar)}
+              <input type="hidden" name="validar" value="{$validar}"/>
+            {/if}
+            
+          </div>
+        </div>
+        <div class="form-group" align="right">
+          <label><a href="formcontrasena.php">No recuerdo mi contraseña</a></label>  
+          <button type="submit" class="btn btn-primary" value='Login' name="guardar">Sign in</button>
+          </div>
+      </form>
+      
+    </nav>
+  </div>
+</div>
+
+{include file='footer.html'}

@@ -1,0 +1,1 @@
+{"data":[{"letra":"<a href='inscripcion.php?info=A'>A<\/a>","nombre_grupo":"SALA - A","cvesala":"xxx","ubicacion":"SALA DE USOS M\u00daLTIPLES","nombre_promotor":"DIOS"}]}

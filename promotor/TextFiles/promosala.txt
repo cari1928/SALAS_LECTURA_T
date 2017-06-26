@@ -1,0 +1,1 @@
+{"data":[{"cvesala":"<a href='salas.php?accion=horario&info=xxx'>xxx<\/a>","ubicacion":"SALA DE USOS M\u00daLTIPLES"}]}

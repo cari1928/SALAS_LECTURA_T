@@ -1,0 +1,75 @@
+body 
+{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.contenedor 
+{
+    /*background: #1D3E53;*/
+    /*Centrar y dar tamaño al contenedor principal*/
+    width: 90%;
+    max-width: 1000px;
+    margin: auto; /*para centrar todo*/
+    /*Flex*/
+    display: flex;
+    flex-flow: row wrap;
+}
+
+body
+{
+    /*background: #254B62;*/
+}
+
+header
+{
+    background: #476D7C;
+    width: 100%;
+    padding: 20px;
+    /*Flex, se agrega porque header sera contenedor padre*/
+    display: flex;
+    justify-content: space-round;
+    align-items: center;
+    flex-flow: row wrap;
+}
+
+header .logo
+{
+    color: #FFF;
+}
+
+header .logo img
+{
+    width: 150px;
+    vertical-align: top;
+}
+
+nav a
+{
+    background: #254B62;
+    color: #000;
+    text-decoration: none;
+    line-height: 80px;
+    font-size: 30px; 
+}
+
+.main
+{
+    /*background: #77ABB7;*/
+}
+
+aside
+{
+    /*background: #33425B;*/
+}
+
+aside .widget
+{
+    /*background: #3498DB;*/
+}
+
+footer
+{
+    /*background: #ECF0F1;*/
+}

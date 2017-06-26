@@ -1,0 +1,44 @@
+{include file="header.html"}
+<section id="main-content">
+	<article><h1>Mensajes</h1></article>
+</section>
+{if $datos eq "No se puede acceder a los mensajes"}
+	{$datos}
+{else}
+	<center>
+		<table cellspacing=0 cellpadding=2 class="table table-striped">
+			<tr>
+				<th>Intrducuccion</th>
+				<th>Tipo</th>
+				<th>Emisor</th>
+				<th>Receptor</th>
+				<th>Fecha</th>
+				<th>Expiración</th>
+				<th>Ver</th>
+			</tr>
+			{foreach $datos as $mensaje}
+			<tr>
+				<td>{$mensaje.introduccion}</td>
+				<td>{$mensaje.tipo}</td>
+				<td>{$mensaje.nombre}</td>
+				<td>Grupo: {$mensaje[6]}</td>
+				<td>{$mensaje.fecha}</td>
+				<td>{$mensaje.expira}</td>
+				<td><a href="msj.php?cvemsj={$mensaje.cvemsj}&accion=ver"><img src="../Images/lupa.png"></a></td>
+			</tr>
+		{/foreach}
+		{foreach $datosI as $mensaje}
+			<tr>
+				<td>{$mensaje.introduccion}</td>
+				<td>{$mensaje.tipo}</td>
+				<td>{$mensaje.nombree}</td>
+				<td>{$mensaje.nombrer}</td>
+				<td>{$mensaje.fecha}</td>
+				<td>{$mensaje.expira}</td>
+				<td><a href="msj.php?cvemsj={$mensaje.cvemsj}&accion=ver"><img src="../Images/lupa.png"></a></td>
+			</tr>
+		{/foreach}
+		</table>
+	</center>
+{/if}
+{include file="footer.html"}

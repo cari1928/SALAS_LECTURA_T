@@ -1,0 +1,24 @@
+{include file="header.html"}
+<link rel="stylesheet" type="text/css" href="../css/menu.css">
+{$ruta}
+
+{if isset($msg)} {include file='../mensajes.html'}{/if}
+
+{if $accion eq 'periodo'}
+  <h3>Generar historial en base a:</h3>
+	<nav id="colorNav">
+		<ul>
+			<li id="icon" class="green">
+			  <a href="promotor.php?accion=historial&info1={$cveperiodo}"><center>
+			  	<img src="../Images/promotor.png">Promotores
+		  	</center></a>
+			</li>
+			<li id="icon" class="green">
+			  <a href="alumnos.php?accion=historial&info1={$cveperiodo}"><center>
+		  	<img src="../Images/alumnos.png">Alumnos</center></a>
+			</li>
+		</ul>
+	</nav>
+{/if}
+
+{include file="footer.html"}

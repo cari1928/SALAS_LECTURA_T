@@ -1,0 +1,102 @@
+{include file='header.html'}
+{$ruta}  
+{if isset($msg)} {include file='../mensajes.html'} {/if}
+
+<table class='table'>
+	{if !isset($bandera)}
+		<tr><td colspan='4' align='right'>
+			<a href='promotor.php?accion=form_insert'><img src='../Images/add.png'/> </a>
+		</td></tr>
+	{else}
+		<tr><td colspan='4' align='right'>
+			<a class="btn btn-primary active" title='Reporte Promotores-Periodos'
+			href='reporte_pdf.php?accion=promotores&info1=1&info2={$cveperiodo}' 			
+			target="_blank">
+			  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Reporte General
+			</a>
+		</td></tr>
+	{/if}
+</table>
+
+{if isset($datos)} 
+  <table id="example" class="display" cellspacing="0" width="100%">
+  	<thead>
+      <tr>
+        <th style="vertical-align:middle"><center>RFC</center></th>
+		<th style="vertical-align:middle"><center>PROMOTOR</center></th>
+		<th style="vertical-align:middle"><center>EMAIL</center></th>
+		<th style="vertical-align:middle"><center>ESPECIALIDAD</center></th>
+		{if !isset($cveperiodo)}
+			<th style="vertical-align:middle"><center>ELIMINAR</center></th>
+			<th style="vertical-align:middle"><center>ACTUALIZAR</center></th>
+		{/if}
+		<th style="vertical-align:middle"><center>GRUPOS</center></th>
+		{if isset($cveperiodo)}<th style="vertical-align:middle"><center>REPORTE PROMOTOR</center></th>{/if}
+      </tr>
+    </thead>
+    
+    <tfoot>
+      <tr>
+        <th style="vertical-align:middle"><center>RFC</center></th>
+		<th style="vertical-align:middle"><center>PROMOTOR</center></th>
+		<th style="vertical-align:middle"><center>EMAIL</center></th>
+		<th style="vertical-align:middle"><center>ESPECIALIDAD</center></th>
+		{if !isset($cveperiodo)}
+			<th style="vertical-align:middle"><center>ELIMINAR</center></th>
+			<th style="vertical-align:middle"><center>ACTUALIZAR</center></th>
+		{/if}
+		<th style="vertical-align:middle"><center>GRUPOS</center></th>
+		{if isset($cveperiodo)}<th width='150'><center>REPORTE PROMOTOR</center></th>{/if}
+      </tr>
+    </tfoot>
+  </table>
+  
+  <script type="text/javascript">
+    $(document).ready(function() {
+      
+    	var table = $('#example').DataTable( {
+        "ajax": "TextFiles/promotores.txt",
+        "columnDefs": [ {
+        {if !isset($bandera)}
+            "targets": -3,
+            "data": null,
+            "defaultContent": "<center><a href='#' class='delete'><img src='../Images/cancelar.png'></a></center>"
+	        }, {	
+        {/if}
+        	"className": "dt-center", 
+					"targets": "_all"
+        } ]
+	    } );
+	    
+	    {if !isset($bandera)}
+		    $('#example tbody').on( 'click', 'a.delete', function () {
+	        event.preventDefault();
+	        
+	        var data = table.row( $(this).parents('tr') ).data();
+					var url = data[5];
+					
+			    swal({
+			      title: "¿Seguro? Se borrará toda la información relacionada", 
+			      text: "Si está seguro ingrese la contraseña de seguridad", 
+			      type: "input",
+			      inputType: "password",
+			      showCancelButton: true,
+			      confirmButtonText: "Aceptar",
+			      cancelButtonText: "Cancelar"
+			      
+			    }, function(typedPassword) {
+			    	// console.log(typedPassword);
+			    	if(typedPassword != "") {
+			    		url += "&infoc=" + typedPassword;
+			      	window.open(url, '_self');	
+			      	return false;
+			    	}
+			    });
+		    } );
+	    {/if}
+	    
+    } );
+  </script>
+{/if}
+
+{include file='footer.html'}

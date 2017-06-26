@@ -1,0 +1,30 @@
+{include file="header.html"}
+{$ruta} 
+{if isset($msg)}
+	<div class="alert alert-{$alert} alert-dismissible" role="alert">
+	  	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  		<span aria-hidden="true">&times;</span></button>
+	  <strong>¡Aviso!</strong> {$msg}
+	</div>
+{/if}
+{if isset($tablegrupos)}
+	<table cellspacing=0 cellpadding=2 class="table table-striped">
+		<tr>
+			<th><center>GRUPO</center></th>
+			<th><center>SALA</center></th>
+			<th><center>UBICACIÓN</center></th>
+			<th><center>HORARIO</center></th>
+		</tr>
+		{foreach $tablegrupos as $grupo}
+			<tr>
+				<td><center>
+					<a href="grupo.php?info1={$grupo.letra}">{$grupo.letra}</a></center>
+				</td>
+				<td><center>{$grupo.nombre}</center></td>
+				<td><center>{$grupo.ubicacion}</center></td>
+				<td><center><a href=""><img src="../Images/periodos.png"></a></center></td>
+			</tr>
+		{/foreach}
+	</table>
+{/if}
+{include file="footer.html"}

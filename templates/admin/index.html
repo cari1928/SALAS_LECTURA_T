@@ -1,0 +1,48 @@
+{include file="header.html"}
+{$ruta}
+{if isset($msg)}{include file='../mensajes.html'}{/if}
+<link rel="stylesheet" type="text/css" href="../css/menu.css">
+<nav id="colorNav">
+	<ul>
+		<li id="icon" class="green">
+			<a  href="periodos.php" ><center><img src="../Images/periodos.png">Periodos</center></a>
+		</li>
+		<li  id="icon" class="green">
+		  <a href="salas.php" ><center><img src="../Images/salas.png">Salas</center></a>
+		</li>
+		<li  id="icon" class="green">
+		  <a href="promotor.php" ><center><img src="../Images/promotor.png">Promotores</center></a>
+		</li>
+		<li  id="icon" class="green">
+		  <a href="alumnos.php" ><center><img src="../Images/alumnos.png">Alumnos</center></a>
+		</li>
+		<li  id="icon" class="green">
+		  <a href="historial.php" ><center><img src="../Images/historial.png">Historial</center></a>
+		</li>
+		<li  id="icon" class="green">
+		  <a href="libros.php" ><center><img src="../Images/libros.png">Libros</center></a>
+		</li>
+		<li  id="icon" class="green">
+		  <a href="grupos.php" ><center><img src="../Images/grupos.png">Grupos</center></a>
+		</li>
+		<li  id="icon" class="green">
+		  <a href="avisos.php" ><center><img src="../Images/aviso.png"> Avisos</center></a>
+		</li>
+		<li  id="icon" class="green">
+		  <a href="formato_preguntas.php" ><center><img src="../Images/aviso.png"> 
+		  <font size=4>Formato Preguntas</font></center></a>
+		</li>
+		<li  id="icon" class="green">
+		  <a href="administradores.php"><center><img src="../Images/admin.png">
+		  	<font size=4>Administradores</font>
+	  	</center></a>
+		</li>
+		{if isset($especial)}
+			<li  id="icon" class="green">
+			  <a href="especial.php" ><center><img src="../Images/aviso.png"> Querys</center></a>
+			</li>
+		{/if}
+	</ul>
+</nav>
+
+{include file="footer.html"}

@@ -1,0 +1,71 @@
+{include file='header.html'}
+{$ruta}
+{include file='../number_style.html'}
+
+<div class="container-fluid">
+  <div class="main row">
+    <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
+      {if isset($msg)}{include file='../mensajes.html'}{/if}
+
+      <form method="post"
+        action="libros.php?accion={if isset($libros)}update{else}insert{/if}">
+        
+        <div class="panel panel-default">
+          
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              {if isset($libros)} 
+                Actualizar Libro
+              {else} 
+                Nuevo Libro 
+              {/if}
+            </h3>
+          </div>
+
+          <div class="panel-body">
+            
+            {if isset($libros)}
+              <input type="hidden" name="cvelibro" value="{$libros.cvelibro}">
+            {/if}
+
+            <div class="form-group">
+              <label> Título </label> 
+              <input class="form-control" name="titulo" placeholder="Título del Libro" maxlength="255" required
+              {if isset($libros)} value="{$libros.titulo}" {/if}>
+            </div>
+
+            <div class="form-group">
+              <label> Autor </label>
+              <input class="form-control" name="autor" placeholder="Nombre del Autor" maxlength="75" required
+              {if isset($libros)} value="{$libros.autor}" {/if}>
+            </div>
+
+            <div class="form-group">
+              <label> Clasificación </label> 
+              <input class="form-control" name="editorial" placeholder="Clasificación" maxlength="25" required
+              {if isset($libros)} value="{$libros.editorial}" {/if}>
+            </div>
+
+            <div class="form-group">
+              <label> Cantidad </label> 
+              <input type="number" class="form-control" name="precio" placeholder="Cantidad" min="0" max="999999999999999" required
+              {if isset($libros)} value="{$libros.precio}" {/if}>
+            </div>
+
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          {if isset($libros)} 
+            Actualizar 
+          {else} 
+            Guardar 
+          {/if}
+        </button>
+
+      </form>
+    </nav>
+  </div>
+</div>
+
+{include file='footer.html'}

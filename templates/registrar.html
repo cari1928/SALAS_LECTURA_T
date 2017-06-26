@@ -1,0 +1,51 @@
+{include file='header.html'}
+{$ruta}
+<div class="container-fluid">
+  <div class="main row">
+    <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3"> 
+    
+      {if isset($msg)}{include file='mensajes.html'}{/if}
+      
+      <form action='registrar.php' method='post'>
+        <div class="panel panel-default">
+          
+          <div class="panel-heading">
+            <h3 class="panel-title"><center>{$encabezado}</center></h3>
+          </div>
+          
+          <div class="panel-body">
+            <div class="form-group">
+              <label>Nombre Completo:</label>
+              <input class="form-control" placeholder="Nombre y Apellidos" name="datos[nombre]" required>
+            </div>
+            <div class="form-group">
+              <label>Especialidad:</label>
+              {$especialidad}
+            </div>
+            <div class="form-group">
+              <label>Usuario:</label>
+              <input class="form-control" placeholder="Número de Control" name="datos[usuario]" maxlength="13" required>
+            </div>
+            <div class="form-group">
+              <label>Correo:</label>
+              <input class="form-control" placeholder="Correo" name="datos[correo]" maxlength="75" required>
+            </div>
+            <div class="form-group">
+              <label>Contraseña:</label>
+              <input type="password" class="form-control" placeholder="Contraseña" name="datos[contrasena]" required>
+            </div>
+            <div class="form-group">
+              <label>Confirmar contraseña:</label>
+              <input type="password" class="form-control" placeholder="Confirmar contraseña" name="datos[confcontrasena]" required>
+            </div>
+          </div>
+        </div>
+        <div align="right">
+          <button type="submit" class="btn btn-primary" value='Registrar' name="guardar">Registrar</button>  
+        </div>
+      </form>
+      <br><br><br>
+    </nav>
+  </div>  
+</div>
+{include file='footer.html'}

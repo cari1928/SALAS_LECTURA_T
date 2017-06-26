@@ -1,0 +1,110 @@
+*
+{
+    margin: 10px;
+    padding: 10px;
+    /*para que las cajas no se desborden unas con otras*/
+    box-sizing: border-box;
+}
+
+.padre
+{
+    display: flex;
+    /*
+    column: para que se muestre en columnas
+    nowrap para que todo se adapte segun el tamaño establecido
+    */
+    flex-flow: column nowrap;
+}
+
+    .header 
+    {
+        background: #000;
+        display: flex;
+        flex-flow: column nowrap;
+    }
+    
+        .menu 
+        {
+            background: #1D3E53;
+            display: flex;
+            flex-flow: row nowrap;
+            height: 100px;
+        }
+        
+            .logo
+            {
+                background: #77ABB7;
+                flex: 1 1 auto;
+                height: 30px;
+            }
+            
+            .nav
+            {
+                background: #77ABB7;
+                flex: 5 1 auto;
+                height: 30px;
+            }
+            
+            .social
+            {
+                background: #77ABB7;
+                flex: 1 1 auto;
+                height: 30px;
+            }
+            
+        .texto-principal
+        {
+            background: #476D7C;
+        }
+        
+            h1
+            {
+                background: #77ABB7;
+            }
+    
+    .section
+    {
+        background: #000;
+        display: flex;
+    }
+        
+        .articulos
+        {
+            background: #22213D;
+            flex: 2 1 auto;
+            display: flex;
+            flex-flow: row wrap;
+        }
+        
+            .article
+            {
+                background: #4E3188;
+                flex: 1 1 auto;
+            }
+    
+            .navegacion
+            {
+                background: #24BABC;
+                flex: 1 1 100%;
+            }
+            
+        .aside
+        {
+            background: #1C1124;
+            flex: 1 1 auto;
+        }
+        
+            .publicidad
+            {
+                background: #693E52;
+            }
+    
+    .footer
+    {
+        background: #000;
+    }
+    
+        .pie
+        {
+            background: #405559;
+        }

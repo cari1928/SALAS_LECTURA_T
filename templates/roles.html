@@ -1,0 +1,24 @@
+{include file='header.html'}
+{$ruta}
+{if isset($msg)}{include file='mensajes.html'}{/if}
+<link rel="stylesheet" type="text/css" href="css/menu.css">
+
+{if isset($roles)}
+	<h3>Selecciona el tipo de cuenta a acceder</h3>
+	<nav id="colorNav">
+	  <ul>
+			{foreach $roles as $rol}
+				<li id="icon" class="green">
+					<a  href="login.php?info={$rol.cverol}" >
+						<center><img src="Images/{if $rol.cverol eq 1}admin.png{/if}{if $rol.cverol eq 2}promotor.png{/if}{if $rol.cverol eq 3}alumnos.png{/if}">
+							{if $rol.cverol eq 1}Administrador{/if}
+							{if $rol.cverol eq 2}Promotor{/if}
+							{if $rol.cverol eq 3}Alumno{/if}
+						</center></a>
+				</li>
+			{/foreach}
+	  </ul>
+	</nav>
+{/if}
+
+{include file='footer.html'}

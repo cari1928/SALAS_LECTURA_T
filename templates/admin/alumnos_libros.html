@@ -1,0 +1,53 @@
+{include file='header.html'}
+{$ruta}
+<table class='table table-striped'>
+	<tr>
+		<td colspan='4' align='right'>
+			<a href='libros.php?accion=form_insert&tabla=periodo'>
+				<img src='../Images/add.png'/> 
+			</a>
+		</td>
+	</tr> 
+</table>
+{if isset($msg)}
+	<div class="alert alert-{$alert} alert-dismissible" role="alert">
+	  	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  		<span aria-hidden="true">&times;</span></button>
+	  <strong>¡Aviso!</strong> {$msg}
+	</div>
+{/if}
+{if isset($libros)}
+	<table class='table table-striped'>
+		<tr>		
+			<th width="300">CLAVE</th>
+			<th width="300">AUTOR</th>
+			<th width="300">TÍTULO</th>
+			<th width="300">EDITORIAL</th>
+			<th width="300">PRECIO</th>
+			<th width="300">ELIMINAR</th>
+			<th width="300">ACTUALIZAR</th>
+		</tr>
+	{foreach $libros as $libro}
+		<tr>
+			{if isset($bandera)}
+				<td><a href="gruposHistorial.php?info1={$libro.cvelibro}&info2={$libro.fechainicio}">
+						{$libro.cvelibro}
+				</a></td>
+			{else}
+				<td>{$libro.cvelibro}</td>
+			{/if}
+			<td>{$libro.autor}</td>
+			<td>{$libro.titulo}</td>
+			<td>{$libro.editorial}</td>
+			<td>{$libro.precio}</td>
+			<td><a href="libros.php?accion=delete&info1={$libro.cvelibro}"> 
+				<img src="../Images/cancelar.png">
+			</a></td>
+			<td><a href="libros.php?accion=form_update&info2={$libro.cvelibro}"> 
+					<img src="../Images/edit.png">
+			</a></td>
+		</tr>
+	{/foreach}
+</table>
+{/if}
+{include file='footer.html'}

@@ -1,0 +1,34 @@
+{include file="header.html"}
+{$ruta} 
+{if isset($msg)}
+	<div class="alert alert-{$alert} alert-dismissible" role="alert">
+	  	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  		<span aria-hidden="true">&times;</span></button>
+	  <strong>¡Aviso!</strong> {$msg}
+	</div>
+{/if}
+{if isset($tablegrupos)}
+		<table cellspacing=0 cellpadding=2 class="table table-striped">
+			<tr>
+				<th><center>GRUPO</center></th>
+				<th><center>SALA</center></th>
+				<th><center>UBICACIÓN</center></th>
+				<th><center>LIBRO GRUPAL</center></th>
+				<th><center>HORARIO</center></th>
+				<th><center>ACTUALIZAR</center></th>
+			</tr>
+			{foreach $tablegrupos as $grupo}
+				<tr>
+					<td style="vertical-align:middle"><center>
+						<a href="grupo.php?info1={$grupo.letra}">{$grupo.letra}</a></center>
+					</td>
+					<td style="vertical-align:middle"><center>{$grupo.nombre}</center></td>
+					<td style="vertical-align:middle"><center>{$grupo.ubicacion}</center></td>
+					<td style="vertical-align:middle"><center>{$grupo.titulo}</center></td>
+					<td style="vertical-align:middle"><center>{$grupo.horario}</center></td>
+					<td style="vertical-align:middle"><center><a href="grupos.php?accion=form_update&info={$grupo.letra}"><img src="../Images/edit.png"></a></center></td>
+				</tr>
+			{/foreach}
+		</table>
+{/if}
+{include file="footer.html"}

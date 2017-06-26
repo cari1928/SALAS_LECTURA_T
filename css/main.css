@@ -1,0 +1,13 @@
+#contenedor {
+	width: 95%;
+	margin: auto;
+
+}
+
+header {
+	height: 200px;	
+	background-image: url("../Images/banner.png");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+

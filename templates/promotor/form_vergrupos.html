@@ -1,0 +1,34 @@
+{include file="header.html"}
+{$ruta}
+<div class="container-fluid">
+  <div class="main row">
+    <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
+      {if isset($msg)}
+      	<div class="alert alert-{$alert} alert-dismissible" role="alert">
+      	  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      	    <span aria-hidden="true">&times;</span></button>
+      	  <strong>¡Aviso!</strong> {$msg}
+      	</div>
+      {/if}
+      <form action="grupos.php?accion=update" method="post">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Actualizar Grupo</h3>
+          </div>
+          <div class="panel-body">
+            {if isset($grupos)}
+              <input type="hidden" name="datos[cveletra]" value="{$grupos.cveletra}">
+            {/if}
+            <div class="form-group">
+              <label> Nombre </label> 
+              <input class="form-control" name="datos[nombre]" placeholder="Nombre del Grupo" maxlength="75" required
+              {if isset($grupos)} value="{$grupos.nombre}" {/if}>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+      </form>
+    </nav>
+  </div>
+</div>
+{include file="footer.html"}

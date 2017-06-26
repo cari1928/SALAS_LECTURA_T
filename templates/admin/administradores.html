@@ -1,0 +1,80 @@
+{include file='header.html'}
+{$ruta}
+
+{if isset($msg)}{include file='../mensajes.html'}{/if}
+
+<table class='table'>
+	<tr><td colspan='4' align='right'>
+		<a href='administradores.php?accion=form_insert'><img src='../Images/add.png' /> </a>
+	</td></tr>
+</table>
+
+{if isset($datos)}
+  <table id="example" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th><center>CLAVE</center></th>
+				<th><center>ADMINISTRADOR</center></th>
+				<th><center>ESPECIALIDAD</center></th>
+				<th><center>CORREO</center></th>
+				<th><center>ELIMINAR</center></th>
+		    <th><center>ACTUALIZAR</center></th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th><center>CLAVE</center></th>
+				<th><center>ADMINISTRADOR</center></th>
+				<th><center>ESPECIALIDAD</center></th>
+				<th><center>CORREO</center></th>
+				<th><center>ELIMINAR</center></th>
+		    <th><center>ACTUALIZAR</center></th>
+      </tr>
+    </tfoot>
+  </table>
+  
+  <script type="text/javascript">
+    $(document).ready(function() {
+      
+    	var table = $('#example').DataTable( {
+        "ajax": "TextFiles/administradores.txt",
+        "columnDefs": [ {
+            "targets": -2,
+            "data": null,
+            "defaultContent": "<center><a href='#' class='delete'><img src='../Images/cancelar.png'></a></center>"
+	        }, {	
+        	"className": "dt-center", 
+					"targets": "_all"
+        } ]
+	    } );
+	    
+	    $('#example tbody').on( 'click', 'a.delete', function () {
+        event.preventDefault();
+        
+        var data = table.row( $(this).parents('tr') ).data();
+				var url = data[4];
+				
+		    swal({
+		      title: "¿Seguro? Se borrará toda la información relacionada", 
+		      text: "Si está seguro ingrese la contraseña de seguridad", 
+		      type: "input",
+		      inputType: "password",
+		      showCancelButton: true,
+		      confirmButtonText: "Aceptar",
+		      cancelButtonText: "Cancelar"
+		      
+		    }, function(typedPassword) {
+		    	// console.log(typedPassword);
+		    	if(typedPassword != "") {
+		    		url += "&infoc=" + typedPassword;
+		      	window.open(url, '_self');	
+		      	return false;
+		    	}
+		    });
+	    } );
+		    
+    } );
+  </script>
+{/if}
+
+{include file='footer.html'}

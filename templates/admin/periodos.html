@@ -1,0 +1,98 @@
+{include file="header.html"}
+{$ruta}   
+
+{if isset($msg)} {include file='../mensajes.html'} {/if}
+
+{if !isset($bandera)}
+	<table class='table'>
+		<tr><td colspan='4' align='right'>
+			<a href='periodos.php?accion=form_insert&tabla=periodo'>
+				<img src='../Images/add.png'/> 
+			</a>
+		</td></tr>
+	</table>
+{/if}
+
+{if isset($periodos)}
+	{if isset($bandera)}<h3>Seleccione un periodo</h3>{/if}
+  <table id="example" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th><center>CLAVE</center></th>
+				<th><center>FECHA INICIO</center></th>
+				<th><center>FECHA FINAL</center></th>
+        {if !isset($bandera)}
+        	<th><center>ELIMINAR</center></th>
+					<th><center>ACTUALIZAR</center></th>
+				{else}
+					<th><center>ROLES</center></th>
+				{/if}
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <tr>
+        <th><center>CLAVE</center></th>
+				<th><center>FECHA INICIO</center></th>
+				<th><center>FECHA FINAL</center></th>
+        {if !isset($bandera)}
+        	<th><center>ELIMINAR</center></th>
+					<th><center>ACTUALIZAR</center></th>
+				{else}
+					<th><center>ROLES</center></th>
+				{/if}
+      </tr>
+      </tr>
+    </tfoot>
+  </table>
+  
+  <script type="text/javascript">
+    $(document).ready(function() {
+      
+    	var table = $('#example').DataTable( {
+        "ajax": "TextFiles/periodos.txt",
+        "columnDefs": [ {
+        {if !isset($bandera)}
+				    "targets": -2,
+				    "data": null,
+				    "defaultContent": "<center><a href='#' class='delete'><img src='../Images/cancelar.png'></a></center>"
+				  }, {	
+				{/if}
+					"className": "dt-center", 
+					"targets": "_all"
+				}]
+	    } );
+	    
+	    {if !isset($bandera)}
+		    $('#example tbody').on( 'click', 'a.delete', function () {
+	        event.preventDefault();
+	        
+	        var data = table.row( $(this).parents('tr') ).data();
+					var url = data[3];
+					
+			    swal({
+			      title: "¿Seguro? Se borrará toda la información relacionada", 
+			      text: "Si está seguro ingrese la contraseña de seguridad", 
+			      type: "input",
+			      inputType: "password",
+			      showCancelButton: true,
+			      confirmButtonText: "Aceptar",
+			      cancelButtonText: "Cancelar"
+			      
+			    }, function(typedPassword) {
+			    	// console.log(typedPassword);
+			    	if(typedPassword != "") {
+			    		url += "&infoc=" + typedPassword;
+			      	window.open(url, '_self');	
+			      	return false;
+			    	}
+			    });
+		    } );
+	    {/if}
+	    
+    } );
+  </script>
+{/if}
+
+
+{include file="footer.html"}

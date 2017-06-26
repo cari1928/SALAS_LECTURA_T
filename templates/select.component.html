@@ -1,0 +1,6 @@
+      <select class="form-control" name="datos[{$nombrecolumna}]">
+        <option value="-1">Selecciona una opción</option>
+      {foreach $datos as $tipo}
+        <option value="{$tipo[0]}" {if $tipo[0] eq $selected} selected {/if}>{$tipo[1]}</option>
+      {/foreach}
+      </select>

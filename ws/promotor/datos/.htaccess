@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteRule ^([0-9-a-zA-Z_-]*)$ index.php?usuario=$1
+RewriteRule ^([0-9-a-zA-Z_-]*)/([0-9-a-zA-Z_-]*)$ index.php?usuario=$1&password=$2 
+RewriteRule ^([0-9-a-zA-Z_-]*)/([0-9-a-zA-Z_-]*)/([0-9-a-zA-Z_-]*)$ index.php?usuario=$1&password=$2&token=$3
+RewriteRule ^([0-9-a-zA-Z_-]*)/([0-9-a-zA-Z_-]*)/([0-9-a-zA-Z_-]*)/([0-9-a-zA-Z_-]*)$ index.php?usuario=$1&password=$2&token=$3&rol=$4

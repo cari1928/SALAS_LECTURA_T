@@ -1,0 +1,12 @@
+div#cap 
+{
+    /*background-color: green;*/
+    text-align: left;
+    padding: 20px;
+}
+
+div#cap h1 
+{
+    float: right;
+    margin-left: 20px;
+}

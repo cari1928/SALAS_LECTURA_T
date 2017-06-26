@@ -1,0 +1,43 @@
+{include file='header.html'}
+{$ruta}
+{if isset($msg)}{include file='../mensajes.html'}{/if}
+<table class='table'>
+	<tr>
+		<td colspan='4' align='right'>
+			<a href='avisos.php?accion=insertar_form'><img src='../Images/add.png'/></a>
+		</td>
+	</tr>
+</table>
+
+{if isset($avisos)}
+	<table class='table table-hover'>
+		<tr class='info'>		
+			<th style="vertical-align:middle"><center>INTRODUCCION</center></th>
+			<th style="vertical-align:middle"><center>TIPO</center></th>
+			<th style="vertical-align:middle"><center>FECHA</center></th>
+			<th style="vertical-align:middle"><center>EXPIRA</center></th>
+	    <th style="vertical-align:middle"><center>ACTUALIZAR</center></th>
+			<th style="vertical-align:middle"><center>ELIMINAR</center></th>
+		</tr>
+		{foreach $avisos as $aviso}
+			<tr>
+				<td><center>{$aviso.introduccion}</center></td>
+				<td><center>{$aviso.descripcion}</center></td>
+				<td><center>{$aviso.fecha}</center></td>
+				<td><center>{$aviso.expira}</center></td>
+				<td><center>
+	        <a href="avisos.php?accion=actualizar_form&info1={$aviso.cvemsj}">
+						<img src="../Images/edit.png">
+					</a></center>
+				</td>
+				<td><center>		
+					<a href="avisos.php?accion=eliminar&info1={$aviso.cvemsj}">
+						<img src="../Images/cancelar.png">
+					</a></center>
+				</td>
+			</tr>
+		{/foreach}
+	</table>
+{/if}
+
+{include file='footer.html'}

@@ -1,0 +1,65 @@
+{include file='header.html'}
+<center>
+    {if isset($msj)}
+        <label style="color:red;">{$msj}</label>
+    {/if}
+</center>   
+{if isset($para)} 
+    {if isset($cveperiodo)}
+        <form name="messageform" action="redacta.php?accion=enviar&para={$para}&cveperiodo={$cveperiodo}" method="POST" id="messageform">
+            <div class="small-10 columns">
+                <label style="color:black;"> Asunto*</label>
+                <input class="span12" type="text" name="introduccion" id="subject" placeholder="Asunto" data-toggle="tooltip" title="Input Message Subject between 10 to 80" data-validation-required-message="Please enter subject" required value='{if isset($mensaje)}{$mensaje[0].introduccion}{/if}' {if isset($mensaje)}readonly{/if}>
+            </div>
+            <div class="small-10 columns" style="margin-top:15px;">
+                <label style="color:black;"> Contenido del mensaje*</label>
+                <textarea class="form-control span12" name="descripcion" id="content" rows="10" cols="100" placeholder="Contenido del mensaje" data-validation-required-message="Please enter your message" minlength="5" data-validation-minlength-message="Min 5 characters" data-toggle="tooltip" title="Input Message Content between 50 to 500" required {if isset($mensaje)}readonly{/if}>{if isset($mensaje)}{$mensaje[0].descripcion}{/if}</textarea>                    </div>
+            <div class="small-10 columns" style="margin-top:15px;">
+                <label style="color:black;"> Fecha de Expiracion*</label>
+                      <input style="width:200px;"TYPE="date"  class="form-control" id="exampleInputEmail3" name="expira" id="producto" require value='{if isset($mensaje)}{$mensaje[0].expira}{/if}' {if isset($mensaje)}readonly{/if}>                      
+            </div>
+            {if !isset($mensaje)}
+                <div class="small-6 columns" style="margin-top:15px;">
+                    <input type="submit" value="Send" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Send the Message" id="_send" name="_send">&nbsp;&nbsp;
+                    <input type="reset" value="Cancel" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Send the Message" id="_cancel" name="_cancel">
+                    <input type="hidden" name="action" id="action">
+                </div>
+            {/if}
+            <div class="small-6 columns" style="margin-top:15px;"></div>
+            <div class="small-6 columns"></div>
+        </form>
+    {/if}
+{/if}
+{if isset($accion)}
+    <form name="messageform" action="redacta.php?accion=enviarI&para={if isset($grupo)}{$grupo}{/if}&receptor={if isset($receptor)}{$receptor}{/if}" method="POST" id="messageform">
+        <div class="small-10 columns">
+            <label style="color:black;"> Asunto*</label>
+            <input class="span12" type="text" name="introduccion" id="subject" placeholder="Asunto" data-toggle="tooltip" title="Input Message Subject between 10 to 80" data-validation-required-message="Please enter subject" required value='{if isset($mensaje)}{$mensaje[0].introduccion}{/if}' {if isset($mensaje)}readonly{/if}>
+        </div>
+        <div class="small-10 columns" style="margin-top:15px;">
+            <label style="color:black;"> Contenido del mensaje*</label>
+            <textarea class="form-control span12" name="descripcion" id="content" rows="10" cols="100" placeholder="Contenido del mensaje" data-validation-required-message="Please enter your message" minlength="5" data-validation-minlength-message="Min 5 characters" data-toggle="tooltip" title="Input Message Content between 50 to 500" required {if isset($mensaje)}readonly{/if}>{if isset($mensaje)}{$mensaje[0].descripcion}{/if}</textarea>                    </div>
+        <div class="small-10 columns" style="margin-top:15px;">
+            <label style="color:black;"> Fecha de Expiracion*</label>
+                  <input style="width:200px;"TYPE="date"  class="form-control" id="exampleInputEmail3" name="expira" id="producto" require value='{if isset($mensaje)}{$mensaje[0].expira}{/if}' {if isset($mensaje)}readonly{/if}>                      
+        </div>
+        <div class="small-6 columns" style="margin-top:15px;">
+            <input type="submit" value="Send" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Send the Message" id="_send" name="_send">&nbsp;&nbsp;
+            <input type="reset" value="Cancel" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Send the Message" id="_cancel" name="_cancel">
+            <input type="hidden" name="action" id="action">
+        </div>
+        <div class="small-6 columns" style="margin-top:15px;">
+            
+        </div>
+         
+        <div class="small-6 columns">
+        </div>
+    </form>
+{else}
+    {if !isset($cveperiodo)}
+        <div class="small-6 columns">
+          <label>No se a especificado destinatario</label>
+        </div>
+    {/if}
+{/if}
+{include file='footer.html'}

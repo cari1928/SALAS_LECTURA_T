@@ -1,0 +1,25 @@
+{include file='header.html'}
+{$ruta}
+<center>
+    <h3>¡Bienvenido! <br><br/></h3>
+       <form class="form-inline" action='cambiacontrasena.php' method='post' enctype='multipart/form-data' accept-charset='utf-8'>
+   <div class="form-group">
+    <label>Usuario:</label>
+    <br/>
+    <input  class="form-control" name="datos[cveUsuario]" readonly value="{$user}">
+  </div>
+    <br/>
+    <br/>
+  <div class="form-group">
+    <label>Contraseña nueva: </label>
+    <br/>
+    <input type="password" class="form-control" id="exampleInputPassword3" placeholder="Password" name="datos[contrasena]" id="producto" required >
+  </div>
+  <br/>
+  <br/>
+  <button type="submit" class="btn btn-default" value='cambiar' name="guardar">Cambiar</button> </br>
+</form>
+</center>
+    </body>
+</html>
+{include file='footer.html'}

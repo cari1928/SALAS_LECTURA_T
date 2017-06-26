@@ -1,0 +1,16 @@
+  <table >
+  <tr>
+  	{foreach $nombrescolumnas as $columna}
+    <th>{$columna}</th>
+		{/foreach}
+	</tr>
+		{section name=registro loop=$datos}
+   	    <tr>
+        	{foreach from=$datos[registro] item=dato key=name}
+       	 	<td>
+            	{$dato}
+        	</td>
+        	{/foreach}
+   		 </tr>
+    	{/section}
+  	 	</table>

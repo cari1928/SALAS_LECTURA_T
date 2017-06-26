@@ -1,0 +1,44 @@
+{include file='header.html'}
+{$ruta}   
+<div class="container-fluid">
+  <div class="main row">
+    <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
+      {if isset($msg)}
+      	<div class="alert alert-{$alert} alert-dismissible" role="alert">
+      	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      	  <strong>¡Aviso!</strong> {$msg}
+      	</div>
+      {/if}
+      <form action="periodos.php?accion={if isset($periodos)}update{else}insert{/if}" method="post">  
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              {if isset($periodos)} Actualizar Periodo
+              {else} Nuevo Periodo {/if}
+            </h3>
+          </div>
+          <div class="panel-body">
+            {if isset($periodos)}
+              <input type="hidden" name="cveperiodo" value="{$periodos.cveperiodo}">
+            {/if}
+            <div class="form-group">
+              <label>Fecha Inicio:</label>
+              <input type="date" class="form-control" name="datos[fechaInicio]" required
+                {if isset($periodos)} value="{$periodos.fechainicio}" {/if}>
+            </div>
+            <div class="form-group">
+              <label>Fecha Final:</label>
+              <input type="date" class="form-control" name="datos[fechaFinal]" required
+                {if isset($periodos)} value="{$periodos.fechafinal}" {/if}>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          {if isset($periodos)} Actualizar 
+          {else} Guardar {/if}
+        </button>
+    </form>
+    </nav>
+  </div>
+</div>  
+{include file='footer.html'}

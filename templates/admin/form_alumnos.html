@@ -1,0 +1,113 @@
+{include file='header.html'}
+{$ruta}    
+{include file='../number_style.html'}
+<div class="container-fluid">
+  <div class="main row">
+    <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
+      
+      {if isset($msg)}{include file='../mensajes.html'}{/if}
+      
+      <form action="alumnos.php?accion={if isset($alumno)}update{else}insert{/if}" method="post">
+        <div class="panel panel-default">
+          
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              {if isset($alumno)} Actualizar Alumno - Número de Control: {$alumno.cveusuario}
+              {else} Nuevo Alumno {/if}
+            </h3>
+          </div>
+          
+          <div class="panel-body">
+            {if isset($alumno)}
+              <input type="hidden" name="datos[usuario]" value="{$alumno.cveusuario}">
+            {/if}
+            <div class="form-group">
+              <label>Nombre Completo: </label>
+              <input class="form-control" placeholder="Nombre y Apellidos" name="datos[nombre]" required 
+              {if isset($alumno)} value="{$alumno.nombre}" {/if}>
+            </div>
+            <div class="form-group">
+              <label>Especialidad: </label>
+              {$cmb_especialidad}
+            </div>
+            {if !isset($alumno)}
+              <div class="form-group">
+                <label>Número de Control:</label>
+                <!--maxlength no funciona por el uso del type number-->
+                <input class="form-control" placeholder="8 caracteres numéricos" name="datos[usuario]" maxlength="8" required type="number">
+              </div>
+            {/if}
+            <div class="form-group">
+              <label>Correo:</label>
+              <input type='email' class="form-control" placeholder="Correo" name="datos[correo]" maxlength="75"
+              {if isset($alumno)} value="{$alumno.correo}" {/if}>
+            </div>
+            
+            <!-- Si es update se muestra el radio button -->
+            {if isset($alumno)}
+              <div id='js' class="form-group">
+                <label id="l1">Modificar contraseña</label>
+                <input id="r1" type="radio" class="btn btn-default" value='true' name="datos[pass]" onclick="mostrar()">
+                <label id ="l2" style="display:none">Mantener contraseña original</label>
+                <input id="r2" type="radio"  class="btn btn-default" value='false' name="datos[pass]" onclick="mostrar()" checked style="display:none">
+              </div>
+              <div id='oculto' class="form-group" style="display:none">
+                <div class="form-group">
+                  <label>Contraseña:</label>
+                  <input type="password" class="form-control" placeholder="Contraseña" name="datos[contrasena]">
+                </div>
+                <div class="form-group">
+                  <label>Nueva contraseña:</label>
+                  <input type="password" class="form-control" placeholder="Nueva contraseña" name="datos[contrasenaN]">
+                </div>
+                <div class="form-group">
+                  <label>Confirmar Nueva contraseña:</label>
+                  <input type="password" class="form-control" placeholder="Confirmar nueva contraseña" name="datos[confcontrasenaN]">
+                </div>
+              </div>
+            <!--Si es insert se muestran los input directamente-->
+            {else}
+              <div class="form-group">
+                  <label>Contraseña:</label>
+                  <input type="password" class="form-control" placeholder="Contraseña" name="datos[contrasena]">
+                </div>
+                <div class="form-group">
+                  <label>Confirmar contraseña:</label>
+                  <input type="password" class="form-control" placeholder="Confirmar contraseña" name="datos[confcontrasena]">
+                </div>
+            {/if}
+            
+          </div>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">
+            {if isset($alumno)} Actualizar 
+            {else} Guardar {/if}
+          </button>
+        </div>
+      </form>
+    </nav>
+  </div>
+</div>
+<script>
+  var bandera = 0;
+    function mostrar()
+    {
+      var test = document.getElementsByName('datos[pass]');
+       if(test[0].checked == true) {
+          document.getElementById('oculto').style.display="block";
+          document.getElementById('r2').style.display="inline";
+          document.getElementById('l2').style.display="inline";
+          document.getElementById('r1').style.display="none";
+          document.getElementById('l1').style.display="none";
+        }
+        if(test[1].checked == true) {
+          document.getElementById('oculto').style.display="none";
+          document.getElementById('r2').style.display="none";
+          document.getElementById('l2').style.display="none";
+          document.getElementById('r1').style.display="inline";
+          document.getElementById('l1').style.display="inline";
+        }
+    }
+</script>
+{include file='footer.html'}

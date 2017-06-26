@@ -1,0 +1,53 @@
+{include file='header.html'} 
+{$ruta}
+{if isset($msg)}
+	<div class="alert alert-{$alert} alert-dismissible" role="alert">
+	  	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  		<span aria-hidden="true">&times;</span></button>
+	  <strong>¡Aviso!</strong> {$msg}
+	</div>
+{/if}
+{if isset($datos)}
+  <div class="page-header">
+    <h1>Selección de Sala</h1>
+  </div>
+  <table id="example" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th><center>GRUPO</center></th>
+        <th><center>NOMBRE SALA</center></th>
+        <th><center>CLAVE SALA</center></th>
+        <th><center>UBICACION</center></th>
+        <th><center>PROMOTOR</center></th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th><center>GRUPO</center></th>
+        <th><center>NOMBRE SALA</center></th>
+        <th><center>CLAVE SALA</center></th>
+        <th><center>UBICACION</center></th>
+        <th><center>PROMOTOR</center></th>
+      </tr>
+    </tfoot>
+  </table>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#example').DataTable( {
+          "ajax": "TextFiles/inscripcion.txt",
+          "columns": [
+              { "data": "letra" },
+              { "data": "nombre_grupo" },
+              { "data": "cvesala" },
+              { "data": "ubicacion" },
+              { "data": "nombre_promotor" }
+          ],
+          "columnDefs": [ {
+  					"className": "dt-center", 
+  					"targets": "_all"
+				}]
+      } );
+    } );
+  </script>
+{/if}
+{include file='footer.html'}
