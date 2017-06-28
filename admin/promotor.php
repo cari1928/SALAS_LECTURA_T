@@ -48,12 +48,13 @@ if ($flag) {
 
 } else {
   //no viene de historial
-  $sql = "select u.cveusuario, u.nombre, u.correo, otro AS \"Otro\", e.nombre AS
-  \"Especialidad\", eu.cveespecialidad  from usuarios u
-  inner join especialidad_usuario eu on eu.cveusuario = u.cveusuario
-  inner join especialidad e on e.cveespecialidad=eu.cveespecialidad
-  where u.cveusuario in (select cveusuario from usuario_rol where cverol=2)
-  order by u.cveusuario";
+  $sql = "SELECT u.cveusuario, u.nombre, u.correo, otro AS \"Otro\", e.nombre AS \"Especialidad\",
+  eu.cveespecialidad
+  FROM usuarios u
+  INNER JOIN especialidad_usuario eu ON eu.cveusuario = u.cveusuario
+  INNER JOIN especialidad e ON e.cveespecialidad = eu.cveespecialidad
+  WHERE u.cveusuario in (SELECT cveusuario FROM usuario_rol WHERE cverol=2)
+  ORDER BY u.cveusuario";
   $web->DB->SetFetchMode(ADODB_FETCH_NUM);
   $promotores = $web->DB->GetAll($sql);
 }
@@ -64,6 +65,8 @@ if (!isset($promotores[0])) {
   $web->simple_message('warning', 'No hay promotores registrados');
 }
 
+// $web->debug($promotores);
+arreglaEspecialidad($web);
 $datos = array('data' => $promotores);
 
 //contenido de las colummnas
@@ -96,6 +99,24 @@ fwrite($file, $datos);
 $web->smarty->assign('datos', $datos);
 $web->smarty->display("promotor.html");
 
+/*************************************************************************************************
+ * FUNCIONES
+ *************************************************************************************************/
+/**
+ * Define lo que se mostrará en caso de que la especialidad esté indicada o no con la opción 'Otro'
+ */
+function arreglaEspecialidad($web)
+{
+  global $promotores;
+
+  for ($i = 0; $i < count($promotores); $i++) {
+    if ($promotores[$i][5] != "O") {
+      $promotores[$i][3] = $promotores[$i][4];
+    }
+  }
+  // $web->debug($promotores);
+}
+
 /**
  * Mostrar mensajes de error en casos específicos
  * @param  String $msg        Mensaje a mostrar
@@ -109,13 +130,13 @@ function errores($msg, $ruta, $web, $cveusuario = null)
   $web->simple_message('danger', $msg);
   $web->iniClases('admin', $ruta);
 
-  $sql = "select cveespecialidad, nombre from especialidad
-  where cveespecialidad <> 'O'";
+  $sql = "SELECT cveespecialidad, nombre FROM especialidad
+  WHERE cveespecialidad <> 'O'";
   $combito = $web->combo($sql, null, '../');
   $web->smarty->assign('combito', $combito);
 
   if ($cveusuario != null) {
-    $sql   = 'select * from usuarios where cveusuario=?';
+    $sql   = 'SELECT * FROM usuarios WHERE cveusuario=?';
     $datos = $web->DB->GetAll($sql, $cveusuario);
     $web->smarty->assign('promotores', $datos[0]);
   }
@@ -151,7 +172,7 @@ function delete_professor($web)
   }
 
   //verifica que el promotor exista
-  $sql   = "select * from usuarios where cveusuario=?";
+  $sql   = "SELECT * FROM usuarios WHERE cveusuario=?";
   $datos = $web->DB->GetAll($sql, $_GET['info1']);
   if (!isset($datos[0])) {
     $web->simple_message('danger', "El promotor no existe");
@@ -159,44 +180,44 @@ function delete_professor($web)
   }
 
   //obtiene grupos del promotor
-  $sql    = "select distinct cveletra, sala from laboral where cvepromotor=?";
+  $sql    = "SELECT DISTINCT cveletra, sala FROM laboral WHERE cvepromotor=?";
   $grupos = $web->DB->GetAll($sql, $_GET['info1']);
 
   for ($i = 0; $i < sizeof($grupos); $i++) {
     //obtiene la cvelectura de cada grupo
-    $sql     = "select cvelectura from lectura where cveletra=?";
+    $sql     = "SELECT cvelectura FROM lectura WHERE cveletra=?";
     $lectura = $web->DB->GetAll($sql, $grupos[$i]['cveletra']);
 
     for ($j = 0; $j < sizeof($lectura); $j++) {
       //elimina de evaluacion, lista_libros y lectura
-      $sql = "delete from evaluacion where cvelectura=?";
+      $sql = "delete FROM evaluacion WHERE cvelectura=?";
       $web->query($sql, $lectura[$j]['cvelectura']);
-      $sql = "delete from lista_libros where cvelectura=?";
+      $sql = "delete FROM lista_libros WHERE cvelectura=?";
       $web->query($sql, $lectura[$j]['cvelectura']);
-      $sql = "delete from lectura where cvelectura=?";
+      $sql = "delete FROM lectura WHERE cvelectura=?";
       $web->query($sql, $lectura[$j]['cvelectura']);
     }
   }
 
   //obtiene las salas que ha apartado el promotor
-  $sql   = "select distinct cvesala from laboral where cvepromotor=?";
+  $sql   = "SELECT DISTINCT cvesala FROM laboral WHERE cvepromotor=?";
   $salas = $web->DB->GetAll($sql, $_GET['info1']);
   //elimina las salas
   for ($i = 0; $i < sizeof($salas); $i++) {
-    $sql = "delete from sala where cvesala=?";
+    $sql = "delete FROM sala WHERE cvesala=?";
     $web->query($sql, $salas[$i]['cvesala']);
   }
 
   //elimina laboral, msj, usuario_rol, especialidad_usuario y promotor
-  $sql = "delete from laboral where cvepromotor=?";
+  $sql = "delete FROM laboral WHERE cvepromotor=?";
   $web->query($sql, $_GET['info1']);
-  $sql = "delete from msj where emisor=? or receptor=?";
+  $sql = "delete FROM msj WHERE emisor=? or receptor=?";
   $web->query($sql, array($_GET['info1'], $_GET['info1']));
-  $sql = "delete from usuario_rol where cveusuario=?";
+  $sql = "delete FROM usuario_rol WHERE cveusuario=?";
   $web->query($sql, $_GET['info1']);
-  $sql = "delete from especialidad_usuario where cveusuario=?";
+  $sql = "delete FROM especialidad_usuario WHERE cveusuario=?";
   $web->query($sql, $_GET['info1']);
-  $sql = "delete from usuarios where cveusuario=?";
+  $sql = "delete FROM usuarios WHERE cveusuario=?";
   if (!$web->query($sql, $_GET['info1'])) {
     $web->simple_message('danger', 'No se pudo completar la operación');
     return false;
@@ -232,7 +253,7 @@ function show_professor_groups($web)
     $cveperiodo = $web->periodo();
   }
 
-  $sql      = "select * from usuarios where cveusuario=?";
+  $sql      = "SELECT * FROM usuarios WHERE cveusuario=?";
   $promotor = $web->DB->GetAll($sql, $_GET['info1']);
   if (!isset($promotor[0])) {
     $web->simple_message('danger', 'No existe el promotor');
@@ -244,26 +265,26 @@ function show_professor_groups($web)
     return false;
   }
 
-  $sql = "select distinct letra, nombre, ubicacion, titulo, laboral.cveperiodo from laboral
-  inner join abecedario on laboral.cveletra = abecedario.cve
-  inner join sala on laboral.cvesala = sala.cvesala
-  left join libro on laboral.cvelibro_grupal = libro.cvelibro
-  where cvepromotor=? and laboral.cveperiodo=?
-  order by letra";
+  $sql = "SELECT DISTINCT letra, nombre, ubicacion, titulo, laboral.cveperiodo
+  FROM laboral
+  INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
+  INNER JOIN sala ON laboral.cvesala = sala.cvesala
+  LEFT JOIN libro ON laboral.cvelibro_grupal = libro.cvelibro
+  WHERE cvepromotor=? AND laboral.cveperiodo=?
+  ORDER BY letra";
   $tablegrupos = $web->DB->GetAll($sql, array($_GET['info1'], $cveperiodo));
-
   if (!isset($tablegrupos[0])) {
     $web->simple_message('danger', 'No ha creado algún grupo');
     return false;
   }
 
-  $sql = "select dia.cvedia, abecedario.letra, dia.nombre, horas.hora_inicial,
-  horas.hora_final from laboral
-  inner join dia on dia.cvedia=laboral.cvedia
-  inner join abecedario on laboral.cveletra = abecedario.cve
-  inner join horas on horas.cvehoras=laboral.cvehoras
-  where cvepromotor=? and laboral.cveperiodo=?
-  order by letra, dia.cvedia, horas.hora_inicial";
+  $sql = "SELECT dia.cvedia, abecedario.letra, dia.nombre, horas.hora_inicial,
+  horas.hora_final FROM laboral
+  INNER JOIN dia ON dia.cvedia=laboral.cvedia
+  INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
+  INNER JOIN horas ON horas.cvehoras=laboral.cvehoras
+  WHERE cvepromotor=? AND laboral.cveperiodo=?
+  ORDER BY letra, dia.cvedia, horas.hora_inicial";
   $horas = $web->DB->GetAll($sql, array($_GET['info1'], $cveperiodo));
 
   for ($i = 0; $i < sizeof($tablegrupos); $i++) {
@@ -292,14 +313,15 @@ function show_history($web)
 {
   $web->iniClases('admin', "index historial promotor");
 
-  $sql = "select distinct u.cveusuario ,u.nombre, u.correo, otro AS \"Otro\", e.nombre AS
-  \"Especialidad\", eu.cveespecialidad  from usuarios u
-  inner join especialidad_usuario eu on eu.cveusuario = u.cveusuario
-  inner join especialidad e on e.cveespecialidad=eu.cveespecialidad
-  inner join laboral on laboral.cvepromotor = u.cveusuario
-  where u.cveusuario in (select cveusuario from usuario_rol where cverol=2)
-  and cveperiodo=?
-  order by u.cveusuario";
+  $sql = "SELECT DISTINCT u.cveusuario ,u.nombre, u.correo, otro AS \"Otro\",
+  e.nombre AS \"Especialidad\", eu.cveespecialidad
+  FROM usuarios u
+  INNER JOIN especialidad_usuario eu ON eu.cveusuario = u.cveusuario
+  INNER JOIN especialidad e ON e.cveespecialidad = eu.cveespecialidad
+  INNER JOIN laboral ON laboral.cvepromotor = u.cveusuario
+  WHERE u.cveusuario IN (SELECT cveusuario FROM usuario_rol WHERE cverol=2)
+  AND cveperiodo=?
+  ORDER BY u.cveusuario";
   $web->DB->SetFetchMode(ADODB_FETCH_NUM);
   $promotores = $web->DB->GetAll($sql, $_GET['info1']);
 
@@ -322,8 +344,10 @@ function show_form_insert($web)
   $web->iniClases('admin', "index promotor nuevo");
 
   //<> Usado para no seleccionar la opción O, creo...
-  $sql = "select cveespecialidad, nombre from especialidad
-  where cveespecialidad <> 'O' order by nombre";
+  $sql = "SELECT cveespecialidad, nombre
+  FROM especialidad
+  WHERE cveespecialidad <> 'O'
+  ORDER BY nombre";
   $combito = $web->combo($sql, null, '../');
 
   $web->smarty->assign('combito', $combito);
@@ -345,20 +369,21 @@ function show_form_update($web)
 
   $web->iniClases('admin', "index promotor actualizar");
 
-  $sql = 'select u.cveusuario, u.nombre AS "nombreUsuario", e.nombre, eu.cveespecialidad,
-  eu.otro, u.correo from usuarios u
-  inner join especialidad_usuario eu on eu.cveusuario=u.cveusuario
-  inner join especialidad e on e.cveespecialidad = eu.cveespecialidad
-  where u.cveusuario=?';
+  $sql = 'SELECT u.cveusuario, u.nombre AS "nombreUsuario", e.nombre, eu.cveespecialidad,
+  eu.otro, u.correo
+  FROM usuarios u
+  INNER JOIN especialidad_usuario eu ON eu.cveusuario = u.cveusuario
+  INNER JOIN especialidad e ON e.cveespecialidad = eu.cveespecialidad
+  WHERE u.cveusuario=?';
   $datos = $web->DB->GetAll($sql, $_GET['info1']);
   if (!isset($datos[0])) {
     $web->simple_message('danger', "No existe el promotor");
     return false;
   }
 
-  $sql = "select cveespecialidad, nombre from especialidad
-  where cveespecialidad <> 'O'
-  order by nombre";
+  $sql = "SELECT cveespecialidad, nombre FROM especialidad
+  WHERE cveespecialidad <> 'O'
+  ORDER BY nombre";
   $combito = $web->combo($sql, $datos[0]['cveespecialidad'], '../');
 
   $web->smarty->assign('combito', $combito);
@@ -411,7 +436,7 @@ function insert_professor($web)
     errores('El correo ya existe', 'index promotor nuevo', $web);
   }
 
-  $sql   = "select*from usuarios where cveusuario=?";
+  $sql   = "SELECT*FROM usuarios WHERE cveusuario=?";
   $datos = $web->DB->GetAll($sql, $_POST['datos']['usuario']);
   if (isset($datos[0])) {
     errores('El usuario ya existe', 'index promotor nuevo', $web);
@@ -451,23 +476,6 @@ function insert_professor($web)
     return false;
   }
   $web->DB->CompleteTrans();
-
-  //Para probar el envío de correos al administrador
-  // $sql     = "SELECT correo, nombre FROM usuarios WHERE cveusuario in (SELECT cveusuario FROM usuario_rol WHERE cverol=1)";
-  // $correos = $web->DB->GetAll($sql);
-  // if (!isset($correos[0])) {
-  //   $web->simple_message('danger', 'No existe un administrador que apruebe tu registro');
-  //   return false;
-  // }
-
-  // //envía correos a todos los administradores
-  // for ($i = 0; $i < sizeof($correos); $i++) {
-
-  //   $mensaje = "Hola " . $correos[$i]['nombre'] . "\n Se solicita que apruebe un usuario para Salas Lectura.<br><br> Numero de control: " . $cveUsuario . "<br><br>Nombre del usuario: " . $nombre . "<br><br>Especialidad: " . $nombre_especialidad[0]['nombre'] . "<br><br>Correo del usuario: " . $correo . "<br><br>Por lo tanto, para realizar dicha accion de click en el siguiente enlace: " . " <a href='https://salas-lectura-cari1928.c9users.io/admin/validar.php?accion=aceptar&clave=" . $cveUsuario . "'>Aceptar</a>" . ".<br><br> De lo contrario, si usted Desea rechazar al usuario de click al siguiente enlace." . "<a href='https://salas-lectura-cari1928.c9users.io/admin/validar.php?accion=rechazar&clave=" . $cveUsuario . "'>Rechazar</a>" . "<br><br> ¡Gracias!";
-
-  //   $web->sendEmail($correos[$i]['correo'], $correos[$i]['nombre'], "Aprobar registro", $mensaje);
-  // }
-
   header('Location: promotor.php');
 }
 
@@ -493,7 +501,7 @@ function update_professor($web)
     errores('Llene todos los campos', 'index promotor nuevo', $cveusuario, $web);
   }
 
-  $sql   = "select * from usuarios where cveusuario=?";
+  $sql   = "SELECT * FROM usuarios WHERE cveusuario=?";
   $datos = $web->DB->GetAll($sql, $cveusuario);
   if (!isset($datos[0])) {
     errores('El promotor no existe', 'index promotor nuevo', $cveusuario, $web);
@@ -504,10 +512,10 @@ function update_professor($web)
     errores('Ingrese un correo valido', 'index promotor nuevo', $cveusuario, $web);
   }
 
-  $sql            = "select correo from usuarios where cveusuario=?";
+  $sql            = "SELECT correo FROM usuarios WHERE cveusuario=?";
   $correo_usuario = $web->DB->GetAll($sql, $cveUsuario);
 
-  $sql     = "select correo from usuarios where correo=?";
+  $sql     = "SELECT correo FROM usuarios WHERE correo=?";
   $correos = $web->DB->GetAll($sql, $correo);
   if (sizeof($correos) == 1) {
     if ($correo_usuario[0]['correo'] != $correos[0]['correo']) {
@@ -537,7 +545,7 @@ function update_professor($web)
       errores('La contraseña nueva debe coincidir con la confirmación', 'index promotor nuevo', $cveusuario, $web);
     }
 
-    $sql = "update usuarios set nombre=?, correo= ?, pass=? where cveusuario=?";
+    $sql = "UPDATE usuarios SET nombre=?, correo= ?, pass=? WHERE cveusuario=?";
     $tmp = array(
       $_POST['datos']['nombre'],
       $_POST['datos']['correo'],
@@ -549,7 +557,7 @@ function update_professor($web)
       return false;
     }
   } else {
-    $sql = "update usuarios set nombre=?, correo= ? where cveusuario=?";
+    $sql = "UPDATE usuarios SET nombre=?, correo= ? WHERE cveusuario=?";
     $tmp = array($_POST['datos']['nombre'], $_POST['datos']['correo'], $cveusuario);
     if (!$web->query($sql, $tmp)) {
       $web->simple_message('danger', 'No se pudo completar la operación');
@@ -558,23 +566,20 @@ function update_professor($web)
 
     if (isset($_POST['datos']['especialidad'])) {
       if ($_POST['datos']['especialidad'] == 'true') {
-        $sql = "update especialidad_usuario set cveespecialidad=?, otro=null
-        where cveusuario=? ";
+        $sql = "UPDATE especialidad_usuario SET cveespecialidad=?, otro=null WHERE cveusuario=? ";
         $web->query($sql, array($_POST['datos']['cveespecialidad'], $cveusuario));
       } else {
-        $sql = "update especialidad_usuario set cveespecialidad='O', otro=?
-        where cveusuario=? ";
+        $sql = "UPDATE especialidad_usuario SET cveespecialidad='O', otro=? WHERE cveusuario=? ";
         $web->query($sql, array($_POST['datos']['otro'], $cveusuario));
       }
     } else {
-      $sql = "select cveespecialidad from especialidad_usuario
-      where cveusuario=?";
+      $sql             = "SELECT cveespecialidad FROM especialidad_usuario WHERE cveusuario=?";
       $cveespecialidad = $web->DB->GetAll($sql, $cveusuario);
       if ($cveespecialidad[0]['cveespecialidad'] == 'O') {
-        $sql = "update especialidad_usuario set cveespecialidad='O', otro=? where cveusuario=? ";
+        $sql = "UPDATE especialidad_usuario SET cveespecialidad='O', otro=? WHERE cveusuario=? ";
         $web->query($sql, array($_POST['datos']['otro'], $cveusuario));
       } else {
-        $sql = "update especialidad_usuario set cveespecialidad=?, otro = null where cveusuario=? ";
+        $sql = "UPDATE especialidad_usuario SET cveespecialidad=?, otro = null WHERE cveusuario=? ";
         $web->query($sql, array($_POST['datos']['cveespecialidad'], $cveusuario));
       }
     }

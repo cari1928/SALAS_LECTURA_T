@@ -13,6 +13,7 @@
 {/if}
 
 {if isset($datos)}
+
 	{if isset($formato_preguntas)}
 		<a href="grupo.php?accion=formato_preguntas"> 
   	<img src="../Images/reporte.png"></a>
@@ -33,9 +34,7 @@
 		{foreach $datos as $alumno}
 			<tr> 
 				 <form class='form - inline' action='grupo.php?info1={$info.letra}' method='post'>
-
 					 <input type="hidden" name="datos[cveeval]" value="{$alumno.cveeval}"> 
-
 					 <td width='500' style="vertical-align:middle"> {$alumno.nombre} </td>
 					 <td width='500'>
 					 	<div id="myprogress" style=" position: relative; width: 100%; height: 30px; background-color: #ddd;">	

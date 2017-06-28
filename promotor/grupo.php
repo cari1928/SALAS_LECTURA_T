@@ -40,7 +40,7 @@ if (isset($_GET['accion'])) {
       if (!isset($libros[0])) {
         $web->simple_message('warning', 'No hay libros registrados');
       } else {
-        $sql          = "SELECT letra FROM abecedario WHERE cve = ?";
+        $sql          = "SELECT letra FROM abecedario WHERE cve=?";
         $letra_subida = $web->DB->GetAll($sql, $libros[0]["cveletra"]);
         for ($i = 0; $i < count($libros); $i++) {
           $nombre_fichero = "/home/slslctr/periodos/" .

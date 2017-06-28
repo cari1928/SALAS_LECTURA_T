@@ -3,6 +3,7 @@
 {if isset($msg)} {include file='../mensajes.html'} {/if}
 
 <table class='table'>
+	
 	{if !isset($bandera)}
 		<tr><td colspan='4' align='right'>
 			<a href='promotor.php?accion=form_insert'><img src='../Images/add.png'/> </a>
@@ -16,6 +17,7 @@
 			</a>
 		</td></tr>
 	{/if}
+	
 </table>
 
 {if isset($datos)} 
@@ -23,30 +25,30 @@
   	<thead>
       <tr>
         <th style="vertical-align:middle"><center>RFC</center></th>
-		<th style="vertical-align:middle"><center>PROMOTOR</center></th>
-		<th style="vertical-align:middle"><center>EMAIL</center></th>
-		<th style="vertical-align:middle"><center>ESPECIALIDAD</center></th>
-		{if !isset($cveperiodo)}
-			<th style="vertical-align:middle"><center>ELIMINAR</center></th>
-			<th style="vertical-align:middle"><center>ACTUALIZAR</center></th>
-		{/if}
-		<th style="vertical-align:middle"><center>GRUPOS</center></th>
-		{if isset($cveperiodo)}<th style="vertical-align:middle"><center>REPORTE PROMOTOR</center></th>{/if}
+				<th style="vertical-align:middle"><center>PROMOTOR</center></th>
+				<th style="vertical-align:middle"><center>EMAIL</center></th>
+				<th style="vertical-align:middle"><center>ESPECIALIDAD</center></th>
+				{if !isset($cveperiodo)}
+					<th style="vertical-align:middle"><center>ELIMINAR</center></th>
+					<th style="vertical-align:middle"><center>ACTUALIZAR</center></th>
+				{/if}
+				<th style="vertical-align:middle"><center>GRUPOS</center></th>
+				{if isset($cveperiodo)}<th style="vertical-align:middle"><center>REPORTE PROMOTOR</center></th>{/if}
       </tr>
     </thead>
     
     <tfoot>
       <tr>
         <th style="vertical-align:middle"><center>RFC</center></th>
-		<th style="vertical-align:middle"><center>PROMOTOR</center></th>
-		<th style="vertical-align:middle"><center>EMAIL</center></th>
-		<th style="vertical-align:middle"><center>ESPECIALIDAD</center></th>
-		{if !isset($cveperiodo)}
-			<th style="vertical-align:middle"><center>ELIMINAR</center></th>
-			<th style="vertical-align:middle"><center>ACTUALIZAR</center></th>
-		{/if}
-		<th style="vertical-align:middle"><center>GRUPOS</center></th>
-		{if isset($cveperiodo)}<th width='150'><center>REPORTE PROMOTOR</center></th>{/if}
+				<th style="vertical-align:middle"><center>PROMOTOR</center></th>
+				<th style="vertical-align:middle"><center>EMAIL</center></th>
+				<th style="vertical-align:middle"><center>ESPECIALIDAD</center></th>
+				{if !isset($cveperiodo)}
+					<th style="vertical-align:middle"><center>ELIMINAR</center></th>
+					<th style="vertical-align:middle"><center>ACTUALIZAR</center></th>
+				{/if}
+				<th style="vertical-align:middle"><center>GRUPOS</center></th>
+				{if isset($cveperiodo)}<th width='150'><center>REPORTE PROMOTOR</center></th>{/if}
       </tr>
     </tfoot>
   </table>
