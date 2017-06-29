@@ -296,6 +296,9 @@ function mostrar_libros($web, $alumno)
         $libros[$i]["cvelibro"] . "_" .
         $libros[$i]["nocontrol"] . ".pdf";
 
+      // echo $nombre_fichero;
+      // die();
+
       if (file_exists($nombre_fichero)) {
         $libros[$i]["archivoExiste"] = explode("/home/slslctr/periodos/", $nombre_fichero)[1];
       }

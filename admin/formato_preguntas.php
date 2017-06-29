@@ -26,6 +26,10 @@ if (isset($_GET['accion'])) {
       }
 
       $nombre = "formato_preguntas.pdf";
+
+      // echo $dir_subida . $nombre;
+      // die();
+
       if (move_uploaded_file($_FILES['datos']['tmp_name']['archivo'], $dir_subida . $nombre)) {
         header('Location: index.php?aviso=1');
       } else {

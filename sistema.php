@@ -91,7 +91,6 @@ class Sistema extends Conexion
     parent::Conectar();
     $this->smarty = new Smarty();
   }
-
   public function mostrartabla($query)
   {
     $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);

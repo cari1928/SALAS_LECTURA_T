@@ -50,6 +50,7 @@ switch ($accion) {
 
   case 'redactarI':
     $receptor = "";
+    
     if (isset($_GET['info2'])) {
       $receptor = $_GET['info2'];
     } else {
@@ -125,6 +126,7 @@ switch ($accion) {
 
   case 'enviarI':
     $receptor = $cveletra = "";
+    $web->debug($_FILES);
     if (isset($_GET['receptor'])) {
       $receptor = $_GET['receptor'];
     }

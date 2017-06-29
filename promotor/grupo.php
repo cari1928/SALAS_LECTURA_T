@@ -19,6 +19,47 @@ if (isset($_GET['accion'])) {
 
   switch ($_GET['accion']) {
 
+    case 'estado':
+      
+      $sql = "SELECT cveestado FROM lista_libros WHERE cvelectura = ? and cvelectura in (SELECT cvelectura FROM lectura WHERE nocontrol = ?)";
+      $estados = $web->DB->GetAll($sql, array($_GET['info'], $_GET['info2']));
+      
+      if(!isset($estados[0])){
+        message('danger', 'El alumno no tiene libros registrados', $web);
+      }
+      
+      if($_GET['estado'] == 2){
+        
+        for($i = 0; $i < sizeof($estados); $i++){
+          if($estados[$i]['cveestado'] == 2){
+            message('danger', 'El alumno no puede tener dos libros en proceso', $web);
+          }
+        }
+        
+        $sql = "UPDATE lista_libros SET cveestado = ? where cvelista = ?";
+        $web->query($sql, array(2, $_GET['info3']));
+        header('Location: grupo.php?accion=libros&info=' . $_GET['info'] . '&info2=' . $_GET['info2']);
+        die();
+      } else if($_GET['estado'] == 3){
+        $sql = "SELECT calif_reporte FROM lista_libros where cvelista = ?";
+        $calif = $web->DB->GetAll($sql, $_GET['info3']);
+        if($calif[0]['calif_reporte'] < 70){
+          message('danger', 'No se puede marcar como terminado, no cuenta con la calificación suficiente', $web);
+        }
+        $sql = "UPDATE lista_libros SET cveestado = ? where cvelista = ?";
+        $web->query($sql, array($_GET['estado'], $_GET['info3']));
+        header('Location: grupo.php?accion=libros&info=' . $_GET['info'] . '&info2=' . $_GET['info2']);
+        die();
+      } else {
+        $sql = "UPDATE lista_libros SET cveestado = ? where cvelista = ?";
+        $web->query($sql, array($_GET['estado'], $_GET['info3']));
+        header('Location: grupo.php?accion=libros&info=' . $_GET['info'] . '&info2=' . $_GET['info2']);
+        die();
+      }
+      
+      
+      break;
+
     case 'libros':
       if (!isset($_GET['info'])) {
         message('danger', 'Información incompleta', $web);
@@ -42,8 +83,9 @@ if (isset($_GET['accion'])) {
       } else {
         $sql          = "SELECT letra FROM abecedario WHERE cve=?";
         $letra_subida = $web->DB->GetAll($sql, $libros[0]["cveletra"]);
+        
         for ($i = 0; $i < count($libros); $i++) {
-          $nombre_fichero = "/home/slslctr/periodos/" .
+          $nombre_fichero = "/home/ubuntu/workspace/periodos/" .
             $libros[$i]["cveperiodo"] . "/" .
             $letra_subida[0][0] . "/" .
             $libros[$i]["nocontrol"] . "/" .
@@ -51,10 +93,34 @@ if (isset($_GET['accion'])) {
             $libros[$i]["nocontrol"] . ".pdf";
           if (file_exists($nombre_fichero)) {
             $libros[$i]["archivoExiste"] = explode(
-              "/home/slslctr/periodos/",
+              "/home/ubuntu/workspace/periodos/",
               $nombre_fichero)[1];
           }
+          $sqlEstado = "SELECT * FROM estado";
+          $estados = $web->DB->GetAll($sqlEstado);
+          $selected = $libros[$i]['cveestado'];
+          $redireccion['accion'] = "?accion=estado";
+          $redireccion['nombre'] = "&estado";
+          $redireccion['pagina'] = "grupo.php";
+          $redireccion['get'] = "&info=".$_GET['info']."&info2=".$_GET['info2']."&info3=".$libros[$i]['cvelista'];
+          $combo = "";
+          $combo .= '<select class="form-control" name="cveestado" onchange="location = this.value">';
+          $combo .= '<option value="-1">Selecciona una opción</option>';
+          for($j = 0; $j < sizeof($estados); $j++){
+            $combo .= '<option value="'.$redireccion['pagina'].$redireccion['accion'].$redireccion['nombre'].'='.$estados[$j]['cveestado'].$redireccion['get'].'"'; 
+            if($selected == $estados[$j]['cveestado']){
+              $combo .= "selected>".$estados[$j]['estado']."</option>";
+            }
+            else{
+              $combo .= ">".$estados[$j]['estado']."</option>";
+            }
+          }
+          $combo .= "</select>";
+          //$combo = $web->combo($sqlEstado, $selected, '../', array(),$redireccion);
+          $libros[$i]['combo'] = $combo;
+          //$web->debug_line($combo); 
         }
+        //$web->debug($libros);
         $web->smarty->assign('libros', $libros);
       }
 
@@ -74,7 +140,7 @@ if (isset($_GET['accion'])) {
     case 'reporte':
       header("Content-disposition: attachment; filename=" . $_GET['info3']);
       header("Content-type: MIME");
-      readfile("/home/slslctr/periodos/" . $_GET['info3']);
+      readfile("/home/ubuntu/workspace/periodos/" . $_GET['info3']);
       break;
 
     case 'calificar_reporte': //info1 = cvelista, info2 = cvelectura, info3 = nocontrol
@@ -127,7 +193,7 @@ if (isset($_GET['accion'])) {
     case 'formato_preguntas':
       header("Content-disposition: attachment; filename=formato_preguntas.pdf");
       header("Content-type: MIME");
-      readfile("/home/slslctr/pdf/" . $cveperiodo . "/formato_preguntas.pdf");
+      readfile("/home/ubuntu/workspace/pdf/" . $cveperiodo . "/formato_preguntas.pdf");
       break;
   }
 }
@@ -240,7 +306,7 @@ if (!isset($datos[0])) {
   die();
 }
 
-$nombre_fichero = "/home/slslctr/pdf/" . $cveperiodo . "/formato_preguntas.pdf";
+$nombre_fichero = "/home/ubuntu/workspace/pdf/" . $cveperiodo . "/formato_preguntas.pdf";
 if (file_exists($nombre_fichero)) {
   $web->smarty->assign('formato_preguntas', true);
 }
