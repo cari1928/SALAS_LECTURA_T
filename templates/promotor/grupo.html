@@ -11,15 +11,30 @@
 		Grupo: {$info.letra}
 	</div></center>
 {/if}
+
 {if !isset($libros)}
+
 	{if isset($datos)}
 	
 		{if isset($formato_preguntas)}
-			<a href="grupo.php?accion=formato_preguntas"> 
-	  	<img src="../Images/reporte.png"></a>
+			<div style="float:right; padding-bottom:10px">
+				
+				<a style="text-decoration:none; color:black; padding-right:10px" 
+					href="grupo.php?accion=formato_preguntas">
+					<img src="../Images/docs.png"> Formato Reporte
+				</a>
+				
+				{if isset($info)}
+					<a style="text-decoration:none; color:black" 
+						href="grupo.php?accion=form_observaciones&info={$info.letra}">
+						<img src="../Images/notas.png"> Observaciones
+					</a>
+				{/if}
+			</div>
 		{/if}
-	
-		<table class='table table-striped' width='500'>
+		
+		<div class="table-info">
+			<table class='table table-striped' width='500'>
 			<tr>
 				<th><center>ALUMNO</center></th>
 				<th><center>ASISTENCIA</center></th>
@@ -33,7 +48,7 @@
 	
 			{foreach $datos as $alumno}
 				<tr> 
-					 <form class='form - inline' action='grupo.php?info1={$info.letra}' method='post'>
+					 <form class='form-inline' action='grupo.php?info1={$info.letra}' method='post'>
 						 <input type="hidden" name="datos[cveeval]" value="{$alumno.cveeval}"> 
 						 <td width='500' style="vertical-align:middle"> {$alumno.nombre} </td>
 						 <td width='500'>
@@ -134,7 +149,9 @@
 	
 				</tr>
 			{/foreach}
-		</table>	
+		</table>		
+		</div>
+		
 	{/if}
 {/if}
 
