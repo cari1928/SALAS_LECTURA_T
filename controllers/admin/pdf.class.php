@@ -8,11 +8,11 @@ use Dompdf\Dompdf;
  */
 class PDF extends Sistema
 {
-  public function createPDF($title, $content)
+  public function createPDF($title, $content, $paper)
   {
     $dompdf = new Dompdf();
     $dompdf->loadHtml($content);
-    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->setPaper('A4', $paper);
     $dompdf->render();
     $dompdf->stream($title . '.pdf', array('Attachment' => 0));
   }

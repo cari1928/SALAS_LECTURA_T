@@ -49,8 +49,7 @@ if ($flag) {
 } else {
   //no viene de historial
   $sql = "SELECT u.cveusuario, u.nombre, u.correo, otro AS \"Otro\", e.nombre AS \"Especialidad\",
-  eu.cveespecialidad
-  FROM usuarios u
+  eu.cveespecialidad FROM usuarios u
   INNER JOIN especialidad_usuario eu ON eu.cveusuario = u.cveusuario
   INNER JOIN especialidad e ON e.cveespecialidad = eu.cveespecialidad
   WHERE u.cveusuario in (SELECT cveusuario FROM usuario_rol WHERE cverol=2)
@@ -65,7 +64,6 @@ if (!isset($promotores[0])) {
   $web->simple_message('warning', 'No hay promotores registrados');
 }
 
-// $web->debug($promotores);
 arreglaEspecialidad($web);
 $datos = array('data' => $promotores);
 
@@ -84,9 +82,10 @@ for ($i = 0; $i < sizeof($datos['data']); $i++) {
 
     //mostrar grupos
     $datos['data'][$i][4] = "<center><a href='promotor.php?accion=mostrar&info1=" . $datos['data'][$i][0] . "&info2=" . $_GET['info1'] . "'><img src='../Images/mostrar.png'></a></center>";
-    //reporte pdf
-    // $datos['data'][$i][5] = "<center><a href='reporte_pdf.php?accion=promotor&info1=1&info2=".$_GET['info1']."&info3=" . $datos['data'][$i][0] . "'><img src='../Images/pdf.png'></a></center>";
-    $datos['data'][$i][5] = "<center><a href='reporte.php?accion=promotor&info1=1&info2=" . $_GET['info1'] . "&info3=" . $datos['data'][$i][0] . "' target='_blank'><img src='../Images/pdf.png'></a></center>";
+    //reporte pdf - listado de alumnos
+    $datos['data'][$i][5] = "<center><a href='reporte.php?accion=promotor_alumnos&info1=1&info2=" . $_GET['info1'] . "&info3=" . $datos['data'][$i][0] . "' target='_blank'><img src='../Images/pdf.png'></a></center>";
+    //reporte pdf - listado de calificaciones
+    $datos['data'][$i][6] = "<center><a href='reporte.php?accion=promotor_calif&info1=1&info2=" . $_GET['info1'] . "&info3=" . $datos['data'][$i][0] . "' target='_blank'><img src='../Images/pdf.png'></a></center>";
   }
 
 }
@@ -130,8 +129,7 @@ function errores($msg, $ruta, $web, $cveusuario = null)
   $web->simple_message('danger', $msg);
   $web->iniClases('admin', $ruta);
 
-  $sql = "SELECT cveespecialidad, nombre FROM especialidad
-  WHERE cveespecialidad <> 'O'";
+  $sql     = "SELECT cveespecialidad, nombre FROM especialidad WHERE cveespecialidad <> 'O'";
   $combito = $web->combo($sql, null, '../');
   $web->smarty->assign('combito', $combito);
 
@@ -190,11 +188,11 @@ function delete_professor($web)
 
     for ($j = 0; $j < sizeof($lectura); $j++) {
       //elimina de evaluacion, lista_libros y lectura
-      $sql = "delete FROM evaluacion WHERE cvelectura=?";
+      $sql = "DELETE FROM evaluacion WHERE cvelectura=?";
       $web->query($sql, $lectura[$j]['cvelectura']);
-      $sql = "delete FROM lista_libros WHERE cvelectura=?";
+      $sql = "DELETE FROM lista_libros WHERE cvelectura=?";
       $web->query($sql, $lectura[$j]['cvelectura']);
-      $sql = "delete FROM lectura WHERE cvelectura=?";
+      $sql = "DELETE FROM lectura WHERE cvelectura=?";
       $web->query($sql, $lectura[$j]['cvelectura']);
     }
   }
@@ -204,25 +202,24 @@ function delete_professor($web)
   $salas = $web->DB->GetAll($sql, $_GET['info1']);
   //elimina las salas
   for ($i = 0; $i < sizeof($salas); $i++) {
-    $sql = "delete FROM sala WHERE cvesala=?";
+    $sql = "DELETE FROM sala WHERE cvesala=?";
     $web->query($sql, $salas[$i]['cvesala']);
   }
 
   //elimina laboral, msj, usuario_rol, especialidad_usuario y promotor
-  $sql = "delete FROM laboral WHERE cvepromotor=?";
+  $sql = "DELETE FROM laboral WHERE cvepromotor=?";
   $web->query($sql, $_GET['info1']);
-  $sql = "delete FROM msj WHERE emisor=? or receptor=?";
+  $sql = "DELETE FROM msj WHERE emisor=? or receptor=?";
   $web->query($sql, array($_GET['info1'], $_GET['info1']));
-  $sql = "delete FROM usuario_rol WHERE cveusuario=?";
+  $sql = "DELETE FROM usuario_rol WHERE cveusuario=?";
   $web->query($sql, $_GET['info1']);
-  $sql = "delete FROM especialidad_usuario WHERE cveusuario=?";
+  $sql = "DELETE FROM especialidad_usuario WHERE cveusuario=?";
   $web->query($sql, $_GET['info1']);
-  $sql = "delete FROM usuarios WHERE cveusuario=?";
+  $sql = "DELETE FROM usuarios WHERE cveusuario=?";
   if (!$web->query($sql, $_GET['info1'])) {
     $web->simple_message('danger', 'No se pudo completar la operación');
     return false;
   }
-
   header('Location: promotor.php');
 }
 
@@ -279,7 +276,8 @@ function show_professor_groups($web)
   }
 
   $sql = "SELECT dia.cvedia, abecedario.letra, dia.nombre, horas.hora_inicial,
-  horas.hora_final FROM laboral
+  horas.hora_final
+  FROM laboral
   INNER JOIN dia ON dia.cvedia=laboral.cvedia
   INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
   INNER JOIN horas ON horas.cvehoras=laboral.cvehoras
@@ -436,7 +434,7 @@ function insert_professor($web)
     errores('El correo ya existe', 'index promotor nuevo', $web);
   }
 
-  $sql   = "SELECT*FROM usuarios WHERE cveusuario=?";
+  $sql   = "SELECT * FROM usuarios WHERE cveusuario=?";
   $datos = $web->DB->GetAll($sql, $_POST['datos']['usuario']);
   if (isset($datos[0])) {
     errores('El usuario ya existe', 'index promotor nuevo', $web);
@@ -450,10 +448,10 @@ function insert_professor($web)
   $web->DB->startTrans();
 
   $sql = "INSERT INTO usuarios(cveusuario, nombre, pass, correo, validacion)
-  values(?,?,?,?, 'Aceptado')";
+  VALUES(?,?,?,?, 'Aceptado')";
   $tmp = array($usuario, $nombre, md5($contrasena), $correo);
   $web->query($sql, $tmp);
-  $sql = "INSERT INTO usuario_rol values(?, ?)";
+  $sql = "INSERT INTO usuario_rol VALUES(?, ?)";
   $web->query($sql, array($usuario, 2));
 
   if (isset($_POST['datos']['especialidad'])) {
@@ -579,7 +577,7 @@ function update_professor($web)
         $sql = "UPDATE especialidad_usuario SET cveespecialidad='O', otro=? WHERE cveusuario=? ";
         $web->query($sql, array($_POST['datos']['otro'], $cveusuario));
       } else {
-        $sql = "UPDATE especialidad_usuario SET cveespecialidad=?, otro = null WHERE cveusuario=? ";
+        $sql = "UPDATE especialidad_usuario SET cveespecialidad=?, otro=null WHERE cveusuario=? ";
         $web->query($sql, array($_POST['datos']['cveespecialidad'], $cveusuario));
       }
     }

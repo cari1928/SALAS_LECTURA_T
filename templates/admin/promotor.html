@@ -33,7 +33,10 @@
 					<th style="vertical-align:middle"><center>ACTUALIZAR</center></th>
 				{/if}
 				<th style="vertical-align:middle"><center>GRUPOS</center></th>
-				{if isset($cveperiodo)}<th style="vertical-align:middle"><center>REPORTE PROMOTOR</center></th>{/if}
+				{if isset($cveperiodo)}
+					<th style="vertical-align:middle"><center>LISTADO ALUMNOS</center></th>
+					<th style="vertical-align:middle"><center>CALIFICACIONES</center></th>
+				{/if}
       </tr>
     </thead>
     
@@ -48,7 +51,10 @@
 					<th style="vertical-align:middle"><center>ACTUALIZAR</center></th>
 				{/if}
 				<th style="vertical-align:middle"><center>GRUPOS</center></th>
-				{if isset($cveperiodo)}<th width='150'><center>REPORTE PROMOTOR</center></th>{/if}
+				{if isset($cveperiodo)}
+					<th width='150'><center>LISTADO ALUMNOS</center></th>
+					<th width='150'><center>CALIFICACIONES</center></th>
+				{/if}
       </tr>
     </tfoot>
   </table>

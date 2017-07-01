@@ -244,13 +244,14 @@ class ReporteControllers extends Sistema
     INNER JOIN lectura ON lectura.cvelectura = evaluacion.cvelectura
     INNER JOIN usuarios ON lectura.nocontrol = usuarios.cveusuario
     WHERE evaluacion.cvelectura=?";
+    $this->DB->SetFetchMode(ADODB_FETCH_BOTH);
     $evaluacion = $this->DB->GetAll($sql, $cvelectura);
 
     if (isset($evaluacion[0])) {
-      if ($evaluacion[0][7] == 0) {
-        $evaluacion[0][7] = 'No';
-      } else {
+      if ($evaluacion[0][7] >= 70) {
         $evaluacion[0][7] = 'Si';
+      } else {
+        $evaluacion[0][7] = 'No';
       }
       $evaluacion[0]['TERMINADO'] = $evaluacion[0][7];
     }
@@ -305,6 +306,18 @@ class ReporteControllers extends Sistema
         return 'Administración';
         break;
     }
+  }
+
+  /**
+   * Obtiene las observaciones de un grupo
+   * @param $data debe contener: cveletra, cveperiodo y cvepromotor, en ése orden
+   */
+  public function getAllObservaciones($data)
+  {
+    $sql = "SELECT fecha, observacion FROM observacion
+    WHERE cveletra=? AND cveperiodo=? AND cvepromotor=?
+    ORDER BY cveobservacion";
+    return $this->DB->GetAll($sql, array($data['cveletra'], $data['cveperiodo'], $data['cvepromotor']));
   }
 
 }

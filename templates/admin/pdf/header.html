@@ -9,44 +9,54 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     
     <style type="text/css">
-        *
-        {
-            padding-bottom: 5px;
-        }
-    
-        div#cap 
-        {
-            /*background-color: green;*/
-            text-align: left;
-            padding: 10px;
-        }
-        
-        div#cap h1 
-        {
-            float: right;
-            margin-right: 150px;
-        }
-        
-        .usuario
-        {
-            float: right;
-        }
-        
-        .grupo
-        {
-            text-align: left;
-        }
-        
-        .table_container
-        {
-            margin-top: 10px;
-        }
-        
-        .table_header
-        {
-          font-size: 15px;
-          font-weight: bold;
-        }
+      *
+      {
+        padding-bottom: 5px;
+      }
+  
+      div#cap 
+      {
+        /*background-color: green;*/
+        text-align: left;
+        padding: 10px;
+      }
+      
+      div#cap h1 
+      {
+        float: right;
+        margin-right: {$size}px;
+      }
+      
+      .usuario
+      {
+        float: right;
+      }
+      
+      .grupo
+      {
+        text-align: left;
+      }
+      
+      .table_container
+      {
+        margin-top: 10px;
+      }
+      
+      .table_header, .notes_header
+      {
+        font-size: 15px;
+        font-weight: bold;
+      }
+      
+      footer 
+      { 
+        position: fixed; 
+        bottom: 20px; 
+        left: 0px; 
+        right: 0px; 
+        /*background-color: lightblue; */
+        height: 50px; 
+      }
     </style>
 </head>
 <body>
@@ -54,12 +64,4 @@
 <div id="cap">
     <h1>Salas de Lectura</h1>
     <img src="../Images/logo.jpg" width="200" height="90" alt=""></img>
-</div>
-
-<div class="logoHeader">
-    <div class="info" align="left">
-        <b>Instituto Tecnológico de Celaya</b><br>
-        <b>Telefono:</b><br>
-        <b>Correo:</b>
-    </div>
 </div>

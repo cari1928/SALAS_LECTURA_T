@@ -22,10 +22,28 @@
         <tr>
           {for $i=0 to $fin}
               <td style="text-align; font-size:13px; vertical-align:middle" 
-                valign="middle" align="center" {if $i == 1 && $table eq "alumnos"}width="80"{/if}>{$row[{$i}]}</td>
+                valign="middle" align="center" 
+                {if $i == 1 && $table eq "alumnos"}width="80"{/if}>
+                {$row[{$i}]}
+              </td>
           {/for}
         </tr>
       {/foreach}
     </tbody>
   </table>
 </div>
+
+{if isset($calif)}
+  <div class="notes">
+    <div class="notes_header">
+      Observaciones
+    </div>  
+    
+    {foreach $observaciones as $o}
+      <div class="notes_content">
+        {$o.fecha} - {$o.observacion}
+      </div>
+    {/foreach}
+  </div>
+{/if}
+
