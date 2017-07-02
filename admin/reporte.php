@@ -6,6 +6,7 @@ require_once '../controllers/admin/pdf.class.php';
 $web = new ReporteControllers;
 $pdf = new PDF;
 $web->smarty->setTemplateDir('../templates/admin/pdf/');
+$web->smarty->setCompileDir('../templates_c'); //para que no aparezca la carpeta admin/templates_c
 
 if (!isset($_GET['accion']) && !isset($_GET['info1']) && !isset($_GET['info2'])) {
   header('Location: index.php?e=1'); //no modifique la estructura de la interfaz
