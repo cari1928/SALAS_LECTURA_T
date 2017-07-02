@@ -70,7 +70,7 @@ if (isset($_GET['accion'])) {
 
     case 'libros':
       if (!isset($_GET['info'])) {
-        message('danger', 'Información incompleta', $web);
+        message('danger', 'Información incompleta - libros', $web);
       }
 
       $sql     = "SELECT * FROM lectura WHERE cvelectura=?";
@@ -212,7 +212,8 @@ if (isset($_GET['accion'])) {
 }
 
 if (!isset($_GET['info1'])) {
-  message('danger', 'Información incompleta', $web);
+  $web->debug($_GET); //no sé porque, pero necesita esto para funcionar, marca error después de mandar una observación, pero no debería
+  message('danger', 'Información incompleta - general', $web);
 }
 $grupo = $_GET['info1'];
 
@@ -423,7 +424,6 @@ function m_Observaciones()
     !isset($_POST['observacion'])) {
     message('warning', 'Falta información');
   }
-
   // obtiene la letra porque se usa para los header-location
   $sql   = "SELECT DISTINCT letra FROM abecedario WHERE cve=?";
   $letra = $web->DB->GetAll($sql, $_GET['info']);
