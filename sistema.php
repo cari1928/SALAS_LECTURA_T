@@ -33,7 +33,7 @@ class Sistema extends Conexion
   public $rol        = "";
   public $smarty;
 
-  public function combo($query, $selected = null, $ruta = "", $parameters = array())
+  public function combo($query, $selected = null, $ruta = "", $parameters = array(), $redireccion = null)
   {
     $datosList = $this->DB->GetAll($query, $parameters);
     if (!isset($datosList[0])) {
@@ -45,6 +45,11 @@ class Sistema extends Conexion
     $this->smarty->assign('nombrecolumna', $nombrescolumnas[1]);
     $this->smarty->assign('nombrescolumnas', $nombrescolumnas);
     $this->smarty->assign('datos', $datosList);
+
+    if ($redireccion != null) {
+      $this->smarty->assign('redireccion', $redireccion);
+    }
+
     return $this->smarty->fetch($ruta . 'select.component.html');
   }
 
@@ -112,10 +117,11 @@ class Sistema extends Conexion
     $this->DB->SetFetchMode(ADODB_FETCH_BOTH);
     $datos_rs = $this->DB->GetAll($sql);
 
-    // $this->debug($datos_rs);
-
     $nombre = $datos_rs[0]['nombre'];
     $cadena = explode(" ", $nombre);
+
+    $this->smarty->assign('usuario', $cadena[0]);
+
     if ($_SESSION['roles'] == 'A') {
       return $cadena[0] . ' - Administrador';
     }
@@ -317,8 +323,7 @@ class Sistema extends Conexion
     if ($ubicacion != null) {
       $nombre = $this->tipoCuenta();
       $this->smarty->assign('nombrecuenta', $nombre);
-      $this->smarty->assign('usuario', $_SESSION['nombre']);
-
+      // $this->smarty->assign('usuario', $_SESSION['nombre']);
       $this->smarty->setTemplateDir('../templates/' . $ubicacion . '/');
     }
 
