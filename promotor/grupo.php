@@ -93,7 +93,7 @@ if (isset($_GET['accion'])) {
         $letra_subida = $web->DB->GetAll($sql, $libros[0]["cveletra"]);
 
         for ($i = 0; $i < count($libros); $i++) {
-          $nombre_fichero = "/home/slslctr/periodos/" .
+          $nombre_fichero = "/home/slslctr/archivos/periodos/" .
             $libros[$i]["cveperiodo"] . "/" .
             $letra_subida[0][0] . "/" .
             $libros[$i]["nocontrol"] . "/" .
@@ -101,7 +101,7 @@ if (isset($_GET['accion'])) {
             $libros[$i]["nocontrol"] . ".pdf";
           if (file_exists($nombre_fichero)) {
             $libros[$i]["archivoExiste"] = explode(
-              "/home/slslctr/periodos/",
+              "/home/slslctr/archivos/periodos/",
               $nombre_fichero)[1];
           }
           $sqlEstado = "SELECT * FROM estado";
@@ -145,7 +145,7 @@ if (isset($_GET['accion'])) {
     case 'reporte':
       header("Content-disposition: attachment; filename=" . $_GET['info3']);
       header("Content-type: MIME");
-      readfile("/home/slslctr/periodos/" . $_GET['info3']);
+      readfile("/home/slslctr/archivos/periodos/" . $_GET['info3']);
       break;
 
     case 'calificar_reporte': //info1 = cvelista, info2 = cvelectura, info3 = nocontrol
@@ -198,7 +198,7 @@ if (isset($_GET['accion'])) {
     case 'formato_preguntas':
       header("Content-disposition: attachment; filename=formato_preguntas.pdf");
       header("Content-type: MIME");
-      readfile("/home/slslctr/pdf/" . $cveperiodo . "/formato_preguntas.pdf");
+      readfile("/home/slslctr/archivos/pdf/" . $cveperiodo . "/formato_preguntas.pdf");
       break;
 
     case 'form_observaciones':
@@ -318,7 +318,7 @@ if (!isset($datos[0])) {
   message('warning', 'No hay alumnos inscritos');
 }
 
-$nombre_fichero = "/home/slslctr/pdf/" . $cveperiodo . "/formato_preguntas.pdf";
+$nombre_fichero = "/home/slslctr/archivos/pdf/" . $cveperiodo . "/formato_preguntas.pdf";
 if (file_exists($nombre_fichero)) {
   $web->smarty->assign('formato_preguntas', true);
 }

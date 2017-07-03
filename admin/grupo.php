@@ -289,18 +289,14 @@ function mostrar_libros($web, $alumno)
     $letra_subida = $web->DB->GetAll($sql, $libros[0]["cveletra"]);
 
     for ($i = 0; $i < count($libros); $i++) {
-      $nombre_fichero = "/home/slslctr/periodos/" .
+      $nombre_fichero = "/home/slslctr/archivos/periodos/" .
         $libros[$i]["cveperiodo"] . "/" .
         $letra_subida[0][0] . "/" .
         $libros[$i]["nocontrol"] . "/" .
         $libros[$i]["cvelibro"] . "_" .
         $libros[$i]["nocontrol"] . ".pdf";
-
-      // echo $nombre_fichero;
-      // die();
-
       if (file_exists($nombre_fichero)) {
-        $libros[$i]["archivoExiste"] = explode("/home/slslctr/periodos/", $nombre_fichero)[1];
+        $libros[$i]["archivoExiste"] = explode("/home/slslctr/archivos/periodos/", $nombre_fichero)[1];
       }
     }
 
@@ -595,7 +591,7 @@ function ver_reporte($web)
 
   header("Content-disposition: attachment; filename=" . $_GET['info']);
   header("Content-type: MIME");
-  readfile("/home/slslctr/periodos/" . $_GET['info']);
+  readfile("/home/slslctr/archivos/periodos/" . $_GET['info']);
   return true;
 }
 

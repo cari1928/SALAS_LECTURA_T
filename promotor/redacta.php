@@ -17,6 +17,18 @@ if ($periodo == "") {
   die();
 }
 
+if (isset($_GET['aviso'])) {
+  switch ($_GET['aviso']) {
+    case 1:
+      $web->simple_message('success', 'Se envío el mensaje satisfactoriamente');
+      break;
+
+    case 2:
+      $web->simple_message('warning', 'Ocurrió un error mientras se enviaba el mensaje');
+      break;
+  }
+}
+
 if (isset($_GET['info'])) {
   $para = $_GET['info'];
 }
@@ -50,7 +62,7 @@ switch ($accion) {
 
   case 'redactarI':
     $receptor = "";
-    
+
     if (isset($_GET['info2'])) {
       $receptor = $_GET['info2'];
     } else {
@@ -126,7 +138,7 @@ switch ($accion) {
 
   case 'enviarI':
     $receptor = $cveletra = "";
-    $web->debug($_FILES);
+
     if (isset($_GET['receptor'])) {
       $receptor = $_GET['receptor'];
     }
@@ -143,27 +155,65 @@ switch ($accion) {
       $receptor,
     ));
 
-    if (isset($datos[0])) {
-      if (isset($_POST)) {
-        $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, receptor, cveletra, cveperiodo)
-        VALUES (?, ?,'I', ?,'" . date('Y-m-j') . "', ?, ?, ?, ?)";
-        $parameters = array(
-          $_POST['introduccion'],
-          $_POST['descripcion'],
-          $_SESSION['cveUser'],
-          $_POST['expira'],
-          $receptor,
-          $cveletra,
-          $periodo,
-        );
-        $web->query($sql, $parameters);
-      } else {
-        $web->smarty->assign('msj', "No se pudo mandar el mensaje");
-        $web->smarty->display('redacta.html');
+    //$web->debug($_FILES);
+    if (!isset($datos[0])) {
+      header('Location: grupos.php?aviso=4'); //No existe el destinatario o no tienes permiso para mandar este mensaje
+    }
+
+    if (isset($_POST)) {
+      $encabezado = "";
+      $contenido  = "";
+      $max_size   = 2000000;
+      if ($_FILES['archivo']['size'] > 0) {
+        if ($_FILES['archivo']['size'] <= $max_size) {
+          $dir_subida = "/home/slslctr/archivos/msj/" . $periodo . "/";
+          $nombre     = $_FILES['archivo']['name'];
+
+          if (file_exists($dir_subida . $nombre)) {
+            header('Location: grupos.php?aviso=1'); // ya existe un archivo con este mismo nombre por favor cambie el nombre
+          }
+
+          if (move_uploaded_file($_FILES['archivo']['tmp_name'], $dir_subida . $nombre)) {
+            $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, receptor, cveletra, cveperiodo, archivo)
+                VALUES (?, ?,'I', ?,'" . date('Y-m-j') . "', ?, ?, ?, ?, ?)";
+            $parameters = array(
+              $_POST['introduccion'],
+              $_POST['descripcion'],
+              $_SESSION['cveUser'],
+              $_POST['expira'],
+              $receptor,
+              $cveletra,
+              $periodo,
+              $nombre,
+            );
+            $web->query($sql, $parameters);
+            header('Location: grupos.php?aviso=2'); // Se envio el mensaje satisfactoriamente
+          } else {
+            header('Location: grupos.php?aviso=3'); // Ocurrio un error al enviar el mensaje
+          }
+        } else {
+          $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, receptor, cveletra, cveperiodo)
+            VALUES (?, ?,'I', ?,'" . date('Y-m-j') . "', ?, ?, ?, ?)";
+          $parameters = array(
+            $_POST['introduccion'],
+            $_POST['descripcion'],
+            $_SESSION['cveUser'],
+            $_POST['expira'],
+            $receptor,
+            $cveletra,
+            $periodo,
+          );
+          $web->query($sql, $parameters);
+        }
       }
     } else {
-      $web->smarty->assign('msj', "No existe el destinatario o no tienes permiso para mandar este mensaje");
+      $web->smarty->assign('msj', "No se pudo mandar el mensaje");
+      $web->smarty->display('redacta.html');
     }
+    die('error');
+    // } else {
+    //   $web->smarty->assign('msj', "No existe el destinatario o no tienes permiso para mandar este mensaje");
+    // }
     break;
 
   case 'ver':

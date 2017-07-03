@@ -16,7 +16,7 @@ if (isset($_GET['accion'])) {
   switch ($_GET['accion']) {
 
     case 'fileinput':
-      $dir_subida = "/home/slslctr/pdf" . "/" . $cveperiodo . "/";
+      $dir_subida = "/home/slslctr/archivos/pdf" . "/" . $cveperiodo . "/";
 
       if ($_FILES['datos']['size']['archivo'] > 1000000) {
         message('danger', 'El archivo es mayor a un MB.', $web);
@@ -26,13 +26,13 @@ if (isset($_GET['accion'])) {
       }
 
       $nombre = "formato_preguntas.pdf";
-
-      // echo $dir_subida . $nombre;
-      // die();
-
       if (move_uploaded_file($_FILES['datos']['tmp_name']['archivo'], $dir_subida . $nombre)) {
         header('Location: index.php?aviso=1');
       } else {
+
+        echo $dir_subida . $nombre;
+        die();
+
         header('Location: index.php?aviso=2');
       }
       break;

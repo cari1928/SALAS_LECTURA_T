@@ -1,0 +1,289 @@
+%PDF-1.3
+1 0 obj
+<< /Type /Catalog
+/Outlines 2 0 R
+/Pages 3 0 R >>
+endobj
+2 0 obj
+<< /Type /Outlines /Count 0 >>
+endobj
+3 0 obj
+<< /Type /Pages
+/Kids [6 0 R
+]
+/Count 1
+/Resources <<
+/ProcSet 4 0 R
+/Font << 
+/F1 8 0 R
+/F2 9 0 R
+>>
+>>
+/MediaBox [0.000 0.000 841.890 595.280]
+ >>
+endobj
+4 0 obj
+[/PDF /Text ]
+endobj
+5 0 obj
+<<
+/Producer (dompdf 0.7.0 + CPDF)
+/CreationDate (D:20170611180220+00'00')
+/ModDate (D:20170611180220+00'00')
+/Title (Reporte)
+>>
+endobj
+6 0 obj
+<< /Type /Page
+/MediaBox [0.000 0.000 841.890 595.280]
+/Parent 3 0 R
+/Contents 7 0 R
+>>
+endobj
+7 0 obj
+<<
+/Length 2951 >>
+stream
+
+1.000 1.000 1.000 rg
+34.016 34.016 773.859 527.249 re f
+0.961 0.961 0.961 rg
+34.016 508.861 137.500 52.403 re f
+0.867 0.867 0.867 RG
+0.75 w 0 J [  ] 0 d
+34.016 561.264 m 171.516 561.264 l S
+0.200 0.200 0.200 rg
+BT 37.766 545.278 Td /F1 10.2 Tf  [(RFC)] TJ ET
+BT 37.766 523.052 Td /F2 13.5 Tf  [(9999999999999)] TJ ET
+0.961 0.961 0.961 rg
+171.516 508.861 207.500 52.403 re f
+0.75 w 0 J [  ] 0 d
+171.516 561.264 m 379.016 561.264 l S
+0.200 0.200 0.200 rg
+BT 175.266 545.278 Td /F1 10.2 Tf  [(PROMOTOR)] TJ ET
+BT 175.266 523.052 Td /F2 13.5 Tf  [(DIOS)] TJ ET
+0.961 0.961 0.961 rg
+379.016 508.861 197.500 52.403 re f
+0.75 w 0 J [  ] 0 d
+379.016 561.264 m 576.516 561.264 l S
+0.200 0.200 0.200 rg
+BT 382.766 545.278 Td /F1 10.2 Tf  [(ESPECIALIDAD)] TJ ET
+BT 382.766 523.052 Td /F2 13.5 Tf  [(JEFE DE JEFES)] TJ ET
+0.961 0.961 0.961 rg
+576.516 508.861 231.359 52.403 re f
+0.75 w 0 J [  ] 0 d
+576.516 561.264 m 692.195 561.264 l S
+0.75 w 0 J [  ] 0 d
+692.195 561.264 m 807.874 561.264 l S
+0.200 0.200 0.200 rg
+BT 580.266 545.278 Td /F1 10.2 Tf  [(CORREO)] TJ ET
+BT 580.266 523.052 Td /F2 13.5 Tf  [(jorge2118burguer@gmail.com)] TJ ET
+0.961 0.961 0.961 rg
+34.016 471.285 773.859 37.577 re f
+1.5 w 0 J [  ] 0 d
+34.016 508.861 m 171.516 508.861 l S
+1.5 w 0 J [  ] 0 d
+171.516 508.861 m 379.016 508.861 l S
+1.5 w 0 J [  ] 0 d
+379.016 508.861 m 576.516 508.861 l S
+1.5 w 0 J [  ] 0 d
+576.516 508.861 m 692.195 508.861 l S
+1.5 w 0 J [  ] 0 d
+692.195 508.861 m 807.874 508.861 l S
+0.200 0.200 0.200 rg
+BT 37.766 485.475 Td /F2 13.5 Tf  [(Periodo: 2017-03-22 : 2017-03-26)] TJ ET
+0.961 0.961 0.961 rg
+34.016 418.882 137.500 52.403 re f
+1.5 w 0 J [  ] 0 d
+34.016 471.285 m 171.516 471.285 l S
+0.200 0.200 0.200 rg
+BT 37.766 455.299 Td /F1 10.2 Tf  [(GRUPO)] TJ ET
+BT 37.766 433.072 Td /F2 13.5 Tf  [(A)] TJ ET
+0.961 0.961 0.961 rg
+171.516 418.882 207.500 52.403 re f
+1.5 w 0 J [  ] 0 d
+171.516 471.285 m 379.016 471.285 l S
+0.200 0.200 0.200 rg
+BT 175.266 455.299 Td /F1 10.2 Tf  [(SALA)] TJ ET
+BT 175.266 433.072 Td /F2 13.5 Tf  [(xxx)] TJ ET
+0.961 0.961 0.961 rg
+379.016 418.882 197.500 52.403 re f
+1.5 w 0 J [  ] 0 d
+379.016 471.285 m 576.516 471.285 l S
+0.200 0.200 0.200 rg
+BT 382.766 455.299 Td /F1 10.2 Tf  [(NOMBRE DEL GRUPO)] TJ ET
+BT 382.766 433.072 Td /F2 13.5 Tf  [(SALA - A)] TJ ET
+0.961 0.961 0.961 rg
+576.516 418.882 231.359 52.403 re f
+1.5 w 0 J [  ] 0 d
+576.516 471.285 m 692.195 471.285 l S
+1.5 w 0 J [  ] 0 d
+692.195 471.285 m 807.874 471.285 l S
+0.200 0.200 0.200 rg
+BT 580.266 455.299 Td /F1 10.2 Tf  [(LIBRO GRUPAL)] TJ ET
+BT 580.266 433.072 Td /F2 13.5 Tf  [(Sexo de Emergencia)] TJ ET
+1.5 w 0 J [  ] 0 d
+34.016 418.882 m 171.516 418.882 l S
+1.5 w 0 J [  ] 0 d
+171.516 418.882 m 379.016 418.882 l S
+1.5 w 0 J [  ] 0 d
+379.016 418.882 m 576.516 418.882 l S
+1.5 w 0 J [  ] 0 d
+576.516 418.882 m 692.195 418.882 l S
+1.5 w 0 J [  ] 0 d
+692.195 418.882 m 807.874 418.882 l S
+BT 37.766 395.496 Td /F2 13.5 Tf  [(No hay alumnos en este grupo)] TJ ET
+endstream
+endobj
+8 0 obj
+<< /Type /Font
+/Subtype /Type1
+/Name /F1
+/BaseFont /Helvetica
+/Encoding /WinAnsiEncoding
+>>
+endobj
+9 0 obj
+<< /Type /Font
+/Subtype /Type1
+/Name /F2
+/BaseFont /Times-Roman
+/Encoding /WinAnsiEncoding
+>>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000074 00000 n 
+0000000120 00000 n 
+0000000284 00000 n 
+0000000313 00000 n 
+0000000458 00000 n 
+0000000561 00000 n 
+0000003564 00000 n 
+0000003671 00000 n 
+trailer
+<<
+/Size 10
+/Root 1 0 R
+/Info 5 0 R
+>>
+startxref
+3780
+%%EOF
+<br />
+<b>Fatal error</b>:  Uncaught  --&gt; Smarty: Unable to load template file 'grupo.html' &lt;-- 
+  thrown in <b>/home/slslctr/lib/smarty/libs/sysplugins/smarty_internal_template.php</b> on line <b>148</b><br />
+<br />
+<b>Fatal error</b>:  Uncaught  --&gt; Smarty: Unable to load template file 'grupo.html' &lt;-- 
+  thrown in <b>/home/slslctr/lib/smarty/libs/sysplugins/smarty_internal_template.php</b> on line <b>148</b><br />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--Mostrar logo-->
+  <link rel="shortcut icon" type="image/x-icon" href="../Images/logo.ico">
+  
+  <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="../js/script.js"></script><!--Para la camara web -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../css/main.css">
+  
+  <!--Datatables-->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"/>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.13/datatables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+
+  <title>Salas Lectura</title>
+</head>
+<body id="contenedor">
+<header></header>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid" style="background-color:#337ab7">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" style="color: white" href="index.php">Salas Lectura</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <a style="color:white" class="navbar-brand" href="salas.php">Crear Grupo</a>  
+      <form class="navbar-form navbar-left" role="Search" action="busqueda.php" method="get">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Buscar" name="q">
+        </div>
+        <button type="submit" class="btn btn-default">Buscar</button>           
+      </form>    
+        
+      <ul class="nav navbar-nav navbar-right">       
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true" style="color:white">Cuenta<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+              <li><a href="datos.php">DIOS</a></li>   
+              <li><a href="../logout.php">Logout</a></li>      
+          </ul>
+        </li>
+      </ul>     
+
+      <ul class="nav navbar-nav navbar-right">       
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true" style="color:white">Grupos<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+              <li><a href= "grupos.php">Ver todos</a></li><li><a href= "grupo.php?info1=A">A - SALA - A - SALA DE USOS MÚLTIPLES</a></li>     
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <div class="form-group">
+                  </div>
+      </ul>   
+      <ul class="nav navbar-nav navbar-right">
+        <div class="form-group">
+                  </div>
+      </ul>   
+      <label class="navbar-brand"><p style="color: white">DIOS - Promotor</p></label>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+<div><label><a href="index.php">index</a></label> > <label><a href="grupos.php">grupos</a></label> > <label>grupo</label></div> 
+<style>
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+  }
+  
+  input[type=number] {
+      -moz-appearance:textfield;
+  }
+</style>
+	<div class="alert alert-danger alert-dismissible" role="alert">
+	  	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  		<span aria-hidden="true">&times;</span></button>
+	  <strong>¡Aviso!</strong> Información incompleta
+	</div>
+
+
+
+	
+
+</body>
+</html>
