@@ -33,7 +33,7 @@
   </table>
 </div>
 
-{if isset($calif)}
+{if isset($calif)} {if $calif}
   <div class="notes">
     <div class="notes_header">
       Observaciones
@@ -45,5 +45,8 @@
       </div>
     {/foreach}
   </div>
-{/if}
+{/if} {/if}
 
+{if isset($page_break)} {if $page_break}
+  <div style="page-break-after:always;"></div>
+{/if} {/if}

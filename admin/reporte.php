@@ -18,11 +18,18 @@ if (!isset($_GET['accion']) && !isset($_GET['info1']) && !isset($_GET['info2']))
 switch ($_GET['accion']) {
 
   case 'promotor_alumnos':
-    // para mensajes de error
-    switch (casePromotorAlumnos()) {
+    switch (casePromotorAlumnos()) { // para mensajes de error
       case 'promotor':
         header('promotor.php?accion=historial&e=4'); //no se obtuvo info del promotor
         break;
+    }
+    break;
+    
+  case 'promotores_alumnos':
+    switch (casePromotoresAlumnos()) { // para mensajes de error
+      // case 'promotor':
+      //   header('promotor.php?accion=historial&e=4'); //no se obtuvo info del promotor
+      //   break;
     }
     break;
 
@@ -125,6 +132,7 @@ function casePromotorAlumnos()
   // se comienzan a checar los grupos para obtener los alumnos
   $html = '';
   for ($j = 0; $j < count($grupos); $j++) {
+    $alumnos = null;
     $lecturas = $web->getAllLecturas($cveperiodo, $cvepromotor, $grupos[$j]['cveletra']);
 
     if (!isset($lecturas[0])) {
@@ -145,7 +153,7 @@ function casePromotorAlumnos()
         $datos[$j][0]['ESPECIALIDAD'] = $datos[$j][0][2];
         $tmpAlumno                    = array_merge($tmpAlumno, $datos[0]);
       } //fin for
-      $alumnos[$j] = $tmpAlumno;
+      $alumnos[0] = $tmpAlumno;
     } //fin else
 
     // FULL SUBHEADER
@@ -153,28 +161,33 @@ function casePromotorAlumnos()
 
     // ALUMNOS SUBHEADER
     if (is_array($alumnos)) {
+      
       $alumnosHeader = getAssocArray($web, $alumnos);
       if ($alumnosHeader == null) {
         $alumnosHeader = 'No hay alumnos en este grupo'; //no hay alumnos disponibles
       }
+      
       $alumnos = getAssocArray($web, $alumnos, true);
       if ($alumnos == null) {
         $alumnos = 'No hay alumnos';
       }
-      $web->smarty->assign('fin', (sizeof($alumnos[$j][0]) / 2 + 1));
+      $web->smarty->assign('fin', (sizeof($alumnos[0][0]) / 2 + 1));
+      
     } else {
       $alumnosHeader = 'No hay alumnos en este grupo'; //no hay alumnos disponibles
       $web->smarty->assign('columns', $alumnosHeader);
       $web->smarty->assign('fin', -1);
     }
+    
+    page_break($j, $grupos); //habilita o deshabilita el salto de página
 
     // DATOS TABLE PRINCIPAL
     $web->smarty->assign('titulo', 'Listado de Alumnos');
     $web->smarty->assign('subtitulo', 'Periodo: ' . $periodo[0]['fechainicio'] . " : " . $periodo[0]['fechafinal']);
     $web->smarty->assign('columns', $alumnosHeader);
-    $web->smarty->assign('rows', $alumnos[$j]);
+    $web->smarty->assign('rows', $alumnos[0]);
     $html .= (string) ($web->smarty->fetch('table.html'));
-  } //fin foreach
+  } //fin for
 
   $html = $header . $html . $footer;
   // echo $html;
@@ -285,6 +298,9 @@ function casePromotorCalif()
     if ($users == null) {
       $users = 'No hay alumnos';
     }
+    
+    page_break($j, $grupos);
+    
     $web->smarty->assign('fin', (sizeof($aluInfo[$j][0]) / 2 - 1));
     $web->smarty->assign('titulo', 'Información específica');
     $web->smarty->assign('subtitulo', 'Alumnos');
@@ -400,9 +416,9 @@ function observaciones($data)
 
   $obs = $web->getAllObservaciones($data);
   if (!isset($obs[0])) {
-    $obs = '';
+    $web->smarty->assign('calif', false);
   } else {
-    $web->smarty->assign('calif', 'calif');
+    $web->smarty->assign('calif', true);
     $web->smarty->assign('observaciones', $obs);
   }
 }
@@ -415,5 +431,25 @@ function caseAlumno($pdf)
   $cvepromotor = verifica_usuario($web);
   $periodo     = $web->getPeriodo($cveperiodo); //esto es para mostrarlo
 
+  // PENDIENTE
+}
+
+/**
+ * Salto de Página
+ */
+function page_break($j, $grupos) {
+  global $web;
+  
+  if($j == count($grupos) - 1) {
+      $web->smarty->assign('page_break', false);
+    } else {
+      $web->smarty->assign('page_break', true);
+    }
+}
+
+function casePromotoresAlumnos() {
+  global $web;
+  global $pdf;
+  
   // PENDIENTE
 }

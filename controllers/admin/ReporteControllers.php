@@ -187,7 +187,6 @@ class ReporteControllers extends Sistema
     WHERE usuarios.cveusuario=?
     AND cveperiodo=?
     AND cveletra=?";
-
     $parameters = array($nocontrol, $cveperiodo, $cveletra);
     $this->DB->SetFetchMode(ADODB_FETCH_BOTH);
     $alumno = $this->DB->GetAll($sql, $parameters);
@@ -317,7 +316,8 @@ class ReporteControllers extends Sistema
     $sql = "SELECT fecha, observacion FROM observacion
     WHERE cveletra=? AND cveperiodo=? AND cvepromotor=?
     ORDER BY cveobservacion";
-    return $this->DB->GetAll($sql, array($data['cveletra'], $data['cveperiodo'], $data['cvepromotor']));
+    $parameters = array($data['cveletra'], $data['cveperiodo'], $data['cvepromotor']);
+    return $this->DB->GetAll($sql, $parameters);
   }
 
 }

@@ -340,8 +340,9 @@ $web->smarty->display("grupo.html");
  * @param  String $msg   Texto a mostrar al usuario
  * @param  Class  $web   Objeto para hacer uso de smarty
  */
-function message($alert, $msg, $web)
+function message($alert, $msg)
 {
+  global $web;
   $web->simple_message($alert, $msg);
   $web->smarty->display("grupo.html");
   die();
