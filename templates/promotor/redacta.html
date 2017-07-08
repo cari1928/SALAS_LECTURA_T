@@ -1,157 +1,186 @@
 {include file='header.html'}
+{if isset($msg)}{include file='../mensajes.html'}{/if}
 
-	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<title>jQuery Bootstrap FileStyle Demos</title>
-<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-		<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-		<!--[if lt IE 9]>
-		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-		<![endif]-->
-		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-		<script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="../../css/bootstrap/bootstrap-filestyle.js"></script>
-	</head>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../css/bootstrap/bootstrap-filestyle.js"></script>
+</head>
 
-	<body>
+<body>
     <div id="jquery-script-menu">
-<div class="jquery-script-center">
-<div class="jquery-script-ads"><script type="text/javascript">
-google_ad_client = "ca-pub-2783044520727903";
-/* jQuery_demo */
-google_ad_slot = "2780937993";
-google_ad_width = 728;
-google_ad_height = 90;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script></div>
-<div class="jquery-script-clear"></div>
-</div>
-</div>
-
-<center>
+      <div class="jquery-script-center">
+        
+        <div class="jquery-script-ads">
+          <script type="text/javascript">
+            google_ad_client = "ca-pub-2783044520727903";
+            /* jQuery_demo */
+            google_ad_slot = "2780937993";
+            google_ad_width = 728;
+            google_ad_height = 90;
+            //-->
+          </script>
+          
+          <script type="text/javascript"
+            src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+          </script>
+        </div>
+        
+        <div class="jquery-script-clear"></div>
+        
+      </div>
+    </div>
+  
+  <center>
     {if isset($msj)}
-        <label style="color:red;">{$msj}</label>
+      <label style="color:red;">{$msj}</label>
     {/if}
-</center>   
-{if isset($para)} 
-    {if isset($cveperiodo)}
-        <form name="messageform" action="redacta.php?accion=enviar&para={$para}&cveperiodo={$cveperiodo}" method="POST" id="messageform">
-            <div class="small-10 columns">
-                <label style="color:black;"> Asunto*</label>
-                <input class="span12" type="text" name="introduccion" id="subject" placeholder="Asunto" data-toggle="tooltip" title="Input Message Subject between 10 to 80" data-validation-required-message="Please enter subject" required value='{if isset($mensaje)}{$mensaje[0].introduccion}{/if}' {if isset($mensaje)}readonly{/if}>
-            </div>
-            <div class="small-10 columns" style="margin-top:15px;">
-                <label style="color:black;"> Contenido del mensaje*</label>
-                <textarea class="form-control span12" name="descripcion" id="content" rows="10" cols="100" placeholder="Contenido del mensaje" data-validation-required-message="Please enter your message" minlength="5" data-validation-minlength-message="Min 5 characters" data-toggle="tooltip" title="Input Message Content between 50 to 500" required {if isset($mensaje)}readonly{/if}>{if isset($mensaje)}{$mensaje[0].descripcion}{/if}</textarea>                    </div>
-            <div class="small-10 columns" style="margin-top:15px;">
-                <label style="color:black;"> Fecha de Expiracion*</label>
-                      <input style="width:200px;"TYPE="date"  class="form-control" id="exampleInputEmail3" name="expira" id="producto" require value='{if isset($mensaje)}{$mensaje[0].expira}{/if}' {if isset($mensaje)}readonly{/if}>                      
-            </div>
-            {if !isset($mensaje)}
-            
-            <!--<div class="container" style="margin-top: 150px;margin-bottom: 30px; background-color:#fafafa;">-->
-    			<!--<div class="row">-->
-    				<!--<div class="span12">-->
-    					<!--<div class="row">-->
-    						<!--<div class="col-xs-6">-->
-    							<div class="form-group">
-    								<label>Subir libro</label>
-    								<input type="file" id="input12">
-    							</div>
-    						<!--</div>-->
-    					<!--</div>-->
-    				<!--</div>-->
-    			<!--</div>-->
-    		<!--</div>-->
-            
-            
-                <div class="small-6 columns" style="margin-top:15px;">
-                    <input type="submit" value="Send" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Send the Message" id="_send" name="_send">&nbsp;&nbsp;
-                    <input type="reset" value="Cancel" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Send the Message" id="_cancel" name="_cancel">
-                    <input type="hidden" name="action" id="action">
-                </div>
-            {/if}
-            <div class="small-6 columns" style="margin-top:15px;"></div>
-            <div class="small-6 columns"></div>
-        </form>
-    {/if}
-{/if}
-{if isset($accion)}
-    <form name="messageform" action="redacta.php?accion=enviarI&para={if isset($grupo)}{$grupo}{/if}&receptor={if isset($receptor)}{$receptor}{/if}" method="POST" id="messageform" enctype="multipart/form-data">
-        <div class="small-10 columns">
-            <label style="color:black;"> Asunto*</label>
-            <input class="span12" type="text" name="introduccion" id="subject" placeholder="Asunto" data-toggle="tooltip" title="Input Message Subject between 10 to 80" data-validation-required-message="Please enter subject" required value='{if isset($mensaje)}{$mensaje[0].introduccion}{/if}' {if isset($mensaje)}readonly{/if}>
-        </div>
-        <div class="small-10 columns" style="margin-top:15px;">
-            <label style="color:black;"> Contenido del mensaje*</label>
-            <textarea class="form-control span12" name="descripcion" id="content" rows="10" cols="100" placeholder="Contenido del mensaje" data-validation-required-message="Please enter your message" minlength="5" data-validation-minlength-message="Min 5 characters" data-toggle="tooltip" title="Input Message Content between 50 to 500" required {if isset($mensaje)}readonly{/if}>{if isset($mensaje)}{$mensaje[0].descripcion}{/if}</textarea>                    </div>
-        <div class="small-10 columns" style="margin-top:15px;">
-            <label style="color:black;"> Fecha de Expiracion*</label>
-                  <input style="width:200px;"TYPE="date"  class="form-control" id="exampleInputEmail3" name="expira" id="producto" require value='{if isset($mensaje)}{$mensaje[0].expira}{/if}' {if isset($mensaje)}readonly{/if}>                      
-        </div>
-        
-        
+  </center>  
+  
+  {if isset($para)} {if isset($cveperiodo)}
+    <form name="messageform" action="redacta.php?accion=enviar&para={$para}&cveperiodo={$cveperiodo}" method="POST" 
+      id="messageform" enctype="multipart/form-data">
+      
+      <div class="small-10 columns">
+        <label style="color:black;"> Asunto*</label>
+        <input class="span12" 
+          name="introduccion" id="subject" placeholder="Asunto" data-toggle="tooltip" 
+          title="Input Message Subject between 10 to 80" data-validation-required-message="Please enter subject" required 
+          value='{if isset($mensaje)}{$mensaje[0].introduccion}{/if}' {if isset($mensaje)}readonly{/if}>
+      </div>
+      
+      <div class="small-10 columns" style="margin-top:15px;">
+        <label style="color:black;"> Contenido del mensaje*</label>
+        <textarea class="form-control span12" name="descripcion" id="content" rows="10" cols="100" 
+          placeholder="Contenido del mensaje" data-validation-required-message="Please enter your message" minlength="5" 
+          data-validation-minlength-message="Min 5 characters" data-toggle="tooltip" 
+          title="Input Message Content between 50 to 500" required 
+          {if isset($mensaje)}readonly{/if}>{if isset($mensaje)}{$mensaje[0].descripcion}{/if}</textarea>                    
+      </div>
+      
+      <div class="small-10 columns" style="margin-top:15px;">
+        <label style="color:black;"> Fecha de Expiracion*</label>
+        <input style="width:200px;"TYPE="date"  class="form-control" id="exampleInputEmail3" name="expira" id="producto" require 
+          value='{if isset($mensaje)}{$mensaje[0].expira}{/if}' {if isset($mensaje)}readonly{/if}>                      
+      </div>
+      
+      {if !isset($mensaje)} {if !isset($mensaje)}
         <div class="row">
-			<div class="col-xs-6">
-				<div class="form-group">
-					<label>Remove text button</label>
-					<input type="file" id="input12" name="example">
-				</div>
-			</div>
-		</div>
-        
+              <div class="col-xs-6">
+                  <div class="form-group">
+                        <label>Subir archivo</label>
+                        <input type="file" id="input12" name="archivo">
+                    </div>
+                </div>
+            </div>
         
         <div class="small-6 columns" style="margin-top:15px;">
-            <input type="submit" value="Send" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Send the Message" id="_send" name="_send">&nbsp;&nbsp;
-            <input type="reset" value="Cancel" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Send the Message" id="_cancel" name="_cancel">
+          <input type="submit" value="Send" class="btn btn-success" data-toggle="tooltip" data-placement="top" 
+            title="Send the Message" id="_send" name="_send">&nbsp;&nbsp;
+          <input type="reset" value="Cancel" class="btn btn-danger" data-toggle="tooltip" data-placement="top" 
+            title="Send the Message" id="_cancel" name="_cancel">
+          <input type="hidden" name="action" id="action">
+        </div>
+      {/if}{/if}
+      
+      <div class="small-6 columns" style="margin-top:15px;"></div>
+      <div class="small-6 columns"></div>
+    </form>
+  {/if} {/if}
+  
+  {if isset($accion)}
+    <form name="messageform" action="redacta.php?accion=enviarI&para={if isset($grupo)}{$grupo}{/if}&receptor={if isset($receptor)}{$receptor}{/if}" method="POST" id="messageform" enctype="multipart/form-data">
+      
+      <div class="small-10 columns">
+        <label style="color:black;"> Asunto*</label>
+        <input class="span12" type="text" name="introduccion" id="subject" placeholder="Asunto" data-toggle="tooltip" 
+          title="Input Message Subject between 10 to 80" data-validation-required-message="Please enter subject" required 
+          value='{if isset($mensaje)}{$mensaje[0].introduccion}{/if}' {if isset($mensaje)}readonly{/if}>
+      </div>
+      
+      <div class="small-10 columns" style="margin-top:15px;">
+        <label style="color:black;"> Contenido del mensaje*</label>
+        <textarea class="form-control span12" name="descripcion" id="content" rows="10" cols="100" 
+          placeholder="Contenido del mensaje" data-validation-required-message="Please enter your message" minlength="5" 
+          data-validation-minlength-message="Min 5 characters" data-toggle="tooltip" 
+          title="Input Message Content between 50 to 500" required 
+          {if isset($mensaje)}readonly{/if}>{if isset($mensaje)}{$mensaje[0].descripcion}{/if}</textarea>                    
+      </div>
+      
+      <div class="small-10 columns" style="margin-top:15px;">
+        <label style="color:black;"> Fecha de Expiracion*</label>
+        <input style="width:200px;"TYPE="date"  class="form-control" id="exampleInputEmail3" name="expira" id="producto" 
+          require value='{if isset($mensaje)}{$mensaje[0].expira}{/if}' {if isset($mensaje)}readonly{/if}>                      
+      </div>
+          
+      {if !isset($mensaje)}
+        <div class="row">
+              <div class="col-xs-6">
+                  <div class="form-group">
+                        <label>Subir archivo</label>
+                        <input type="file" id="input12" name="archivo">
+                    </div>
+                </div>
+            </div>
+          
+          
+        <div class="small-6 columns" style="margin-top:15px;">
+            <input type="submit" value="Send" class="btn btn-success" data-toggle="tooltip" data-placement="top" 
+              title="Send the Message" id="_send" name="_send">&nbsp;&nbsp;
+            <input type="reset" value="Cancel" class="btn btn-danger" data-toggle="tooltip" data-placement="top" 
+              title="Send the Message" id="_cancel" name="_cancel">
             <input type="hidden" name="action" id="action">
         </div>
-        <div class="small-6 columns" style="margin-top:15px;">
-            
-        </div>
-         
-        <div class="small-6 columns">
-        </div>
+      {/if}
+      
+      {if isset($archivo)}
+            <a style="text-decoration:none; color:black; padding-right:10px" 
+              href="{if !isset($eliminado)}msj.php?accion=archivo&info={$archivo}{else}#{/if}">
+                <img src="../Images/docs.png"> {$archivo}
+            </a>
+      {/if}
+          
+      <div class="small-6 columns" style="margin-top:15px;"></div>
+      <div class="small-6 columns"></div>
     </form>
-{else}
-    {if !isset($cveperiodo)}
-        <div class="small-6 columns">
-          <label>No se a especificado destinatario</label>
-        </div>
-    {/if}
-{/if}
+    
+  {else} {if !isset($cveperiodo)}
+    <div class="small-6 columns">
+      <label>No se a especificado destinatario</label>
+    </div>
+  {/if} {/if}
+
+</body>
 
 <script type="text/javascript">
 
-	$('#input12').filestyle({
-		buttonText : ''
-	});
+  $('#input12').filestyle({
+        buttonText : ''
+    });
 
-	
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36251023-1']);
+  _gaq.push(['_setDomainName', 'jqueryscript.net']);
+  _gaq.push(['_trackPageview']);
+  
+  (function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  
 </script>
-</body><script type="text/javascript">
-
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-36251023-1']);
-_gaq.push(['_setDomainName', 'jqueryscript.net']);
-_gaq.push(['_trackPageview']);
-
-(function() {
-var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-
-</script>
-
 
 {include file='footer.html'}

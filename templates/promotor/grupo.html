@@ -16,22 +16,33 @@
 
 	{if isset($datos)}
 	
-		{if isset($formato_preguntas)}
-			<div style="float:right; padding-bottom:10px">
-				
+		<div style="float:right; padding-bottom:10px">
+	
+			{if isset($formato_preguntas)}
 				<a style="text-decoration:none; color:black; padding-right:10px" 
 					href="grupo.php?accion=formato_preguntas">
-					<img src="../Images/docs.png"> Formato Reporte
+					<img src="../Images/docs.png"> Formato-Reporte
+				</a>
+			{/if}
+			
+			<a style="text-decoration:none; color:black; padding-right:10px" 
+				href="grupo.php?accion=lista_asistencia&info={$info.letra}" target="_blank">
+				<img src="../Images/lista_asistencia.png"> Lista-Asistencia
+			</a>
+				
+			{if isset($info)}
+				<a style="text-decoration:none; color:black; padding-right:10px" 
+					href="grupo.php?accion=form_observaciones&info={$info.letra}">
+					<img src="../Images/notas.png"> Observaciones
 				</a>
 				
-				{if isset($info)}
-					<a style="text-decoration:none; color:black" 
-						href="grupo.php?accion=form_observaciones&info={$info.letra}">
-						<img src="../Images/notas.png"> Observaciones
-					</a>
-				{/if}
-			</div>
-		{/if}
+				<a style="text-decoration:none; color:black; padding-right:20px" 
+					href="redacta.php?accion=redactar&info={$info.letra}">
+					<img src="../Images/sobre.png"> Mensaje Grupal
+				</a>
+			{/if}
+			
+		</div>
 		
 		<div class="table-info">
 			<table class='table table-striped' width='500'>

@@ -971,6 +971,7 @@ function recuperaid($email)
 }
 
 include 'controllers/admin/ReporteControllers.php';
+include 'controllers/promotor/ListAsiControllers.php';
 
 //instanciamos web
 $web = new Sistema;

@@ -43,21 +43,27 @@ switch ($accion) {
 
   case 'redactar':
     $sql   = "SELECT cve FROM abecedario WHERE letra=?";
-    $datos = $web->DB->GetAll($sql, $para);
-    $letra = $datos[0]['cve'];
+    $datos = $web->DB->GetAll($sql, $_GET['info']);
+    if (!isset($datos[0])) {
+      $web->simple_message('warning', 'No modifique la interfaz');
+      $web->smarty->display('redacta.html');
+      die();
+    }
 
-    $sql   = "SELECT * FROM lectura WHERE cveperiodo=? AND cveletra=? AND cvepromotor=?";
-    $datos = $web->DB->GetAll($sql, array($periodo, $letra, $_SESSION['cveUser']));
+    $letra = $datos[0]['cve'];
+    $sql   = "SELECT * FROM lectura WHERE cveperiodo=? AND cveletra=? AND cveletra in
+              (SELECT cveletra FROM laboral WHERE cvepromotor = ? and cveperiodo = ?)";
+    $datos = $web->DB->GetAll($sql, array($periodo, $letra, $_SESSION['cveUser'], $periodo));
     if (isset($datos[0])) {
       $web->smarty->assign('para', $para);
       $web->smarty->assign('cveperiodo', $periodo);
       $web->smarty->display('redacta.html');
       exit();
     }
-    $web->smarty->assign('msj',
-      "No existe el destinatario o no tienes permiso para mandar este mensaje");
+
+    $web->simple_message('warning', 'No existe el destinatario o no tienes permiso para mandar este mensaje');
     $web->smarty->display('redacta.html');
-    exit();
+    die();
     break;
 
   case 'redactarI':
@@ -120,19 +126,53 @@ switch ($accion) {
     $datos = $web->DB->GetAll($sql, $letra);
     $letra = $datos[0]['cve'];
     if (isset($_POST)) {
-      $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, cveletra, cveperiodo)
-      VALUES (?, ?,'G', ?,'" . date('Y-m-j') . "', ?, ?, ?)";
-      $datos = $web->DB->GetAll($sql, array(
-        $_POST['introduccion'],
-        $_POST['descripcion'],
-        $_SESSION['cveUser'],
-        $_POST['expira'],
-        $letra,
-        $periodo,
-      ));
+      $max_size = 2000000;
+      // $web->debug($_FILES);
+      if ($_FILES['archivo']['size'] > 0) {
+        if ($_FILES['archivo']['size'] <= $max_size) {
+          $dir_subida = "/home/slslctr/archivos/msj/" . $periodo . "/";
+          $nombre     = $_FILES['archivo']['name'];
+
+          if (file_exists($dir_subida . $nombre)) {
+            header('Location: grupos.php?aviso=1'); // ya existe un archivo con este mismo nombre por favor cambie el nombre
+          }
+
+          if (move_uploaded_file($_FILES['archivo']['tmp_name'], $dir_subida . $nombre)) {
+            $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, cveletra, cveperiodo, archivo)
+              VALUES (?, ?,'G', ?,'" . date('Y-m-j') . "', ?, ?, ?, ?)";
+            $datos = $web->DB->GetAll($sql, array(
+              $_POST['introduccion'],
+              $_POST['descripcion'],
+              $_SESSION['cveUser'],
+              $_POST['expira'],
+              $letra,
+              $periodo,
+              $nombre,
+            ));
+            header('Location: grupos.php?aviso=2'); // Se envio el mensaje satisfactoriamente
+            die();
+          } else {
+            header('Location: grupos.php?aviso=3'); // Se envio el mensaje satisfactoriamente
+            die();
+          }
+        }
+      } else {
+        $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, cveletra, cveperiodo)
+                  VALUES (?, ?,'G', ?,'" . date('Y-m-j') . "', ?, ?, ?)";
+        $datos = $web->DB->GetAll($sql, array(
+          $_POST['introduccion'],
+          $_POST['descripcion'],
+          $_SESSION['cveUser'],
+          $_POST['expira'],
+          $letra,
+          $periodo,
+        ));
+        header('Location: grupos.php?aviso=2'); // Se envio el mensaje satisfactoriamente
+        die();
+      }
     } else {
-      $web->smarty->assign('msj', "No se pudo mandar el mensaje");
-      $web->smarty->display('redacta.html');
+      header('Location: grupos.php?aviso=3'); // Se envio el mensaje satisfactoriamente
+      die();
     }
     break;
 
@@ -231,11 +271,13 @@ switch ($accion) {
         INNER JOIN abecedario ON msj.cveletra = abecedario.cve
         WHERE msj.tipo='G' AND abecedario.letra=? AND msj.cveperiodo=? AND emisor=?
           AND expira >='" . date('Y-m-j') . "'";
-      $datos = $web->DB->GetAll($sql, array(
+      //$web->debug_line($sql);
+      $parameters = array(
         $grupo,
         $periodo,
-        $_SESSION['cveUser'],
-      ));
+        $_SESSION['cveUser']);
+      //$web->debug($parameters);
+      $datos = $web->DB->GetAll($sql, $parameters);
       $web->smarty->assign('datos', $datos);
 
       $sql = "SELECT cvemsj, introduccion, tipomsj.descripcion AS tipo, e.nombre AS nombree,

@@ -1,7 +1,7 @@
 <?php
 
 require_once '../sistema.php';
-require_once '../controllers/admin/pdf.class.php';
+require_once '../controllers/pdf.class.php';
 
 $web = new ReporteControllers;
 $pdf = new PDF;
@@ -18,18 +18,19 @@ if (!isset($_GET['accion']) && !isset($_GET['info1']) && !isset($_GET['info2']))
 switch ($_GET['accion']) {
 
   case 'promotor_alumnos':
-    switch (casePromotorAlumnos()) { // para mensajes de error
+    switch (casePromotorAlumnos()) {
+      // para mensajes de error
       case 'promotor':
         header('promotor.php?accion=historial&e=4'); //no se obtuvo info del promotor
         break;
     }
     break;
-    
+
   case 'promotores_alumnos':
     switch (casePromotoresAlumnos()) { // para mensajes de error
-      // case 'promotor':
-      //   header('promotor.php?accion=historial&e=4'); //no se obtuvo info del promotor
-      //   break;
+        // case 'promotor':
+        //   header('promotor.php?accion=historial&e=4'); //no se obtuvo info del promotor
+        //   break;
     }
     break;
 
@@ -132,7 +133,7 @@ function casePromotorAlumnos()
   // se comienzan a checar los grupos para obtener los alumnos
   $html = '';
   for ($j = 0; $j < count($grupos); $j++) {
-    $alumnos = null;
+    $alumnos  = null;
     $lecturas = $web->getAllLecturas($cveperiodo, $cvepromotor, $grupos[$j]['cveletra']);
 
     if (!isset($lecturas[0])) {
@@ -148,6 +149,7 @@ function casePromotorAlumnos()
           $lecturas[$i]['cveletra'],
           $lecturas[$i]['cvelectura']
         );
+
         $datos[$j][0][4]              = $datos[$j][0]['TERMINADO'];
         $datos[$j][0][2]              = $web->getEspecialidad($datos[$j][0][2]);
         $datos[$j][0]['ESPECIALIDAD'] = $datos[$j][0][2];
@@ -161,24 +163,24 @@ function casePromotorAlumnos()
 
     // ALUMNOS SUBHEADER
     if (is_array($alumnos)) {
-      
-      $alumnosHeader = getAssocArray($web, $alumnos);
+
+      $alumnosHeader = getAssocArray($alumnos);
       if ($alumnosHeader == null) {
         $alumnosHeader = 'No hay alumnos en este grupo'; //no hay alumnos disponibles
       }
-      
-      $alumnos = getAssocArray($web, $alumnos, true);
+
+      $alumnos = getAssocArray($alumnos, true);
       if ($alumnos == null) {
         $alumnos = 'No hay alumnos';
       }
       $web->smarty->assign('fin', (sizeof($alumnos[0][0]) / 2 + 1));
-      
+
     } else {
       $alumnosHeader = 'No hay alumnos en este grupo'; //no hay alumnos disponibles
       $web->smarty->assign('columns', $alumnosHeader);
       $web->smarty->assign('fin', -1);
     }
-    
+
     page_break($j, $grupos); //habilita o deshabilita el salto de página
 
     // DATOS TABLE PRINCIPAL
@@ -210,7 +212,7 @@ function creaArray($header, $body)
  * Elimina campos numéricos para dejar solo los encabezados
  * @param $numeric true===deja encabezados numericos ; false===elimina encabezados numericos
  */
-function getAssocArray($web, $array, $numeric = false)
+function getAssocArray($array, $numeric = false)
 {
   for ($i = 0; $i < count($array); $i++) {
 
@@ -290,17 +292,17 @@ function casePromotorCalif()
     $html .= grupoSubHeader(array('grupos' => $grupos, 'gruposHeader' => $gruposHeader, 'position' => $j));
 
     // TABLE INFO
-    $usersHeader = getAssocArray($web, $aluInfo);
+    $usersHeader = getAssocArray($aluInfo);
     if ($usersHeader == null) {
       $usersHeader = 'No hay alumnos en este grupo'; //no hay alumnos disponibles
     }
-    $users = getAssocArray($web, $aluInfo, true);
+    $users = getAssocArray($aluInfo, true);
     if ($users == null) {
       $users = 'No hay alumnos';
     }
-    
+
     page_break($j, $grupos);
-    
+
     $web->smarty->assign('fin', (sizeof($aluInfo[$j][0]) / 2 - 1));
     $web->smarty->assign('titulo', 'Información específica');
     $web->smarty->assign('subtitulo', 'Alumnos');
@@ -360,6 +362,7 @@ function headerFooter($size)
   global $web;
 
   $web->smarty->assign('size', $size);
+  $web->smarty->assign('page_title', 'Reporte');
 
   $header = (string) ($web->smarty->fetch('header.html'));
   // $footer = (string) ($web->smarty->fetch('footer.html'));
@@ -437,19 +440,21 @@ function caseAlumno($pdf)
 /**
  * Salto de Página
  */
-function page_break($j, $grupos) {
+function page_break($j, $grupos)
+{
   global $web;
-  
-  if($j == count($grupos) - 1) {
-      $web->smarty->assign('page_break', false);
-    } else {
-      $web->smarty->assign('page_break', true);
-    }
+
+  if ($j == count($grupos) - 1) {
+    $web->smarty->assign('page_break', false);
+  } else {
+    $web->smarty->assign('page_break', true);
+  }
 }
 
-function casePromotoresAlumnos() {
+function casePromotoresAlumnos()
+{
   global $web;
   global $pdf;
-  
+
   // PENDIENTE
 }

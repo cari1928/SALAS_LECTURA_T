@@ -208,6 +208,10 @@ if (isset($_GET['accion'])) {
     case 'observacion':
       m_Observaciones();
       break;
+
+    case 'lista_asistencia':
+      mListaAsistencia();
+      break;
   }
 }
 
@@ -467,4 +471,130 @@ function showMessage()
         break;
     }
   }
+}
+
+function mListaAsistencia()
+{
+  require_once '../controllers/pdf.class.php';
+  global $web;
+
+  $web = new ListAsiControllers;
+  $pdf = new PDF;
+  $web->smarty->setTemplateDir('../templates/admin/pdf/');
+  $web->smarty->setCompileDir('../templates_c'); //para que no aparezca la carpeta admin/templates_c
+
+  // OBTIENE HEADER
+  $data   = $web->headerFooter();
+  $header = $data['header'];
+  $footer = $data['footer'];
+
+  if (!isset($_GET['info'])) {
+    mSetMessage($pdf, $header, 'e2');
+  }
+
+  // OBTIENE INFO DE PROMOTOR PARA SUBHEADER
+  $data = $web->promoSubHeader();
+  if (!isset($data['cveperiodo'])) {
+    mSetMessage($pdf, $header, $data);
+  }
+  $cveperiodo  = $data['cveperiodo'];
+  $cvepromotor = $data['cvepromotor'];
+  $periodo     = $data['periodo'];
+
+  $data = $web->grupoSubHeader(array('cveperiodo' => $cveperiodo, 'cvepromotor' => $cvepromotor));
+  if (!isset($data['grupos'])) {
+    mSetMessage($pdf, $header, $data);
+  }
+  $grupos       = $data['grupos'];
+  $gruposHeader = $data['gruposHeader'];
+
+  // se comienza a checar el grupo para obtener los alumnos
+  $lecturas = $web->getAllLecturas($cveperiodo, $cvepromotor, $grupos[0]['cveletra']);
+  if (!isset($lecturas[0])) {
+    mSetMessage($pdf, $header, 'e3'); //no hay alumnos en este grupo
+
+  } else {
+    // Obtiene todos los alumnos de un grupo
+    $tmpAlumno = array();
+    $tmpData   = array();
+    for ($i = 0; $i < count($lecturas); $i++) {
+      $p['#'] = ($i + 1); //enumera
+
+      $datos[0] = $web->getAlumno(
+        $lecturas[$i]['nocontrol'],
+        $cveperiodo,
+        $lecturas[$i]['cveletra'],
+        $lecturas[$i]['cvelectura']
+      );
+
+      $datos         = array_merge($p, $datos[0][0]);
+      $tmpData[0][0] = $web->mMoveFields($datos);
+      $tmpAlumno     = array_merge($tmpAlumno, $tmpData[0]);
+
+    } //fin for
+    $alumnos[0] = $tmpAlumno;
+  } //end else
+
+  // FULL SUBHEADER
+  $html = $web->grupoSubHeader(array('grupos' => $grupos, 'gruposHeader' => $gruposHeader, 'position' => 0));
+
+  // ALUMNOS SUBHEADER
+  if (!is_array($alumnos)) {
+    mSetMessage($pdf, $header, 'e3'); //no hay alumnos en este grupo
+  }
+
+  $alumnosHeader = $web->getAssocArray($alumnos);
+  $alumnos       = $web->getAssocArray($alumnos, true);
+  if ($alumnosHeader == null || $alumnos == null) {
+    mSetMessage($pdf, $header, 'e3'); //no hay alumnos en este grupo
+  }
+
+  $web->smarty->assign('fin', (sizeof($alumnos[0][0]) / 2 + 1));
+  $web->page_break(0, $grupos); //habilita o deshabilita el salto de página
+
+  // DATOS TABLE PRINCIPAL
+  $web->smarty->assign('titulo', 'Listado de Alumnos');
+  $web->smarty->assign('subtitulo', 'Periodo: ' . $periodo[0]['fechainicio'] . " : " . $periodo[0]['fechafinal']);
+  $web->smarty->assign('columns', $alumnosHeader);
+  $web->smarty->assign('rows', $alumnos[0]);
+  $html .= (string) ($web->smarty->fetch('table.html'));
+  $html = $header . $html . $footer;
+  // echo $html;
+  $pdf->createPDF('Lista de Asistencia', $html, 'landscape');
+}
+
+/*
+ * Muestra mensajes de error y de éxito
+ * Usar solo para casos de despliege de PDF
+ */
+function mSetMessage($pdf, $header, $msg)
+{
+  switch ($msg) {
+    case 'e1':
+      $msg = 'No hay periodo actual';
+      break;
+
+    case 'promotor':
+      $msg = 'Ocurrió un error al intentar identificar a este promotor';
+      break;
+
+    case 'grupos':
+      $msg = 'Ocurrió un error al intentar identificar a este grupo';
+      break;
+
+    case 'e2':
+      $msg = 'Hacen falta datos para continuar';
+      break;
+
+    case 'e3':
+      $msg = 'No hay alumnos en este grupo';
+      break;
+
+    default:
+      echo 'No option';
+      die();
+  }
+
+  $pdf->createPDF('Lista-Asistencia', $header . $msg, 'landscape');
+  die();
 }

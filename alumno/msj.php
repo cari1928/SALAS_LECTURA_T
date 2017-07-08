@@ -50,9 +50,36 @@ if (isset($_GET['accion'])) {
       break;
 
     case 'leer':
-      if (!isset($_GET['info'])) {
-        deadMessage($web, 'warning', 'Falta información');
+      $cvemsj = "";
+      if (isset($_GET['info'])) {
+        $cvemsj = $_GET['info'];
       }
+
+      $sql     = "select * from msj where cvemsj=" . $cvemsj;
+      $mensaje = $web->DB->GetAll($sql);
+      $web->smarty->assign('mensaje', $mensaje);
+      $web->smarty->assign('accion', $accion);
+      //$web->debug($mensaje);
+      if ($mensaje[0]['archivo'] != '') {
+        $nombre_fichero = "/home/slslctr/archivos/msj/" . $cveperiodo . "/" . $mensaje[0]['archivo'];
+        if (!file_exists($nombre_fichero)) {
+          $mensaje[0]['archivo'] = "El archivo " . $mensaje[0]['archivo'] . " ha sido eliminado";
+          $web->smarty->assign('eliminado', true);
+        }
+        $web->smarty->assign('archivo', $mensaje[0]['archivo']);
+      }
+      $web->smarty->display('msj.html');
+      exit();
+      break;
+
+    case 'archivo':
+      $nombre_fichero = "/home/slslctr/archivos/msj/" . $cveperiodo . "/" . $_GET['info'];
+      if (!file_exists($nombre_fichero)) {
+        header('Location: grupos.php?aviso=5'); //El archivo no existe
+      }
+      header("Content-disposition: attachment; filename=" . $_GET['info']);
+      header("Content-type: MIME");
+      readfile("/home/slslctr/archivos/msj/" . $cveperiodo . "/" . $_GET['info']);
       break;
 
   }
@@ -61,7 +88,6 @@ if (isset($_GET['accion'])) {
 /*************************************************************************************************
  * FUNCIONES
  *************************************************************************************************/
-
 function deadMessage($web, $type, $msg)
 {
   $web->simple_message($type, $msg);

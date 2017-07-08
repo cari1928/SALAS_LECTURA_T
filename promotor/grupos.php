@@ -1,7 +1,7 @@
 <?php
 include "../sistema.php";
 
-if ($_SESSION['roles'] != 'P') { $web->checklogin(); }
+if ($_SESSION['roles'] != 'P') {$web->checklogin();}
 
 $web->iniClases('promotor', "index grupos");
 $grupos = $web->grupos($_SESSION['cveUser']);
@@ -14,50 +14,73 @@ if ($cveperiodo == "") {
   die();
 }
 
+if (isset($_GET['aviso'])) {
+  switch ($_GET['aviso']) {
+    case 1:
+      $web->simple_message('success', 'Ya existe un archivo con el mismo nombre');
+      break;
+
+    case 2:
+      $web->simple_message('warning', 'Se envío el mensaje satisfactoriamente');
+      break;
+
+    case 3:
+      $web->simple_message('warning', 'Ocurrió un error mientras se enviaba el mensaje');
+      break;
+
+    case 4:
+      $web->simple_message('warning', 'No existe el destinatario o no tienes permiso para mandar este mensaje');
+      break;
+    case 5:
+      $web->simple_message('warning', 'El archivo no existe o fue eliminado');
+      break;
+  }
+}
+
 if (isset($_GET['accion'])) {
 
-    switch ($_GET['accion']) {
+  switch ($_GET['accion']) {
 
-      case 'form_update':
-        if (!isset($_GET['info'])) {
-            $web->simple_message('danger', 'No se especificó el grupo');
-            break;
-        }
+    case 'form_update':
+      if (!isset($_GET['info'])) {
+        $web->simple_message('danger', 'No se especificó el grupo');
+        break;
+      }
 
-        $sql = "select * from laboral where cveletra in
+      $sql = "select * from laboral where cveletra in
           (select cve from abecedario where letra=?)";
-        $grupo = $web->DB->GetAll($sql, $_GET['info']);
+      $grupo = $web->DB->GetAll($sql, $_GET['info']);
 
-        if (!isset($grupo[0])) {
-            $web->simple_message('danger', 'No existe el grupo seleccionado');
-            break;
-        }
-
-        $web->iniClases('promotor', "index grupos actualizar");
-        $web->smarty->assign('grupos', $grupo[0]);
-        $web->smarty->display('form_vergrupos.html');
-        die();
+      if (!isset($grupo[0])) {
+        $web->simple_message('danger', 'No existe el grupo seleccionado');
         break;
+      }
 
-      case 'update':
-        if (!isset($_POST['datos']['nombre'])) {
-            $web->simple_message('danger', "No alteres la estructura de la interfaz");
-            break;
-        }
+      $web->iniClases('promotor', "index grupos actualizar");
+      $web->smarty->assign('grupos', $grupo[0]);
+      $web->smarty->display('form_vergrupos.html');
+      die();
+      break;
 
-        if ($_POST['datos']['nombre'] == "") {
-            $web->simple_message('danger', "Llena todos los campos");
-            break;
-        }
-
-        $nombre = $_POST['datos']['nombre'];
-        $cveletra = $_POST['datos']['cveletra'];
-        
-        $sql = "update laboral set nombre=? where cveletra=?";
-        $web->query($sql, array($nombre, $cveletra));
-        header('Location: grupos.php');
+    case 'update':
+      if (!isset($_POST['datos']['nombre'])) {
+        $web->simple_message('danger', "No alteres la estructura de la interfaz");
         break;
-    }
+      }
+
+      if ($_POST['datos']['nombre'] == "") {
+        $web->simple_message('danger', "Llena todos los campos");
+        break;
+      }
+
+      $nombre   = $_POST['datos']['nombre'];
+      $cveletra = $_POST['datos']['cveletra'];
+
+      $sql = "update laboral set nombre=? where cveletra=?";
+      $web->query($sql, array($nombre, $cveletra));
+      header('Location: grupos.php');
+      break;
+  }
 }
 
 $sql = "select distinct letra, nombre, ubicacion, titulo from laboral
@@ -72,23 +95,23 @@ if (!isset($tablegrupos[0])) {
   $web->simple_message('danger', 'No ha registrado algún grupo');
 }
 
-$sql = "select dia.cvedia, abecedario.letra, dia.nombre, horas.hora_inicial, horas.hora_final 
+$sql = "select dia.cvedia, abecedario.letra, dia.nombre, horas.hora_inicial, horas.hora_final
 from laboral
 inner join dia on dia.cvedia=laboral.cvedia
 inner join abecedario on laboral.cveletra = abecedario.cve
 inner join horas on horas.cvehoras = laboral.cvehoras
-where cvepromotor=? and laboral.cveperiodo=? 
+where cvepromotor=? and laboral.cveperiodo=?
 order by letra, dia.cvedia, horas.hora_inicial";
 $horas = $web->DB->GetAll($sql, array($_SESSION['cveUser'], $cveperiodo));
 
-for($i=0; $i<sizeof($tablegrupos); $i++){
-  $tablegrupos[$i]['horario']="";
-  
-  for($j=0; $j<sizeof($horas); $j++){
-    
-    if($tablegrupos[$i]['letra'] == $horas[$j]['letra']){
-      $tablegrupos[$i]['horario'] .= $horas[$j]['nombre'] . ' - ' . $horas[$j]['hora_inicial'] . ' a ' . $horas[$j]['hora_final'] . "<br>";    
-    }  
+for ($i = 0; $i < sizeof($tablegrupos); $i++) {
+  $tablegrupos[$i]['horario'] = "";
+
+  for ($j = 0; $j < sizeof($horas); $j++) {
+
+    if ($tablegrupos[$i]['letra'] == $horas[$j]['letra']) {
+      $tablegrupos[$i]['horario'] .= $horas[$j]['nombre'] . ' - ' . $horas[$j]['hora_inicial'] . ' a ' . $horas[$j]['hora_final'] . "<br>";
+    }
   }
 }
 
