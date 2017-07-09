@@ -15,21 +15,23 @@ if ($cveperiodo == "") {
 }
 
 if (isset($_GET['aviso'])) {
+
   switch ($_GET['aviso']) {
     case 1:
-      $web->simple_message('success', 'Ya existe un archivo con el mismo nombre');
+      $web->simple_message('warning', 'Ya existe un archivo con el mismo nombre');
       break;
 
     case 2:
-      $web->simple_message('warning', 'Se envío el mensaje satisfactoriamente');
+      $web->simple_message('info', 'Se envió el mensaje satisfactoriamente');
       break;
 
     case 3:
-      $web->simple_message('warning', 'Ocurrió un error mientras se enviaba el mensaje');
+      $web->simple_message('danger', 'Ocurrió un error mientras se enviaba el mensaje');
       break;
 
     case 4:
-      $web->simple_message('warning', 'No existe el destinatario o no tienes permiso para mandar este mensaje');
+      $web->simple_message('warning',
+        'No existe el destinatario o no tiene permiso para mandar este mensaje');
       break;
     case 5:
       $web->simple_message('warning', 'El archivo no existe o fue eliminado');
@@ -47,8 +49,8 @@ if (isset($_GET['accion'])) {
         break;
       }
 
-      $sql = "select * from laboral where cveletra in
-          (select cve from abecedario where letra=?)";
+      $sql = "SELECT * FROM laboral WHERE cveletra IN
+          (SELECT cve FROM abecedario WHERE letra=?)";
       $grupo = $web->DB->GetAll($sql, $_GET['info']);
 
       if (!isset($grupo[0])) {
@@ -64,44 +66,44 @@ if (isset($_GET['accion'])) {
 
     case 'update':
       if (!isset($_POST['datos']['nombre'])) {
-        $web->simple_message('danger', "No alteres la estructura de la interfaz");
+        $web->simple_message('warning', "No alteres la estructura de la interfaz");
         break;
       }
 
       if ($_POST['datos']['nombre'] == "") {
-        $web->simple_message('danger', "Llena todos los campos");
+        $web->simple_message('warning', "Llena todos los campos");
         break;
       }
 
       $nombre   = $_POST['datos']['nombre'];
       $cveletra = $_POST['datos']['cveletra'];
 
-      $sql = "update laboral set nombre=? where cveletra=?";
+      $sql = "UPDATE laboral SET nombre=? WHERE cveletra=?";
       $web->query($sql, array($nombre, $cveletra));
       header('Location: grupos.php');
       break;
   }
 }
 
-$sql = "select distinct letra, nombre, ubicacion, titulo from laboral
-inner join sala on laboral.cvesala = sala.cvesala
-inner join abecedario on laboral.cveletra = abecedario.cve
-left join libro on laboral.cvelibro_grupal = libro.cvelibro
-where cvepromotor=? and laboral.cveperiodo=?
-order by letra";
+$sql = "SELECT DISTINCT letra, nombre, ubicacion, titulo FROM laboral
+INNER JOIN sala ON laboral.cvesala = sala.cvesala
+INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
+LEFT JOIN libro ON laboral.cvelibro_grupal = libro.cvelibro
+WHERE cvepromotor=? AND laboral.cveperiodo=?
+ORDER BY letra";
 $tablegrupos = $web->DB->GetAll($sql, array($_SESSION['cveUser'], $cveperiodo));
 
 if (!isset($tablegrupos[0])) {
   $web->simple_message('danger', 'No ha registrado algún grupo');
 }
 
-$sql = "select dia.cvedia, abecedario.letra, dia.nombre, horas.hora_inicial, horas.hora_final
-from laboral
-inner join dia on dia.cvedia=laboral.cvedia
-inner join abecedario on laboral.cveletra = abecedario.cve
-inner join horas on horas.cvehoras = laboral.cvehoras
-where cvepromotor=? and laboral.cveperiodo=?
-order by letra, dia.cvedia, horas.hora_inicial";
+$sql = "SELECT dia.cvedia, abecedario.letra, dia.nombre, horas.hora_inicial, horas.hora_final
+FROM laboral
+INNER JOIN dia ON dia.cvedia=laboral.cvedia
+INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
+INNER JOIN horas ON horas.cvehoras = laboral.cvehoras
+WHERE cvepromotor=? AND laboral.cveperiodo=?
+ORDER BY letra, dia.cvedia, horas.hora_inicial";
 $horas = $web->DB->GetAll($sql, array($_SESSION['cveUser'], $cveperiodo));
 
 for ($i = 0; $i < sizeof($tablegrupos); $i++) {

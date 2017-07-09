@@ -18,6 +18,7 @@ if ($periodo == "") {
 }
 
 if (isset($_GET['aviso'])) {
+
   switch ($_GET['aviso']) {
     case 1:
       $web->simple_message('success', 'Se envío el mensaje satisfactoriamente');
@@ -52,7 +53,7 @@ switch ($accion) {
 
     $letra = $datos[0]['cve'];
     $sql   = "SELECT * FROM lectura WHERE cveperiodo=? AND cveletra=? AND cveletra in
-              (SELECT cveletra FROM laboral WHERE cvepromotor = ? and cveperiodo = ?)";
+      (SELECT cveletra FROM laboral WHERE cvepromotor = ? and cveperiodo = ?)";
     $datos = $web->DB->GetAll($sql, array($periodo, $letra, $_SESSION['cveUser'], $periodo));
     if (isset($datos[0])) {
       $web->smarty->assign('para', $para);
@@ -68,11 +69,10 @@ switch ($accion) {
 
   case 'redactarI':
     $receptor = "";
-
     if (isset($_GET['info2'])) {
       $receptor = $_GET['info2'];
     } else {
-      $web->smarty->assign('msj', "Falta información");
+      $web->simple_message('warning', "Falta información");
       $web->smarty->display('redacta.html');
       die();
     }
@@ -84,13 +84,11 @@ switch ($accion) {
 
     $sql   = "SELECT cveusuario FROM usuarios WHERE cveusuario=?";
     $datos = $web->DB->GetAll($sql, $receptor);
-
     if (isset($datos[0])) {
       $sql = "SELECT * FROM lectura
         INNER JOIN abecedario ON abecedario.cve = lectura.cveletra
         WHERE abecedario.letra=? AND lectura.cveperiodo=?";
       $datos_g = $web->DB->GetAll($sql, array($grupo, $periodo));
-
       if (isset($datos_g[0])) {
         $web->smarty->assign('receptor', $receptor);
         $web->smarty->assign('accion', $accion);
@@ -107,8 +105,7 @@ switch ($accion) {
       }
     }
 
-    $web->smarty->assign('msj',
-      "No existe el destinatario o no tienes permiso para mandar este mensaje");
+    $web->simple_message('danger', "No existe el destinatario o no tienes permiso para mandar este mensaje");
     $web->smarty->display('redacta.html');
     exit();
     break;
@@ -125,16 +122,17 @@ switch ($accion) {
     $sql   = "SELECT cve FROM abecedario WHERE letra=?";
     $datos = $web->DB->GetAll($sql, $letra);
     $letra = $datos[0]['cve'];
+
     if (isset($_POST)) {
       $max_size = 2000000;
-      // $web->debug($_FILES);
+
       if ($_FILES['archivo']['size'] > 0) {
         if ($_FILES['archivo']['size'] <= $max_size) {
-          $dir_subida = "/home/slslctr/archivos/msj/" . $periodo . "/";
+          $dir_subida = "/home/slslctr/archivos_msj/" . $periodo . "/";
           $nombre     = $_FILES['archivo']['name'];
 
           if (file_exists($dir_subida . $nombre)) {
-            header('Location: grupos.php?aviso=1'); // ya existe un archivo con este mismo nombre por favor cambie el nombre
+            header('Location: grupos.php?aviso=1'); // ya existe un archivo con este mismo nombre
           }
 
           if (move_uploaded_file($_FILES['archivo']['tmp_name'], $dir_subida . $nombre)) {
@@ -150,11 +148,10 @@ switch ($accion) {
               $nombre,
             ));
             header('Location: grupos.php?aviso=2'); // Se envio el mensaje satisfactoriamente
-            die();
           } else {
-            header('Location: grupos.php?aviso=3'); // Se envio el mensaje satisfactoriamente
-            die();
+            header('Location: grupos.php?aviso=3'); // Ocurrió un error
           }
+          die();
         }
       } else {
         $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, cveletra, cveperiodo)
@@ -178,7 +175,6 @@ switch ($accion) {
 
   case 'enviarI':
     $receptor = $cveletra = "";
-
     if (isset($_GET['receptor'])) {
       $receptor = $_GET['receptor'];
     }
@@ -187,35 +183,30 @@ switch ($accion) {
     }
 
     $sql = "SELECT * FROM lectura
-        INNER JOIN laboral ON laboral.cveletra = lectura.cveletra
-        INNER JOIN usuarios ON laboral.cvepromotor = usuarios.cveusuario
-        WHERE laboral.cvepromotor=? AND lectura.nocontrol=?";
-    $datos = $web->DB->GetAll($sql, array(
-      $_SESSION['cveUser'],
-      $receptor,
-    ));
-
-    //$web->debug($_FILES);
+      INNER JOIN laboral ON laboral.cveletra = lectura.cveletra
+      INNER JOIN usuarios ON laboral.cvepromotor = usuarios.cveusuario
+      WHERE laboral.cvepromotor=? AND lectura.nocontrol=?";
+    $datos = $web->DB->GetAll($sql, array($_SESSION['cveUser'], $receptor));
     if (!isset($datos[0])) {
-      header('Location: grupos.php?aviso=4'); //No existe el destinatario o no tienes permiso para mandar este mensaje
+      header('Location: grupos.php?aviso=4'); //No existe el destinatario o no hay permiso
     }
 
     if (isset($_POST)) {
-      $encabezado = "";
-      $contenido  = "";
+      $encabezado = $contenido = "";
       $max_size   = 2000000;
       if ($_FILES['archivo']['size'] > 0) {
         if ($_FILES['archivo']['size'] <= $max_size) {
-          $dir_subida = "/home/slslctr/archivos/msj/" . $periodo . "/";
-          $nombre     = $_FILES['archivo']['name'];
 
+          $dir_subida = "/home/slslctr/archivos_msj/" . $periodo . "/";
+          $nombre     = $_FILES['archivo']['name'];
           if (file_exists($dir_subida . $nombre)) {
-            header('Location: grupos.php?aviso=1'); // ya existe un archivo con este mismo nombre por favor cambie el nombre
+            header('Location: grupos.php?aviso=1'); // ya existe un archivo con este mismo nombre
+            die();
           }
 
           if (move_uploaded_file($_FILES['archivo']['tmp_name'], $dir_subida . $nombre)) {
             $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, receptor, cveletra, cveperiodo, archivo)
-                VALUES (?, ?,'I', ?,'" . date('Y-m-j') . "', ?, ?, ?, ?, ?)";
+              VALUES (?, ?,'I', ?,'" . date('Y-m-j') . "', ?, ?, ?, ?, ?)";
             $parameters = array(
               $_POST['introduccion'],
               $_POST['descripcion'],
@@ -231,6 +222,7 @@ switch ($accion) {
           } else {
             header('Location: grupos.php?aviso=3'); // Ocurrio un error al enviar el mensaje
           }
+          die();
         } else {
           $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, receptor, cveletra, cveperiodo)
             VALUES (?, ?,'I', ?,'" . date('Y-m-j') . "', ?, ?, ?, ?)";
@@ -247,13 +239,10 @@ switch ($accion) {
         }
       }
     } else {
-      $web->smarty->assign('msj', "No se pudo mandar el mensaje");
+      $web->simple_message('danger', "No se pudo mandar el mensaje");
       $web->smarty->display('redacta.html');
     }
-    die('error');
-    // } else {
-    //   $web->smarty->assign('msj', "No existe el destinatario o no tienes permiso para mandar este mensaje");
-    // }
+    die();
     break;
 
   case 'ver':

@@ -1,6 +1,5 @@
 {include file='header.html'}
 {$ruta}
-
 {if isset($msg)}{include file='mensajes.html'}{/if}
 
 <div class="container-fluid">
@@ -15,17 +14,19 @@
           </div>
           
           <div class="panel-body">
+            
             <div class="form-group">
               <label>Usuario:</label>
-              <input  class="form-control" placeholder="NoControl / RFC" name="datos[cveUsuario]" required maxlength="13">
+              <input class="form-control" placeholder="NoControl / RFC" name="datos[cveUsuario]" required maxlength="13">
             </div>
+            
             <div class="form-group">
               <label>Contraseña:</label>
               <input type="password" class="form-control" placeholder="Password" name="datos[contrasena]" required >
             </div>
+            
             <div align="right">
-              Recordar esta cuenta
-              <input type="checkbox">
+              Recordar esta cuenta <input type="checkbox">
             </div>
             
             {if isset($usuario_clave)}
@@ -38,10 +39,11 @@
             
           </div>
         </div>
+        
         <div class="form-group" align="right">
           <label><a href="formcontrasena.php">No recuerdo mi contraseña</a></label>  
           <button type="submit" class="btn btn-primary" value='Login' name="guardar">Sign in</button>
-          </div>
+        </div>
       </form>
       
     </nav>

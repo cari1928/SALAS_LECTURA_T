@@ -858,22 +858,6 @@ class Sistema extends Conexion
   }
 
   /**
-   * Obtiene el contenido de un archivo
-   * @param  String $url Dirección del archivo
-   * @return String Contenido del archivo
-   */
-  public function obtenerhtml($url)
-  {
-    $codigohtml = "";
-    $fo         = fopen($url, "r") or die("No se ha encontrado la pagina.");
-    while (!feof($fo)) {
-      $codigohtml .= fgets($fo, 4096);
-    }
-    fclose($fo);
-    return $codigohtml;
-  }
-
-  /**
    * get all assigned template vars
    * @return variables asignadas con smarty->assing y sus contenidos
    */

@@ -1,18 +1,21 @@
 {include file='header.html'}
-<center>
-    <h3>¡Bienvenido! <br> Al sistema de cambio de contraseña <br/></h3>
-       <form class="form-inline" action='formcontrasena.php' method='post' enctype='multipart/form-data' accept-charset='utf-8'>
-  <div class="form-group">
-    <label>Usuario:</label>
-    <br/>
-    <input  class="form-control" id="exampleInputEmail3" placeholder="NoControl/RFC" name="datos[cveUsuario]" id="producto" required maxlength="13">
-  </div>
-  </br>
-  </br>
-  <button type="submit" class="btn btn-default" value='Login' name="guardar">Enviar correo</button> </br>
-  {$mensaje}
-</form>
-</center>
-    </body>
-</html>
+  
+  <center>
+    <h3>¡Bienvenido! <br> Sistema de cambio de contraseña</h3>
+    <form class="form-inline" action='formcontrasena.php' method='post' enctype='multipart/form-data' accept-charset='utf-8'>
+      
+      <div class="form-group">
+        <label>Usuario:</label>
+        <input class="form-control" placeholder="NoControl/RFC" name="datos[cveUsuario]" required maxlength="13">
+      </div>
+      
+      <button type="submit" class="btn btn-default" value='Login' name="guardar">Enviar correo</button>
+      
+      {if isset($message)}
+        <div class="form-group"> {$mensaje} </div>
+      {/if}
+      
+    </form>
+  </center>
+
 {include file='footer.html'}

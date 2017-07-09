@@ -2,13 +2,13 @@
 {if isset($msg)}{include file='mensajes.html'}{/if}
 
 {if isset($mensaje)}
-    <center><h1>Aviso</h1></center>
-    {$mensaje}
+  <center><h1>Aviso</h1></center>
+  {$mensaje}
 {/if}
 
 {if isset($mensajes)}
-    <center><h1>Avisos</h1></center>
-    <table class='table table-hover'>
+  <center><h1>Avisos</h1></center>
+  <table class='table table-hover'>
 		<tr class='info'>		
 			<th style="vertical-align:middle"><center>TITULO</center></th>
 			<th style="vertical-align:middle"><center>TIPO</center></th>
@@ -18,17 +18,18 @@
 			<th style="vertical-align:middle"><center>LEER MAS</center></th>
 		</tr>
 		{foreach $mensajes as $mensaje}
-		<tr>
-			<td><center>{$mensaje.introduccion}</center></td>
-			<td><center>{$mensaje.descripcion}</center></td>
-			<td><center>{$mensaje.nombre}</center></td>
-			<td><center>{$mensaje.fecha}</center></td>
-			<td><center>{$mensaje.expira}</center></td>
-			<td><center><a href="mensaje.php?msj={$mensaje.cvemsj}">
-				<img src="../Images/leer.png">
-			</a></center></td>
-		</tr>
-	{/foreach}
+			<tr>
+				<td><center>{$mensaje.introduccion}</center></td>
+				<td><center>{$mensaje.descripcion}</center></td>
+				<td><center>{$mensaje.nombre}</center></td>
+				<td><center>{$mensaje.fecha}</center></td>
+				<td><center>{$mensaje.expira}</center></td>
+				<td><center><a href="mensaje.php?msj={$mensaje.cvemsj}">
+					<img src="../Images/leer.png">
+				</a></center></td>
+			</tr>
+		{/foreach}
 	</table>
 {/if}
+
 {include file='footer.html'}
