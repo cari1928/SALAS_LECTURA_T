@@ -1,0 +1,70 @@
+*
+{
+  padding-bottom: 5px;
+  font-size: 12px;
+}
+
+div#cap 
+{
+  /*background-color: green;*/
+  text-align: left;
+  padding: 10px;
+}
+
+.title1
+{
+  font-size: 20px;
+}
+
+.title2
+{
+  font-size: 15px;
+}
+
+.phrase
+{
+  font-size:12px;
+}
+
+.usuario
+{
+  float: right;
+}
+
+.grupo
+{
+  text-align: left;
+}
+
+.table_container
+{
+  margin-top: 10px;
+}
+
+.table_header, .notes_header
+{
+  font-size: 15px;
+  font-weight: bold;
+}
+
+th
+{
+  text-align:center; 
+  font-size:9px;
+}
+
+td
+{
+  text-align:center; 
+  font-size:9px; 
+  vertical-align:middle
+}
+
+footer 
+{ 
+  position: fixed; 
+  bottom: 20px; 
+  left: 0px; 
+  right: 0px; 
+  height: 50px; 
+}

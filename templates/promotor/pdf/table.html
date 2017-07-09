@@ -1,0 +1,52 @@
+<div class="table_container">
+  
+  <div class="table_header">
+    <center>{$title}</center>
+  </div>
+
+  <table class="table table-bordered">
+    <thead class="thead-default">
+      <tr>
+        {foreach $columns as $column}
+          {if $column eq "NOMBRE"}
+            <th width="90">{$column}</th>
+          {else} 
+            {if $column eq "#"}
+              <th width="5">{$column}</th>
+            {else} 
+              <th width="60">{$column}</th>
+            {/if}
+          {/if} 
+        {/foreach}
+        
+        {for $i=1 to 20}
+          <th width="5">{$i}</th>  
+        {/for} 
+
+      </tr>
+    </thead>
+    
+    <tbody>
+      {foreach $rows as $row}
+        <tr>
+          
+          {for $i=0 to $fin}
+            <td valign="middle" align="center" {if $i == 1 && $table eq "alumnos"}width="90"{/if}>
+              {$row[{$i}]}
+            </td>
+          {/for}
+          
+          {for $i=1 to 20}
+            <td></td>  
+          {/for} 
+
+        </tr>
+      {/foreach}
+    </tbody>
+  </table>
+
+</div>
+
+{if isset($page_break)} {if $page_break}
+  <div style="page-break-after:always;"></div>
+{/if} {/if}

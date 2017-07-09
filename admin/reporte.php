@@ -149,7 +149,6 @@ function casePromotorAlumnos()
           $lecturas[$i]['cveletra'],
           $lecturas[$i]['cvelectura']
         );
-
         $datos[$j][0][4]              = $datos[$j][0]['TERMINADO'];
         $datos[$j][0][2]              = $web->getEspecialidad($datos[$j][0][2]);
         $datos[$j][0]['ESPECIALIDAD'] = $datos[$j][0][2];
@@ -164,12 +163,12 @@ function casePromotorAlumnos()
     // ALUMNOS SUBHEADER
     if (is_array($alumnos)) {
 
-      $alumnosHeader = getAssocArray($alumnos);
+      $alumnosHeader = getAssocArray($web, $alumnos);
       if ($alumnosHeader == null) {
         $alumnosHeader = 'No hay alumnos en este grupo'; //no hay alumnos disponibles
       }
 
-      $alumnos = getAssocArray($alumnos, true);
+      $alumnos = getAssocArray($web, $alumnos, true);
       if ($alumnos == null) {
         $alumnos = 'No hay alumnos';
       }
@@ -212,7 +211,7 @@ function creaArray($header, $body)
  * Elimina campos numéricos para dejar solo los encabezados
  * @param $numeric true===deja encabezados numericos ; false===elimina encabezados numericos
  */
-function getAssocArray($array, $numeric = false)
+function getAssocArray($web, $array, $numeric = false)
 {
   for ($i = 0; $i < count($array); $i++) {
 
@@ -273,6 +272,7 @@ function casePromotorCalif()
   // se comienzan a checar los grupos para obtener los alumnos
   $html = '';
   for ($j = 0; $j < count($grupos); $j++) {
+    $aluInfo  = null;
     $lecturas = $web->getAllLecturas($cveperiodo, $cvepromotor, $grupos[$j]['cveletra']);
 
     if (!isset($lecturas[0])) {
@@ -292,29 +292,35 @@ function casePromotorCalif()
     $html .= grupoSubHeader(array('grupos' => $grupos, 'gruposHeader' => $gruposHeader, 'position' => $j));
 
     // TABLE INFO
-    $usersHeader = getAssocArray($aluInfo);
+    $usersHeader = getAssocArray($web, $aluInfo);
     if ($usersHeader == null) {
       $usersHeader = 'No hay alumnos en este grupo'; //no hay alumnos disponibles
     }
-    $users = getAssocArray($aluInfo, true);
+    $users = getAssocArray($web, $aluInfo, true);
     if ($users == null) {
       $users = 'No hay alumnos';
     }
 
     page_break($j, $grupos);
 
-    $web->smarty->assign('fin', (sizeof($aluInfo[$j][0]) / 2 - 1));
-    $web->smarty->assign('titulo', 'Información específica');
-    $web->smarty->assign('subtitulo', 'Alumnos');
-    $web->smarty->assign('columns', $usersHeader);
-    $web->smarty->assign('rows', $users[$j]);
+    if (is_array($aluInfo)) {
+      $fin = (sizeof($aluInfo[0][0]) / 2 - 1);
+    } else {
+      $fin = -1;
+    }
 
     // OBSERVACIONES
     $obs = observaciones(array(
-      'cveletra'    => $lecturas[0]['cveletra'],
+      'cveletra'    => $grupos[$j]['cveletra'],
       'cveperiodo'  => $cveperiodo,
       'cvepromotor' => $cvepromotor,
     ));
+
+    $web->smarty->assign('fin', $fin);
+    $web->smarty->assign('titulo', 'Información específica');
+    $web->smarty->assign('subtitulo', 'Alumnos');
+    $web->smarty->assign('columns', $usersHeader);
+    $web->smarty->assign('rows', $users[0]);
 
     $html .= (string) ($web->smarty->fetch('table.html'));
   } //end for
@@ -362,7 +368,6 @@ function headerFooter($size)
   global $web;
 
   $web->smarty->assign('size', $size);
-  $web->smarty->assign('page_title', 'Reporte');
 
   $header = (string) ($web->smarty->fetch('header.html'));
   // $footer = (string) ($web->smarty->fetch('footer.html'));

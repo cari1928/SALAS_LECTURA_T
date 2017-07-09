@@ -480,7 +480,7 @@ function mListaAsistencia()
 
   $web = new ListAsiControllers;
   $pdf = new PDF;
-  $web->smarty->setTemplateDir('../templates/admin/pdf/');
+  $web->smarty->setTemplateDir('../templates/promotor/pdf/');
   $web->smarty->setCompileDir('../templates_c'); //para que no aparezca la carpeta admin/templates_c
 
   // OBTIENE HEADER
@@ -553,14 +553,15 @@ function mListaAsistencia()
   $web->page_break(0, $grupos); //habilita o deshabilita el salto de página
 
   // DATOS TABLE PRINCIPAL
-  $web->smarty->assign('titulo', 'Listado de Alumnos');
-  $web->smarty->assign('subtitulo', 'Periodo: ' . $periodo[0]['fechainicio'] . " : " . $periodo[0]['fechafinal']);
   $web->smarty->assign('columns', $alumnosHeader);
   $web->smarty->assign('rows', $alumnos[0]);
+  $web->smarty->assign('title', 'Lista de Asistencia');
   $html .= (string) ($web->smarty->fetch('table.html'));
+
   $html = $header . $html . $footer;
   // echo $html;
   $pdf->createPDF('Lista de Asistencia', $html, 'landscape');
+  die();
 }
 
 /*

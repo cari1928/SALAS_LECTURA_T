@@ -1,0 +1,54 @@
+*
+{
+  padding-bottom: 5px;
+}
+
+div#cap 
+{
+  /*background-color: green;*/
+  text-align: left;
+  padding: 10px;
+}
+
+.usuario
+{
+  float: right;
+}
+
+.grupo
+{
+  text-align: left;
+}
+
+.table_container
+{
+  margin-top: 10px;
+}
+
+.table_header, .notes_header
+{
+  font-size: 15px;
+  font-weight: bold;
+}
+
+th
+{
+  text-align:center;
+}
+
+td
+{
+  text-align: center; 
+  font-size: 12px; 
+  vertical-align: middle
+}
+
+footer 
+{ 
+  position: fixed; 
+  bottom: 20px; 
+  left: 0px; 
+  right: 0px; 
+  /*background-color: lightblue; */
+  height: 50px; 
+}

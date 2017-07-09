@@ -1,29 +1,19 @@
 <div class="table_container">
-  
-  {if !isset($days)}
-    <div class="table_header">
-      <center>{$titulo}</center>
-      <center>{$subtitulo}</center>
-    </div>
-  {/if}
+  <div class="table_header">
+    <center>{$titulo}</center>
+    <center>{$subtitulo}</center>
+  </div>
 
   <table class="table table-bordered">
     <thead class="thead-default">
       <tr>
         {foreach $columns as $column}
           {if $column eq "NOMBRE"}
-            <th style="text-align:center" width="80">{$column}</th>
+            <th width="80">{$column}</th>
           {else}
-            <th style="text-align:center">{$column}</th>
+            <th>{$column}</th>
           {/if}
         {/foreach}
-        
-        {if isset($days)} 
-          {for $i=1 to 25}
-            <th style="text-align:center" width="5">{$i}</th>  
-          {/for} 
-          <th style="text-align:center" width="5">/</th>  
-        {/if}
       </tr>
     </thead>
     
@@ -31,16 +21,10 @@
       {foreach $rows as $row}
         <tr>
           {for $i=0 to $fin}
-              <td style="text-align; font-size:10px; vertical-align:middle" 
-                valign="middle" align="center" 
-                {if $i == 1 && $table eq "alumnos"}width="80"{/if}>
+              <td valign="middle" align="center"{if $i == 1 && $table eq "alumnos"}width="80"{/if}>
                 {$row[{$i}]}
               </td>
           {/for}
-          
-          {if isset($days)} {for $i=1 to 26}
-            <td style="text-align:center" width="5"></td>  
-          {/for} {/if}
         </tr>
       {/foreach}
     </tbody>
