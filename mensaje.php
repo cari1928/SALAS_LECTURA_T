@@ -1,43 +1,40 @@
 <?php
 include 'sistema.php';
-if (isset($_GET['msj'])) 
-{
-	$cvemsj=$_GET['msj'];
-	$sql="select*from msj where cvemsj='".$cvemsj."'";
-	$mensaje=$web->msj($sql);
-	$web->smarty->assign('mensaje',$mensaje);
-	$web->smarty->display('mensajes_publicos.html');
-	die();
-}
 
-$date = getdate();
-$fecha = date('Y-m-j');
-$sql="select cvemsj, introduccion, tipomsj.descripcion, usuarios.nombre, fecha, expira 
-			from msj inner join tipomsj on tipomsj.cvetipomsj = msj.tipo
-					 inner join usuarios on usuarios.cveusuario = msj.emisor
-			where tipomsj.cvetipomsj='PU' and expira >= ? order by fecha";
-$mensajes = $web->DB->GetAll($sql, $fecha);
-
-if(!isset($mensajes[0])){
-	message('No hay ningun aviso para mostrar',$web);
-}
-
-$web->smarty->assign('mensajes',$mensajes);
-$web->smarty->display('mensajes_publicos.html');
-
-
-/**
- * Método para mostrar el template form_alumnos cuando ocurre algún error
- * @param  String $msg       Mensaje a desplegar
- * @param  $web              Para poder aplicar las funciones de $web
- */
- 
-function message($msg, $web)
-{
-  $web->smarty->assign('alert', 'danger');
-  $web->smarty->assign('msg', $msg);
+if (isset($_GET['msj'])) {
+  $cvemsj  = $_GET['msj'];
+  $sql     = "SELECT * FROM msj WHERE cvemsj=?";
+  $mensaje = $web->msj($sql, $cvemsj);
+  $web->smarty->assign('mensaje', $mensaje);
   $web->smarty->display('mensajes_publicos.html');
   die();
 }
 
-?>
+$date  = getdate();
+$fecha = date('Y-m-j');
+$sql   = "SELECT cvemsj, introduccion, tipomsj.descripcion, usuarios.nombre, fecha, expira FROM msj
+INNER JOIN tipomsj ON tipomsj.cvetipomsj = msj.tipo
+INNER JOIN usuarios ON usuarios.cveusuario = msj.emisor
+WHERE tipomsj.cvetipomsj='PU' AND expira >= ?
+ORDER BY fecha";
+$mensajes = $web->DB->GetAll($sql, $fecha);
+
+if (!isset($mensajes[0])) {
+  message('warning', 'No hay avisos por mostrar');
+}
+
+$web->smarty->assign('mensajes', $mensajes);
+$web->smarty->display('mensajes_publicos.html');
+
+/**
+ * Método para mostrar el template form_alumnos cuando ocurre algún error
+ * @param  String $alert     Tipo de mensaje
+ * @param  String $msg       Mensaje a desplegar
+ */
+function message($alert, $msg)
+{
+  global $web;
+  $web->simple_message($alert, $msg);
+  $web->smarty->display('mensajes_publicos.html');
+  die();
+}

@@ -1,11 +1,6 @@
 {include file='header.html'}
 {if isset($msg)}{include file='mensajes.html'}{/if}
 
-{if isset($mensaje)}
-  <center><h1>Aviso</h1></center>
-  {$mensaje}
-{/if}
-
 {if isset($mensajes)}
   <center><h1>Avisos</h1></center>
   <table class='table table-hover'>

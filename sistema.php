@@ -56,18 +56,18 @@ class Sistema extends Conexion
   /*
   Muestra informacion de los mensajes publicos
    */
-  public function msj($sql)
+  public function msj($sql, $array = array())
   {
-    $datos = $this->DB->GetAll($sql);
+    $datos = $this->DB->GetAll($sql, $array);
     if (!isset($datos[0])) {
       return "No se encuentra informacion";
     }
     $nombrescolumnas = array_keys($datos[0]);
     $this->smarty->assign('nombrecolumna', $nombrescolumnas[1]);
     $this->smarty->assign('msj', $datos);
-    //var_dump($this->DB->GetAll("select nombre from usuarios where cveusuario='".$datos[0][4]."'"));
-    //die();
-    $this->smarty->assign('promotor', $this->DB->GetAll("select nombre from usuarios where cveusuario='" . $datos[0][4] . "'"));
+
+    $sql = "SELECT nombre FROM usuarios WHERE cveusuario=?";
+    $this->smarty->assign('promotor', $this->DB->GetAll($sql, $datos[0][4]));
     return $this->smarty->fetch('componentmsj.html');
   }
 
@@ -81,7 +81,6 @@ class Sistema extends Conexion
   {
     $this->query = $query;
     $this->rs    = &$this->DB->Execute($this->query, $parameters);
-
     if ($this->DB->ErrorMsg()) {
       $msg = $this->DB->ErrorMsg();
       echo $msg;
