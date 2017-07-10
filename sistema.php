@@ -276,8 +276,8 @@ class Sistema extends Conexion
   }
 
   /*
-  MUESTRA LOS MENSAJES PUBLICOS
-  SOLO ES PRUEBA LO QUITARE Y LO MANDARE A index.php NIVEL PUBLICO
+   * MUESTRA LOS MENSAJES PUBLICOS
+   * SOLO ES PRUEBA LO QUITARE Y LO MANDARE A index.php NIVEL PUBLICO
    */
   public function muestraMSJ($query, $tipo)
   {
