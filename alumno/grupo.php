@@ -1,5 +1,4 @@
 <?php
-
 include '../sistema.php';
 
 if ($_SESSION['roles'] != 'U') {
@@ -29,12 +28,17 @@ if (isset($_GET['accion'])) {
         message('danger', 'Información incompleta', $web);
       }
 
-      $sql          = "select letra from abecedario where cve in (select cveletra from lectura where cvelectura = ?)";
+      $sql = "SELECT letra FROM abecedario
+      WHERE cve IN (SELECT cveletra FROM lectura WHERE cvelectura=?)";
       $letra_subida = $web->DB->GetAll($sql, $_GET['info1']);
       if (!isset($letra_subida[0])) {
         message('danger', 'No existe el grupo', $web);
       }
-      $dir_subida = "/home/slslctr/archivos/periodos" . "/" . $cveperiodo . "/" . $letra_subida[0][0] . "/" . $_SESSION['cveUser'] . "/";
+
+      $dir_subida = "/home/slslctr/archivos/periodos/" .
+        $cveperiodo . "/" .
+        $letra_subida[0][0] . "/" .
+        $_SESSION['cveUser'] . "/";
 
       if ($_FILES['datos']['size']['archivo'] > 1000000) {
         message('danger', 'El archivo es mayor a un MB.', $web);
@@ -42,12 +46,11 @@ if (isset($_GET['accion'])) {
       if ($_FILES['datos']['type']['archivo'] != 'application/pdf') {
         message('danger', 'Solo esta permitido subir archivos de tipo .pdf', $web);
       }
-
       if (!isset($_POST['datos']['reporte'])) {
         message('danger', 'Información incompleta', $web);
       }
 
-      $sql             = "select cvelibro from libro where cvelibro = ?";
+      $sql             = "SELECT cvelibro FROM libro WHERE cvelibro=?";
       $cvelibro_subida = $web->DB->GetAll($sql, $_POST['datos']['reporte']);
       if (!isset($cvelibro_subida[0])) {
         message('danger', 'El libro no existe', $web);
@@ -55,9 +58,9 @@ if (isset($_GET['accion'])) {
 
       $nombre = $cvelibro_subida[0][0] . "_" . $_SESSION['cveUser'] . ".pdf";
       if (move_uploaded_file($_FILES['datos']['tmp_name']['archivo'], $dir_subida . $nombre)) {
-        message('success', 'Se subio el reporte satisfactoriamente', $web);
+        message('success', 'Se subió el reporte satisfactoriamente', $web);
       } else {
-        message('danger', 'Ocurrio un error mientras se subia el archivo', $web);
+        message('danger', 'Ocurrió un error mientras se subía el archivo', $web);
       }
       break;
 
@@ -66,9 +69,8 @@ if (isset($_GET['accion'])) {
         message('danger', 'Información incompleta', $web);
       }
 
-      $sql     = "select * from lectura where cvelectura=?";
+      $sql     = "SELECT * FROM lectura WHERE cvelectura=?";
       $lectura = $web->DB->GetAll($sql, $_GET['info1']);
-
       if (!isset($lectura[0])) {
         message("danger", "No altere la estructura de la interfaz", $web);
       }
@@ -76,22 +78,22 @@ if (isset($_GET['accion'])) {
       $web->iniClases('usuario', "index grupos libro");
 
       //para no mostrar los libros que ya fueron registrados para ese alumno en ese periodo
-      $sql = "select cvelibro, titulo from libro
-        where cvelibro not in
-        (select cvelibro from lista_libros
-          inner join lectura on lectura.cvelectura = lista_libros.cvelectura
-          inner join abecedario on abecedario.cve = lectura.cveletra
-          inner join laboral on laboral.cveletra = abecedario.cve
-          where nocontrol=? and laboral.cveperiodo=? and lectura.cvelectura=?)
-        order by titulo";
+      $sql = "SELECT cvelibro, titulo FROM libro
+        WHERE cvelibro NOT IN
+        (SELECT cvelibro FROM lista_libros
+          INNER JOIN lectura ON lectura.cvelectura = lista_libros.cvelectura
+          INNER JOIN abecedario ON abecedario.cve = lectura.cveletra
+          INNER JOIN laboral ON laboral.cveletra = abecedario.cve
+          WHERE nocontrol=? AND laboral.cveperiodo=? AND lectura.cvelectura=?)
+        ORDER BY titulo";
       $combo = $web->combo($sql, null, '../', array($lectura[0]['nocontrol'], $cveperiodo, $_GET['info1']));
 
-      $sql = "select libro.cvelibro, titulo, estado from lista_libros
-          inner join estado on estado.cveestado = lista_libros.cveestado
-          inner join lectura on lista_libros.cvelectura = lectura.cvelectura
-          inner join libro on libro.cvelibro = lista_libros.cvelibro
-          where nocontrol=? and lectura.cvelectura=?
-          order by titulo";
+      $sql = "SELECT libro.cvelibro, titulo, estado FROM lista_libros
+          INNER JOIN estado ON estado.cveestado = lista_libros.cveestado
+          INNER JOIN lectura ON lista_libros.cvelectura = lectura.cvelectura
+          INNER JOIN libro ON libro.cvelibro = lista_libros.cvelibro
+          WHERE nocontrol=? AND lectura.cvelectura=?
+          ORDER BY titulo";
       $tmp    = array($lectura[0]['nocontrol'], $_GET['info1']);
       $libros = $web->DB->GetAll($sql, $tmp);
       if (!isset($libros[0])) {
@@ -123,26 +125,26 @@ if (isset($_GET['accion'])) {
       $cvelibro   = $_POST['datos']['cvelibro'];
       $cvelectura = $_POST['datos']['cvelectura'];
 
-      $sql   = "select * from libro where cvelibro=?";
+      $sql   = "SELECT * FROM libro WHERE cvelibro=?";
       $libro = $web->DB->GetAll($sql, $cvelibro);
 
       if (!isset($libro[0])) {
         message("danger", "No existe el libro seleccionado", $web);
       }
 
-      $sql = "select * from lectura
-        inner join abecedario on lectura.cveletra = abecedario.cve
-        inner join laboral on laboral.cveletra = abecedario.cve
-        where cvelectura=?
-        and lectura.cveperiodo=?";
+      $sql = "SELECT * FROM lectura
+        INNER JOIN abecedario ON lectura.cveletra = abecedario.cve
+        INNER JOIN laboral ON laboral.cveletra = abecedario.cve
+        WHERE cvelectura=?
+        AND lectura.cveperiodo=?";
       $lectura = $web->DB->GetAll($sql, array($cvelectura, $cveperiodo));
 
       if (!isset($lectura[0])) {
         message("danger", "No altere la estructura de la interfaz", $web);
       }
 
-      $sql = "insert into lista_libros(cvelibro, cvelectura, cveperiodo, cveestado, calif_reporte)
-        values (?, ?, ?, 1, 0)";
+      $sql = "INSERT INTO lista_libros(cvelibro, cvelectura, cveperiodo, cveestado, calif_reporte)
+        VALUES (?, ?, ?, 1, 0)";
       $web->query($sql, array($cvelibro, $cvelectura, $cveperiodo));
       header('Location: grupo.php?accion=form_libro&info1=' . $cvelectura);
       break;
@@ -162,41 +164,41 @@ if (!isset($_GET['info1'])) {
 }
 $grupo = $_GET['info1'];
 
-$sql = "select distinct nocontrol from laboral
-      inner join abecedario on abecedario.cve = laboral.cveletra
-      inner join lectura on abecedario.cve = lectura.cveletra
-      where laboral.cveletra in (select cve from abecedario where letra=?)
-          and laboral.cveperiodo=? and nocontrol=?";
+$sql = "SELECT distinct nocontrol FROM laboral
+INNER JOIN abecedario on abecedario.cve = laboral.cveletra
+INNER JOIN lectura on abecedario.cve = lectura.cveletra
+WHERE laboral.cveletra in (SELECT cve FROM abecedario WHERE letra=?)
+  AND laboral.cveperiodo=? AND nocontrol=?";
 $grupo_promotor = $web->DB->GetAll($sql, array($grupo, $cveperiodo, $_SESSION['cveUser']));
-
 if (!isset($grupo_promotor[0])) {
   message('danger', 'No existe el grupo en este periodo y/o no tiene permiso para acceder', $web);
 }
 
 //Info de encabezado
-$sql = "select distinct letra, laboral.nombre as \"nombre_grupo\", sala.ubicacion, fechainicio, fechafinal, nocontrol, usuarios.nombre as \"nombre_promotor\" from laboral
-    inner join sala on laboral.cvesala = sala.cvesala
-    inner join abecedario on laboral.cveletra = abecedario.cve
-    inner join periodo on laboral.cveperiodo= periodo.cveperiodo
-    inner join lectura on abecedario.cve = abecedario.cve
-    inner join usuarios on laboral.cvepromotor = usuarios.cveusuario
-    where nocontrol=? and laboral.cveperiodo=? and letra=?
-    order by letra";
+$sql = "SELECT distinct letra, laboral.nombre AS \"nombre_grupo\", sala.ubicacion, fechainicio, fechafinal,
+nocontrol, usuarios.nombre AS \"nombre_promotor\" FROM laboral
+INNER JOIN sala ON laboral.cvesala = sala.cvesala
+INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
+INNER JOIN periodo ON laboral.cveperiodo= periodo.cveperiodo
+INNER JOIN lectura ON abecedario.cve = abecedario.cve
+INNER JOIN usuarios ON laboral.cvepromotor = usuarios.cveusuario
+WHERE nocontrol=? AND laboral.cveperiodo=? AND letra=?
+ORDER BY letra";
 $datos_rs = $web->DB->GetAll($sql, array($_SESSION['cveUser'], $cveperiodo, $grupo));
 $web->smarty->assign('info', $datos_rs[0]);
 
 $tmp = array($grupo, $cveperiodo, $_SESSION['cveUser']);
 
 //Datos de la tabla = Alumnos
-$sql = "select distinct usuarios.nombre, asistencia, comprension, reporte,
-  asistencia, actividades, participacion, terminado, nocontrol, cveeval, lectura.cveperiodo,
-  lectura.cvelectura from lectura
-  inner join evaluacion on evaluacion.cvelectura = lectura.cvelectura
-  inner join abecedario on lectura.cveletra = abecedario.cve
-  inner join usuarios on lectura.nocontrol = usuarios.cveusuario
-  inner join laboral on abecedario.cve = laboral.cveletra
-  where letra=? and lectura.cveperiodo=? and nocontrol=?
-  order by usuarios.nombre";
+$sql = "SELECT distinct usuarios.nombre, asistencia, comprension, reporte, asistencia, actividades,
+participacion, terminado, nocontrol, cveeval, lectura.cveperiodo, lectura.cvelectura
+FROM lectura
+INNER JOIN evaluacion ON evaluacion.cvelectura = lectura.cvelectura
+INNER JOIN abecedario ON lectura.cveletra = abecedario.cve
+INNER JOIN usuarios ON lectura.nocontrol = usuarios.cveusuario
+INNER JOIN laboral ON abecedario.cve = laboral.cveletra
+WHERE letra=? AND lectura.cveperiodo=? AND nocontrol=?
+ORDER BY usuarios.nombre";
 $datos = $web->DB->GetAll($sql, array($grupo, $cveperiodo, $_SESSION['cveUser']));
 if (!isset($datos[0])) {
   message('warning', 'No hay alumnos inscritos', $web);
@@ -208,6 +210,9 @@ $web->smarty->assign('datos', $datos);
 $web->smarty->assign('grupo', $grupo);
 $web->smarty->display("grupo.html");
 
+/**********************************************************************************************
+ * FUNCIONES
+ **********************************************************************************************/
 function message($alert, $msg, $web)
 {
   $web->simple_message($alert, $msg);

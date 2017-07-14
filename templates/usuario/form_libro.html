@@ -26,10 +26,15 @@
     </nav>
   </div>
 </div>
+
 <!--Tabla de libros-->
   {if isset($libros)}
+  
+    <!--CSS-->
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/bootstrap/fileinput/css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+    
+    <!--Javascript-->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="../css/bootstrap/fileinput/js/fileinput.min.js" type="text/javascript"></script>
     
@@ -40,7 +45,7 @@
       </div>
       <div class="panel-body">
         <div class="form-group">
-            <input id="file-1" type="file" class="file" multiple=true data-preview-file-type="any" name="datos[archivo]">
+          <input id="file-1" type="file" class="file" multiple=true data-preview-file-type="any" name="datos[archivo]">
         </div>
       </div>
     </div>
@@ -51,21 +56,22 @@
     <table class='table table-striped'>
       <tr>
         <th><center>CLAVE</center></th>
-  			<th><center>TITULO</center></th>
-  			<th><center>REPORTE</center></th>
+        <th><center>TITULO</center></th>
+        <th><center>REPORTE</center></th>
         <th><center>ESTADO</center></th>
-  		</tr>
-  		{foreach $libros as $libro}
-  			<tr>
-  			  <td><center>{$libro.cvelibro}</center></td>
-  				<td><center>{$libro.titulo}</center></td>
+      </tr>
+      {foreach $libros as $libro}
+        <tr>
+          <td><center>{$libro.cvelibro}</center></td>
+          <td><center>{$libro.titulo}</center></td>
           <td><center>
-            <input id="r4" type="radio" class="btn btn-default" value='{$libro.cvelibro}' name="datos[reporte]">
+            <input id="r4" type="radio" class="btn btn-default" value='{$libro.cvelibro}' 
+              name="datos[reporte]">
           </center></td>
           <td><center>{$libro.estado}</center></td>
-  			</tr>
-  		{/foreach}
-  	</table>
+        </tr>
+      {/foreach}
+    </table>
   {/if}
 </form>
 

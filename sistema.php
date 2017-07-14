@@ -53,8 +53,8 @@ class Sistema extends Conexion
     return $this->smarty->fetch($ruta . 'select.component.html');
   }
 
-  /*
-  Muestra informacion de los mensajes publicos
+  /**
+   * Muestra informacion de los mensajes publicos
    */
   public function msj($sql, $array = array())
   {
@@ -68,14 +68,13 @@ class Sistema extends Conexion
 
     $sql = "SELECT nombre FROM usuarios WHERE cveusuario=?";
     $this->smarty->assign('promotor', $this->DB->GetAll($sql, $datos[0][4]));
-    return $this->smarty->fetch('componentmsj.html');
+    return $this->smarty->fetch('msj.component.html');
   }
 
   /**
    * Ejecuta operación SQL de manera más sencilla que DB->GetAll
    * @param  String $query      Consulta SQL
    * @param  array $parameters  Contenedor de las incógnitas en $query
-   * @return [type]             [description]
    */
   public function query($query, $parameters = array())
   {
@@ -95,6 +94,7 @@ class Sistema extends Conexion
     parent::Conectar();
     $this->smarty = new Smarty();
   }
+
   public function mostrartabla($query)
   {
     $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);
@@ -133,13 +133,6 @@ class Sistema extends Conexion
   }
   /**
    * Muestra una tabla html en base a varios parámetros
-   * @param  String $query     [Consulta sql para obtener la info a desplegar en la tabla]
-   * @param  [type] $direccion [description]
-   * @param  [type] $option    [description]
-   * @param  [type] $add       [description]
-   * @param  [type] $table     [description]
-   * @param  string $extra     [description]
-   * @return [String]          [Código html de la tabla ya creada]
    */
   public function showTable($query, $direccion, $option, $add, $table, $extra = "")
   {
@@ -289,12 +282,12 @@ class Sistema extends Conexion
     $nombrescolumnas = array_keys($datosmsj[0]);
     $this->smarty->assign('nombrecolumna', $nombrescolumnas[1]);
     $this->smarty->assign('datos', $datosmsj);
-    return $this->smarty->fetch('componentmsj.html');
+    return $this->smarty->fetch('msj.component.html');
 
     if ($tipo == 'PU') {
       $this->smarty->assign('nombrecolumna', $nombrescolumnas[1]);
       $this->smarty->assign('datos', $datosmsj);
-      return $this->smarty->fetch('componentmsj.html');
+      return $this->smarty->fetch('msj.component.html');
     }
 
     if ($tipo == 'PR') {
@@ -359,11 +352,6 @@ class Sistema extends Conexion
       die($this->DB->ErrorMsg());
     }
   }
-  public function error($mensaje)
-  {
-    $this->smarty->assign('mensaje', $mensaje);
-    $this->smarty->display('error.html');
-  }
 
   public function valida($correo)
   {
@@ -372,6 +360,7 @@ class Sistema extends Conexion
     }
     return false;
   }
+
   /**
    * Verifica si un elemento es numérico
    * @param  [type] $email Elemento a checar
@@ -381,6 +370,7 @@ class Sistema extends Conexion
   {
     return is_numeric($email);
   }
+
 /**
  * Obtiene la información que será desplegada en el Nav Bar del promotor o del alumno
  * @param  String $rfc [ID del promotor o el alumno]
@@ -395,17 +385,17 @@ class Sistema extends Conexion
     }
     if ($rol == 'P') {
       //es un promotor
-      $sql = "select distinct letra, nombre, ubicacion from laboral
-              inner join sala on laboral.cvesala = sala.cvesala
-              inner join abecedario on laboral.cveletra = abecedario.cve
-              where cvepromotor=? and laboral.cveperiodo=? order by letra";
+      $sql = "SELECT DISTINCT letra, nombre, ubicacion FROM laboral
+              INNER JOIN sala ON laboral.cvesala = sala.cvesala
+              INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
+              WHERE cvepromotor=? AND laboral.cveperiodo=? ORDER BY letra";
     } else {
       //es un alumno
-      $sql = "select distinct letra, nombre, ubicacion from laboral
-              inner join abecedario on laboral.cveletra = abecedario.cve
-              inner join lectura on lectura.cveletra = abecedario.cve
-              inner join sala on laboral.cvesala = sala.cvesala
-              where nocontrol=? and laboral.cveperiodo=? order by letra";
+      $sql = "SELECT DISTINCT letra, nombre, ubicacion FROM laboral
+              INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
+              INNER JOIN lectura ON lectura.cveletra = abecedario.cve
+              INNER JOIN sala ON laboral.cvesala = sala.cvesala
+              WHERE nocontrol=? AND laboral.cveperiodo=? ORDER BY letra";
     }
     $datos_rs = $this->DB->GetAll($sql, array($_SESSION['cveUser'], $periodo));
     if (sizeof($datos_rs) == 0) {
@@ -414,7 +404,8 @@ class Sistema extends Conexion
       $cadena = '<li><a href= "grupos.php">Ver todos</a></li>';
       for ($i = 0; $i < sizeof($datos_rs); $i++) {
         $cadena .= '<li><a href= "grupo.php?info1=' . $datos_rs[$i][0];
-        $cadena .= '">' . $datos_rs[$i][0] . ' - ' . $datos_rs[$i][1] . ' - ' . $datos_rs[$i][2] . '</a></li>';
+        $cadena .= '">' . $datos_rs[$i][0] . ' - ' . $datos_rs[$i][1] . ' - ' .
+          $datos_rs[$i][2] . '</a></li>';
       }
       return $cadena;
     }
@@ -434,14 +425,15 @@ class Sistema extends Conexion
     } else if ($_SESSION['roles'] != 'A') {
       $cvep = $_SESSION['cveUser'];
     }
-    $query = "
-        select distinct cveeval AS \"ID\", nocontrol AS \"Número de Ctrl\", nombre AS \"Alumno\", comprension AS \"Comprensión\", motivacion AS \"Motivación\", reporte AS \"Reporte\", tema AS \"Tema\", participacion AS \"Participación\", terminado AS \"Terminado\"
-        from evaluacion inner join usuarios on usuarios.cveusuario = evaluacion.nocontrol
-        where cveletra in (select cve from abecedario where letra= '" . $infos['grupo'] . "')
-                and cvepromotor='" . $cvep . "'
-        order by nombre";
+    $query = "SELECT DISTINCT cveeval AS \"ID\", nocontrol AS \"Número de Ctrl\", nombre AS \"Alumno\",
+    comprension AS \"Comprensión\", motivacion AS \"Motivación\", reporte AS \"Reporte\", tema AS \"Tema\",
+    participacion AS \"Participación\", terminado AS \"Terminado\" FROM evaluacion
+    INNER JOIN usuarios ON usuarios.cveusuario = evaluacion.nocontrol
+    WHERE cveletra IN (SELECT cve FROM abecedario WHERE letra=?)
+    AND cvepromotor=?
+    ORDER BY nombre";
     $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);
-    $this->query($query);
+    $this->query($query, array($infos['grupo'], $cvep));
     $cantidadcolumnas  = $this->rs->_numOfFields;
     $cantidadregistros = $this->rs->_numOfRows;
     $tabla             = "<table class='table table-striped' width='500'>";
@@ -512,7 +504,7 @@ class Sistema extends Conexion
     $tabla .= '</table>';
     return $tabla;
   }
-//---------------------------------------------------------------------------------------
+
   public function checklogin()
   {
     if ($_SESSION['logueado'] == true) {
@@ -541,10 +533,10 @@ class Sistema extends Conexion
     $msj        = '';
     $contrasena = md5($contrasena);
 
-    $sql      = "select * from usuarios where pass=? and cveusuario=?";
+    $sql      = "SELECT * FROM usuarios WHERE pass=? AND cveusuario=?";
     $datos_rs = $this->DB->GetAll($sql, array($contrasena, $email));
 
-    //falta verificar si la contraseña que esta insertando es la clave que se mando por correo para
+    //falta verificar si la contraseña que esta insertando es la clave que se mando por correo
 
     if (!isset($datos_rs[0])) {
       return false;
@@ -555,11 +547,11 @@ class Sistema extends Conexion
       return false;
     }
 
-    $sql   = "select * from usuario_rol where cveusuario=?";
+    $sql   = "SELECT * FROM usuario_rol WHERE cveusuario=?";
     $roles = $this->DB->GetAll($sql, $email);
 
     $nombre = $datos_rs[0]["nombre"];
-    $sql    = "update usuarios set clave=null where cveusuario=?";
+    $sql    = "UPDATE usuarios SET clave=null WHERE cveusuario=?";
     $this->query($sql, $email);
 
     $_SESSION['nombre']  = $nombre;
@@ -567,15 +559,8 @@ class Sistema extends Conexion
 
     //no tiene ningún rol
     if (sizeof($roles) == 0) {
-
-      //caso especial
-      // if ($email == '9999999999999') {
-      //   $this->smarty->assign('especial', $email);
-      // }
-
       $this->simple_message('danger', 'Su usuario no está registrado por completo');
       $this->iniClases(null, 'index login roles');
-      // $this->smarty->assign('roles', $roles);
       $this->smarty->display('roles.html');
       die();
 
@@ -619,7 +604,6 @@ class Sistema extends Conexion
     return true;
   }
 
-  /**/
   public function logout()
   {
     unset($_SESSION);
@@ -629,7 +613,7 @@ class Sistema extends Conexion
   public function recuperaId($email)
   {
     if ($this->validarEmail($email)) {
-      $this->query("select id from usuario where email=?", $email);
+      $this->query("SELECT id FROM usuario WHERE email=?", $email);
       while (!$this->rs->EOF) {
         $id = $this->rs->fields['id'];
         $this->rs->MoveNext();
@@ -639,6 +623,7 @@ class Sistema extends Conexion
       $this->error('erroralingresarelmail');
     }
   }
+
   public function generaContrasena()
   {
     $num1   = rand(1, 1000000);
@@ -679,7 +664,7 @@ class Sistema extends Conexion
       $mail->MsgHTML($mensaje);
 
       $mail->Send();
-      $this->smarty->display('templates / admin / index . html');
+      $this->smarty->display('templates/admin/index.html');
       echo "<center><h3>Revisa tu correo electronico</h3></center>";
 
     } catch (phpmailerException $e) {
@@ -688,34 +673,7 @@ class Sistema extends Conexion
       echo $e->getMessage(); //Boring error messages from anything else!
     }
   }
-  public function muestraAdmin($query)
-  {
-    $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);
-    $this->query($query);
-    $cantidadcolumnas  = $this->rs->_numOfFields;
-    $cantidadregistros = $this->rs->_numOfRows;
-    $nombrescolumnas   = array_keys($this->rs->fields);
-    $datos             = $this->DB->GetAll($query);
-    $this->smarty->assign('cantidadcolumnas', $cantidadcolumnas);
-    $this->smarty->assign('cantidadregistros', $cantidadregistros);
-    $this->smarty->assign('nombrescolumnas', $nombrescolumnas);
-    $this->smarty->assign('datos', $datos);
-    return $this->smarty->fetch('muestraAdmin . html');
-  }
-  public function muestraUsuarios($query)
-  {
-    $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);
-    $this->query($query);
-    $cantidadcolumnas  = $this->rs->_numOfFields;
-    $cantidadregistros = $this->rs->_numOfRows;
-    $nombrescolumnas   = array_keys($this->rs->fields);
-    $datos             = $this->DB->GetAll($query);
-    $this->smarty->assign('cantidadcolumnas', $cantidadcolumnas);
-    $this->smarty->assign('cantidadregistros', $cantidadregistros);
-    $this->smarty->assign('nombrescolumnas', $nombrescolumnas);
-    $this->smarty->assign('datos', $datos);
-    return $this->smarty->fetch('muestraUsuarios . html');
-  }
+
   public function comboP($query, $name)
   {
     $this->query($query);
@@ -724,7 +682,7 @@ class Sistema extends Conexion
     $this->smarty->assign('campos', $campos);
     return $this->smarty->fetch('agregaProducto . html');
   }
-//----------------------------------------------------------------------------------------
+
   public function comboM($query, $name)
   {
     $this->query($query);
@@ -733,7 +691,7 @@ class Sistema extends Conexion
     $this->smarty->assign('campos', $campos);
     return $this->smarty->fetch('agregaMarca . html');
   }
-//----------------------------------------------------------------------------------------
+
   public function comboC($query, $name)
   {
     $this->query($query);
@@ -742,26 +700,7 @@ class Sistema extends Conexion
     $this->smarty->assign('campos', $campos);
     return $this->smarty->fetch('agregaCliente . html');
   }
-//-----------------------------------------------------------------------------------------
-  public function guardaFotoEmpleado($id, $foto)
-  {
-    $encoded = $foto;
-    $encoded = str_replace('', '+', $encoded);
-    $encoded = str_replace('data:image / jpeg;
-                base64, ', '', $encoded);
-    $image = base64_decode($encoded);
-    //para mysql
-    $image = mysql_escape_string($image);
-    //par postgres
-    //$image = pg_escape_bytea($image); y -> '
-    //{ $image}
-    $sql = "         UPDATE  empleado
-                                 SET foto = '$image'
-                                 WHERE id_empleado = $id ";
-    //echo $sql;
-    $this->query($sql);
-  }
-//----------------------------------------------------------------------------------------
+
   public function validarContrasena($contrasena)
   {
     if (preg_match("/^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/", $contrasena)) {
@@ -770,6 +709,7 @@ class Sistema extends Conexion
       return (false);
     }
   }
+
   /**
    * [periodo description]
    * @param  [type] $web [description]
@@ -777,7 +717,7 @@ class Sistema extends Conexion
    */
   public function periodo()
   {
-    $sql      = "select * from periodo";
+    $sql      = "SELECT * FROM periodo";
     $datos_rs = $this->DB->GetAll($sql);
     $date     = getdate();
     $fechaAct = $date['year'] . "-" . $date['mon'] . "-" . $date['mday'];
@@ -792,8 +732,8 @@ class Sistema extends Conexion
       $cont++;
     }
     if (isset($cveperiodo)) {
-      $sql     = "select fechainicio,fechafinal from periodo where cveperiodo='" . $cveperiodo . "'";
-      $datos   = $this->DB->GetAll($sql);
+      $sql     = "SELECT fechainicio, fechafinal FROM periodo WHERE cveperiodo=?";
+      $datos   = $this->DB->GetAll($sql, $cveperiodo);
       $periodo = "El periodo es: " . $datos[0]['fechainicio'] . " a " . $datos[0]['fechafinal'];
       $this->smarty->assign('periodo', $periodo);
       return $cveperiodo;
@@ -818,7 +758,7 @@ class Sistema extends Conexion
 
     //se valida la contraseña
     $pass     = md5($_GET['infoc']);
-    $sql      = "select * from usuarios where cveusuario=? and pass=?";
+    $sql      = "SELECT * FROM usuarios WHERE cveusuario=? AND pass=?";
     $datos_rs = $this->DB->GetAll($sql, array($cveusuario, $pass));
     if (!isset($datos_rs[0])) {
       return 2;
@@ -884,64 +824,28 @@ class Sistema extends Conexion
     header('Content-Type: aplication/json');
   }
 
-}
-
-//----------------------------------------------------------------------------------------
-function recuperaid($email)
-{
-  if ($this->validarEmail($email)) {
-    $this->query("select e.id_empleado
-    from empleado e left join usuario u on e.id_empleado = u.id
-    where u.email='$email'");
-    while (!$this->rs->EOF) {
-      $id = $this->rs->fields['id_empleado'];
-      $this->rs->MoveNext();
-    }
-    return ($id);
-  }
-
-  function authentication()
+  public function guarda_foto($foto)
   {
-    if (!isset($_SERVER['PHP_AUTH_USER'])) {
-      header('WWW-Authenticate: Basic realm="Mi dominio"');
-      header('HTTP/1.0 401 Unauthorized');
-//        echo 'Se a cancelado la autenticacion';
-      exit;
-    } else {
-      if ($_SERVER['PHP_AUTH_USER'] == 'root' && $_SERVER['PHP_AUTH_PW'] == 'root') {
-        return true;
-      } else {
-//SSS         echo 'Autenticacion no valida';
-        return false;
-      }
-    }
-    header('Content-Type: aplication/json');
+    $encoded = $foto;
+    $encoded = str_replace(' ', '+', $encoded);
+    $encoded = str_replace('data:image/jpeg;base64,', '', $encoded);
+    $image   = base64_decode($encoded);
+    $sql     = "update usuarios set foto=? where cveusuario=?";
+    $this->query($sql, array($_SESSION['cveUser'] . ".jpg", $_SESSION['cveUser']));
+    file_put_contents("/home/slslctr/archivos/fotos/" . $_SESSION['cveUser'] . ".jpg", $image);
+    //para mysql
+    //$image = mysql_escape_string($image);
+    //par postgres
+    //$image = pg_escape_bytea($image); y -> '{$image}'
+    //   $sql = "      UPDATE  empleado
+    //                    SET foto = '$image'
+    //                    WHERE id_empleado = $id ";
+    //   echo $sql;
+    // $this->query($sql);
+
   }
 
-  function verificar($usuario, $password, $token)
-  {
-    $sql        = "select * from usuarios where cveusuario = ? and pass = ?";
-    $parameters = array($usuario, $password);
-    $usr        = $this->DB->GetAll($sql, $parameters);
-
-    if (!isset($usr[0])) {
-      $this->status("Error", "No existe el usuario");
-    }
-
-    $sql = "select * from bitacora "
-      . "where cveusuario = ? and "
-      . "pass = ? and "
-      . "token = ? and "
-      . "now() between fecini and fecfin";
-    $parameters = array($usuario, $password, $token);
-    $res        = $this->DB->GetAll($sql, $parameters);
-    if (!isset($res[0])) {
-      $this->status("Error", "No se puede verificar el token o ya expiro");
-    }
-    return true;
-  }
-
-  function status($status, $mensaje)
+  public function status($status, $mensaje)
   {
     $message['status']  = $status;
     $message['message'] = $mensaje;
@@ -953,6 +857,8 @@ function recuperaid($email)
 
 }
 
+include 'controllers/ForoControllers.php';
+include 'controllers/admin/LibrosControllers.php';
 include 'controllers/admin/ReporteControllers.php';
 include 'controllers/promotor/ListAsiControllers.php';
 

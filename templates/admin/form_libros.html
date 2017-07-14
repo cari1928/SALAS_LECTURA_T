@@ -1,13 +1,33 @@
 {include file='header.html'}
 {$ruta}
 {include file='../number_style.html'}
+{if isset($msg)}{include file='../mensajes.html'}{/if}
+
+<!-- some CSS styling changes and overrides -->
+<style>
+.kv-avatar .krajee-default.file-preview-frame,.kv-avatar .krajee-default.file-preview-frame:hover {
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    text-align: center;
+}
+.kv-avatar .file-input {
+    display: table-cell;
+    max-width: 220px;
+}
+.kv-reqd {
+    color: red;
+    font-family: monospace;
+    font-weight: normal;
+}
+</style>
 
 <div class="container-fluid">
   <div class="main row">
     <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
-      {if isset($msg)}{include file='../mensajes.html'}{/if}
-
-      <form method="post"
+      
+      <form method="post" enctype="multipart/form-data" 
         action="libros.php?accion={if isset($libros)}update{else}insert{/if}">
         
         <div class="panel panel-default">
@@ -41,15 +61,27 @@
             </div>
 
             <div class="form-group">
-              <label> Clasificación </label> 
-              <input class="form-control" name="editorial" placeholder="Clasificación" maxlength="25" required
+              <label> Editorial </label> 
+              <input class="form-control" name="editorial" placeholder="Editorial del Libro" maxlength="25" required
               {if isset($libros)} value="{$libros.editorial}" {/if}>
             </div>
 
             <div class="form-group">
               <label> Cantidad </label> 
-              <input type="number" class="form-control" name="precio" placeholder="Cantidad" min="0" max="999999999999999" required
-              {if isset($libros)} value="{$libros.precio}" {/if}>
+              <input type="number" class="form-control" name="cantidad" placeholder="Cantidad de Libros en Existencia"
+                min="0" max="999999999999999" required
+              {if isset($libros)} value="{$libros.cantidad}" {/if}>
+            </div>
+            
+            <div class="form-group">
+              <label> Sinopsis </label> 
+              <textarea class="form-control" name="sinopsis" required style="resize:none"
+                cols="20" rows="8" placeholder="Escriba la sinopsis del libro..."></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label> Portada-Banner (313x500px)</label>
+              <input id="portada" name="portada" type="file" class="file-loading" required/>
             </div>
 
           </div>
@@ -67,5 +99,28 @@
     </nav>
   </div>
 </div>
+
+<script type="text/javascript">
+  {literal}
+    $("#portada").fileinput({
+      overwriteInitial: true,
+      maxFileSize: 1500,
+      showClose: false,
+      showCaption: false,
+      browseLabel: '',
+      removeLabel: '',
+      browseIcon: '<i class="glyphicon glyphicon-folder-open"></i>',
+      removeIcon: '<i class="glyphicon glyphicon-remove"></i>',
+      removeTitle: 'Cancel or reset changes',
+      elErrorContainer: '#kv-avatar-errors-1',
+      msgErrorClass: 'alert alert-block alert-danger',
+      defaultPreviewContent: '<img src="/uploads/default_avatar_male.jpg" alt="Your Avatar" style="width:160px">',
+      layoutTemplates: {main2: '{preview} {remove} {browse}'},
+      allowedFileExtensions: ["jpg", "png"],
+      minFileCount: 1,
+      maxFileCount: 1
+    });
+  {/literal}  
+</script>
 
 {include file='footer.html'}

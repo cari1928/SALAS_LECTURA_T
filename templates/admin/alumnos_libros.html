@@ -1,5 +1,7 @@
 {include file='header.html'}
 {$ruta}
+{if isset($msg)}{include file='../mensajes.html'}{/if}
+
 <table class='table table-striped'>
 	<tr>
 		<td colspan='4' align='right'>
@@ -10,8 +12,6 @@
 	</tr> 
 </table>
 
-{if isset($msg)}{include file='../mensajes.html'}{/if}
-
 {if isset($libros)}
 	<table class='table table-striped'>
 		<tr>		
@@ -19,7 +19,7 @@
 			<th width="300">AUTOR</th>
 			<th width="300">TÍTULO</th>
 			<th width="300">EDITORIAL</th>
-			<th width="300">PRECIO</th>
+			<th width="300">CANTIDAD</th>
 			<th width="300">ELIMINAR</th>
 			<th width="300">ACTUALIZAR</th>
 		</tr>
@@ -35,7 +35,7 @@
 			<td>{$libro.autor}</td>
 			<td>{$libro.titulo}</td>
 			<td>{$libro.editorial}</td>
-			<td>{$libro.precio}</td>
+			<td>{$libro.cantidad}</td>
 			<td><a href="libros.php?accion=delete&info1={$libro.cvelibro}"> 
 				<img src="../Images/cancelar.png">
 			</a></td>
@@ -46,4 +46,5 @@
 	{/foreach}
 </table>
 {/if}
+
 {include file='footer.html'}

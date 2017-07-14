@@ -1153,7 +1153,7 @@ ul.elements li > i{
 }
 
 .pagination li:first-child a{
-  background: url(../images/portfolio/left.png);
+  background: url(../../Images/foro/portfolio/left.png);
   background-repeat: no-repeat;
   text-indent: -999999999px;
   background-position: center top 10px;
@@ -1167,7 +1167,7 @@ ul.elements li > i{
 }
 
 .pagination li:first-child a:hover{
-  background: url(../images/portfolio/left.png);
+  background: url(../../Images/foro/portfolio/left.png);
   background-position: center top -37px;
   background-repeat: no-repeat;
   -webkit-transition: 300ms;
@@ -1177,7 +1177,7 @@ ul.elements li > i{
 }
 
 .pagination li:last-child a{
-  background: url(../images/portfolio/right.png);
+  background: url(../../Images/foro/portfolio/right.png);
   background-repeat: no-repeat;
   text-indent: -999999999px;
   background-position: center top 10px;
@@ -1191,7 +1191,7 @@ ul.elements li > i{
 }
 
 .pagination li:last-child a:hover{
-  background: url(../images/portfolio/right.png);
+  background: url(../../Images/foro/portfolio/right.png);
   background-position: center top -37px;
   background-repeat: no-repeat;
   -webkit-transition: 300ms;
