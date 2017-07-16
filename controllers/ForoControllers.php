@@ -6,7 +6,8 @@ class ForoControllers extends Sistema
   {
     $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);
     $sql = "SELECT sinopsis, titulo, autor, libro.cvelibro FROM libro
-    LEFT JOIN comentario ON libro.cvelibro = comentario.cvelibro";
+    LEFT JOIN comentario ON libro.cvelibro = comentario.cvelibro
+    ORDER BY cvelibro";
     return $this->DB->GetAll($sql);
   }
 
