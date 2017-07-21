@@ -1,25 +1,23 @@
 <?php
-include '../sistema.php';
-if ($_SESSION['roles'] == 'U') {
-  $web->iniClases('usuario', "index");
-  $grupos = $web->grupos($_SESSION['cveUser']);
-  $web->smarty->assign('grupos', $grupos);
+include 'sistema.php';
 
-  if (isset($_GET['aviso'])) {
+$date  = getdate();
+$fecha = date('Y-m-j');
 
-    switch ($_GET['aviso']) {
-
-      case 1:
-        $web->simple_message('success', 'Se subió correctamente la imagen');
-        break;
-
-      case 2:
-        $web->simple_message('warning', 'Ocurrió un error mientras se subía la imagen');
-        break;
-    }
+if (isset($_GET['m'])) {
+  switch ($_GET['m']) {
+    case 1:
+      $web->simple_message('warinig', 'No se ha iniciado sesión');
+      break;
+    case 2:
+      $web->simple_message('warning', 'Falta información del foro');
+      break;
   }
-  $web->smarty->display('index.html');
-
-} else {
-  $web->checklogin();
 }
+
+$sql = "SELECT introduccion, cvemsj FROM msj
+WHERE tipo='PU' AND expira >= ?
+ORDER BY fecha";
+$mensajes = $web->muestraMSJ($sql, $fecha);
+$web->smarty->assign('mensaje', $mensajes);
+$web->smarty->display('index.html');

@@ -8,9 +8,10 @@
     <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
       
       <form class="form form-vertical" method="post" enctype="multipart/form-data" 
-        action="libros.php?accion={if isset($libros)}update{else}insert{/if}">
+        action="libros.php?accion={if isset($libros)}update{else}insert{/if}" novalidate>
         
         {if isset($libros)}<input type="hidden" name="cvelibro" value="{$libros.cvelibro}">{/if}
+        {if isset($portada)}<input type="hidden" name="portada" value="{$portada}">{/if}
         
         <div class="panel panel-default">
           
@@ -24,13 +25,51 @@
             
             <div class="row">
               
-              <div class="col-sm-12">
-                <div id="kv-avatar-errors-1" class="center-block" style="display:none"></div>
-                
-                <div class="kv-avatar center-block text-center form-group" style="width:400px">
-                  <input id="portada" name="portada" type="file" class="file-loading" accept="image/*" required/>
-                </div>
-              </div>
+              {if isset($upload_libros)}
+                {if $upload_libros eq 'UPDATE'}
+                  <div class="col-sm-12">
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <div class="form-group" style="text-align:right">
+                          <label> Portada Default </label> 
+                        </div>
+                      </div>
+                      
+                      <div class="col-sm-6">
+                        <div class="onoffswitch">
+                          <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch"
+                            onclick="show()" {if $portada eq 'no_disponible.jpg'} checked {/if}>
+                          <label class="onoffswitch-label" for="myonoffswitch"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-sm-12" id="imgPortada">
+                    <div id="kv-avatar-errors-2" class="center-block" style="display:none"></div>
+                    <div class="kv-avatar center-block text-center form-group" style="width:400px">
+                      <input id="portada" name="portada" type="file" class="file-loading" accept="image/*" 
+                        required/>
+                    </div>
+                  </div>
+                  
+                  <div class="col-sm-12" id="imgDefault" style="display:none">
+                    <center>
+                      <div class="form-group" style="width:400px">
+                        <img src="../Images/portadas/no_disponible.jpg" alt="portada" style="width:380px">
+                      </div>
+                    </center>
+                  </div>
+                {else}
+                  <div class="col-sm-12" id="imgPortada">
+                    <div id="kv-avatar-errors-2" class="center-block" style="display:none"></div>
+                    <div class="kv-avatar center-block text-center form-group" style="width:400px">
+                      <input id="portada" name="portada" type="file" class="file-loading" accept="image/*" 
+                        required/>
+                    </div>
+                  </div>
+                {/if}
+              {/if}
               
               <div class="col-sm-12">
                 <div class="row">
@@ -70,11 +109,8 @@
                   <div class="col-sm-12">
                     <div class="form-group">
                       <label> Sinopsis <span class="kv-reqd">*</span></label> 
-                      <textarea class="form-control" name="sinopsis" required 
-                        style="text-align:left; resize:none" cols="20" rows="8" 
-                        placeholder="Escriba la sinopsis del libro...">
-                        {if isset($libros)} {$libros.sinopsis} {/if}
-                      </textarea>
+                      <textarea class="form-control" name="sinopsis" required style="text-align:left; resize:none"
+                        cols="20" rows="8" placeholder="Escriba la sinopsis del libro...">{if isset($libros)}{$libros.sinopsis}{/if}</textarea>
                     </div>
                   </div>
                   
@@ -96,30 +132,21 @@
 </div>
 
 <script type="text/javascript">
-  $(document).on('ready', function() {
   $("#portada").fileinput({
-    initialPreview: ['../Images/portadas/{$portada}'],
-    initialPreviewAsData: true,
-    initialPreviewConfig: [ 
-      {literal}{{/literal} 
-        caption: "{$portada}", size: 930321, width: "120px", key: 1, showDelete: false 
-      {literal}}{/literal}
-    ],  
-    maxFileSize: 1500,
-    showClose: false,
-    showCaption: false,
-    browseLabel: '',
-    removeLabel: '',
-    browseIcon: '<i class="glyphicon glyphicon-folder-open"></i>',
-    removeIcon: '<i class="glyphicon glyphicon-remove"></i>',
-    removeTitle: 'Cancel or reset changes',
-    elErrorContainer: '#kv-avatar-errors-1',
-    msgErrorClass: 'alert alert-block alert-danger',
-    defaultPreviewContent:'<img src="../Images/portadas/no_disponible.jpg" alt="Your Avatar" style="width:400px">',
-    {literal} layoutTemplates: {main2: '{preview} {remove} {browse}'}, {/literal}
-    allowedFileExtensions: ["jpg", "png", "gif"]
+      overwriteInitial: true,
+      showClose: false,
+      showCaption: false,
+      showBrowse: false,
+      browseOnZoneClick: true,
+      removeLabel: '',
+      removeIcon: '<i class="glyphicon glyphicon-remove"></i>',
+      removeTitle: 'Cancela o reinicia',
+      elErrorContainer: '#kv-avatar-errors-2',
+      msgErrorClass: 'alert alert-block alert-danger',
+      defaultPreviewContent: '<img src="../Images/portadas/{$portada}" alt="portada" style="width:380px"><h6 class="text-muted">Clic aquí para subir portada</h6>',
+      {literal} layoutTemplates: {main2: '{preview} {remove} {browse}'}, {/literal}
+      allowedFileExtensions: ["jpg", "png", "gif"]
   });
-});
 </script>
 
 {include file='footer.html'}

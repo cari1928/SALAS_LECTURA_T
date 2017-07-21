@@ -1,5 +1,4 @@
-.kv-avatar .krajee-default.file-preview-frame,.kv-avatar .krajee-default.file-preview-frame:hover 
-{
+.kv-avatar .krajee-default.file-preview-frame, .kv-avatar .krajee-default.file-preview-frame:hover {
   margin: 0;
   padding: 0;
   border: none;
@@ -7,15 +6,65 @@
   text-align: center;
 }
 
-.kv-avatar .file-input 
-{
+.kv-avatar .file-input {
   display: table-cell;
-  max-width: 600px;
+  max-width: 400px;
 }
 
-.kv-reqd 
-{
+.kv-reqd {
   color: red;
   font-family: monospace;
   font-weight: normal;
+}
+
+.onoffswitch {
+  position: relative;
+  width: 40px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.onoffswitch-checkbox {
+  display: none;
+}
+
+.onoffswitch-label {
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+  height: 21px;
+  padding: 0;
+  line-height: 21px;
+  border: 2px solid #E3E3E3;
+  border-radius: 21px;
+  background-color: #D1D1D1;
+  transition: background-color 0.3s ease-in;
+}
+
+.onoffswitch-label:before {
+  content: "";
+  display: block;
+  width: 21px;
+  margin: 0px;
+  background: #FFFFFF;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 17px;
+  border: 2px solid #E3E3E3;
+  border-radius: 21px;
+  transition: all 0.3s ease-in 0s;
+}
+
+.onoffswitch-checkbox:checked+.onoffswitch-label {
+  background-color: #337AB7;
+}
+
+.onoffswitch-checkbox:checked+.onoffswitch-label, .onoffswitch-checkbox:checked+.onoffswitch-label:before {
+  border-color: #337AB7;
+}
+
+.onoffswitch-checkbox:checked+.onoffswitch-label:before {
+  right: 0px;
 }
