@@ -38,11 +38,11 @@ if (isset($respuestas[0])) {
   }
 }
 
-$no_comentarios = 0;
+$num_comentarios = 0;
 if (isset($comentarios[0])) {
-  $no_comentarios = sizeof($comentarios);
+  $num_comentarios = sizeof($comentarios);
   $web->smarty->assign('comentarios', $comentarios);
-  $web->smarty->assign('no_comentarios', $no_comentarios);
 }
+$web->smarty->assign('num_comentarios', $num_comentarios);
 $web->smarty->assign('libro', $libro[0]);
 $web->smarty->display('foro_libro.html');
