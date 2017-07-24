@@ -2,44 +2,64 @@
 {$ruta}
 {if isset($msg)}{include file='../mensajes.html'}{/if}
 
-{if !isset($aviso)}
-    <h3>Nuevo aviso publico</h3>
-{else}
-    <h3>Actualizando aviso</h3>
-{/if}
-
-<form name="messageform" 
-  action="avisos.php?accion={if !isset($aviso)}insertar{else}actualizar{/if}" 
-  method="POST" 
-  id="messageform">
-
-  <div class="small-10 columns">
-    <label style="color:black;"> Asunto*</label>
-    <input class="span12" type="text" name="introduccion" id="subject" placeholder="Asunto" data-toggle="tooltip" title="Input Message Subject between 10 to 80" data-validation-required-message="Please enter subject" required 
-    value='{if isset($aviso)}{$aviso.introduccion}{/if}'>
+<div class="container-fluid">
+  <div class="main row">
+    <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
+      
+      <form name="messageform" action="avisos.php?accion={if !isset($aviso)}insertar{else}actualizar{/if}" 
+        method="post" id="messageform">
+        
+        <input type="hidden" name="action" id="action">
+        {if isset($aviso)} <input type="hidden" name="cvemsj" value="{$aviso.cvemsj}" id="action"> {/if}
+        
+        
+        <div class="panel panel-default">
+          
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              {if !isset($aviso)} Nuevo Aviso Público {else} Actualizar Aviso Público{/if}
+            </h3>
+          </div>
+          
+          <div class="panel-body">
+              
+            <div class="form-group">
+              <label style="color:black;"> Asunto <span class="kv-reqd">*</span></label>
+              <input class="form-control" name="introduccion" id="subject" placeholder="Asunto" 
+                data-toggle="tooltip" title="Debe contener entre 10 y 80 caracteres" 
+                data-validation-required-message="Por favor, ingrese el asunto" required 
+                value='{if isset($aviso)}{$aviso.introduccion}{/if}'>
+            </div>
+            
+            <div class="form-group">
+              <label> Contenido del aviso <span class="kv-reqd">*</span></label>
+              <textarea class="form-control span12" name="descripcion" id="content" rows="7" 
+                placeholder="Contenido del aviso" data-validation-required-message="Por favor ingrese su aviso" 
+                minlength="5" data-validation-minlength-message="Min. 5 caracteres" data-toggle="tooltip" 
+                title="Contenido, se aceptan entre 50 y 5000 caracteres" style="resize:none"
+                required>{if isset($aviso)}{$aviso.descripcion}{/if}</textarea>                    
+            </div>
+            
+            <div class="form-group">
+              <label> Fecha de Expiracion <span class="kv-reqd">*</span></label>
+              <input type="date" class="form-control" name="expira" required 
+                value='{if isset($aviso)}{$aviso.expira}{/if}'>
+            </div>
+            
+            <div class="form-group" align="right">
+              <input type="submit" value="Publicar" class="btn btn-primary" 
+                data-toggle="tooltip" title="Publicar Aviso" id="_send" 
+                name="_send">  
+            </div>
+            
+            <!--<div class="small-6 columns" style="margin-top:15px;"></div>-->
+            <!--<div class="small-6 columns"></div>-->
+            
+          </div>
+        </div>
+      </form>
+    </nav>
   </div>
+</div>
 
-  <div class="small-10 columns" style="margin-top:15px;">
-    <label style="color:black;"> Contenido del aviso*</label>
-    <textarea class="form-control span12" name="descripcion" id="content" rows="10" cols="100" placeholder="Contenido del aviso" data-validation-required-message="Please enter your message" minlength="5" data-validation-minlength-message="Min 5 characters" data-toggle="tooltip" title="Input Message Content between 50 to 500" required >
-      {if isset($aviso)}
-        {$aviso.descripcion}
-      {/if}
-    </textarea>                    
-  </div>
 
-  <div class="small-10 columns" style="margin-top:15px;">
-    <label style="color:black;"> Fecha de Expiracion*</label>
-    <input style="width:200px;" type="date" class="form-control" id="exampleInputEmail3" name="expira" id="producto" require value='{if isset($aviso)}{$aviso.expira}{/if}'>
-  </div>
-
-  <input type="submit" value="Send" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Send the Message" id="_send" name="_send">&nbsp;&nbsp;
-  <input type="hidden" name="action" id="action">
-
-  {if isset($aviso)}
-    <input type="hidden" name="cvemsj" value="{$aviso.cvemsj}" id="action">
-  {/if}
-  
-  <div class="small-6 columns" style="margin-top:15px;"></div>
-  <div class="small-6 columns"></div>
-</form>

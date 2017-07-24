@@ -1,30 +1,27 @@
 {include file='header.html'}
 {if isset($msg)}{include file='mensajes.html'}{/if}
 
+<link rel="stylesheet" href="../css/aviso_publico.css" type="text/css" />
+
 {if isset($mensajes)}
   <center><h1>Avisos</h1></center>
-  <table class='table table-hover'>
-		<tr class='info'>		
-			<th style="vertical-align:middle"><center>TITULO</center></th>
-			<th style="vertical-align:middle"><center>TIPO</center></th>
-			<th style="vertical-align:middle"><center>EMISOR</center></th>
-			<th style="vertical-align:middle"><center>FECHA</center></th>
-			<th style="vertical-align:middle"><center>EXPIRA</center></th>
-			<th style="vertical-align:middle"><center>LEER MAS</center></th>
-		</tr>
-		{foreach $mensajes as $mensaje}
-			<tr>
-				<td><center>{$mensaje.introduccion}</center></td>
-				<td><center>{$mensaje.descripcion}</center></td>
-				<td><center>{$mensaje.nombre}</center></td>
-				<td><center>{$mensaje.fecha}</center></td>
-				<td><center>{$mensaje.expira}</center></td>
-				<td><center><a href="mensaje.php?msj={$mensaje.cvemsj}">
-					<img src="../Images/leer.png">
-				</a></center></td>
-			</tr>
-		{/foreach}
-	</table>
+ 	{foreach $mensajes as $m}
+		<div class="w3-card-4 w3-margin" style="width:97%">
+	 
+			<nav class="w3-container w3-blue" style="background-color:#3F51B5">
+			  <h1>{$m.fecha}: {$m.introduccion}</h1>
+			</nav>
+			
+			<div class="w3-container">
+			  <p style="margin-top:5px">{$m.descripcion}</p>
+			</div>
+			
+			<footer class="w3-container w3-blue" style="background-color:#1A237E">
+			  <h5>Expira: {$m.expira}</h5>
+			</footer>
+		
+		</div>
+	{/foreach}
 {/if}
 
 {include file='footer.html'}

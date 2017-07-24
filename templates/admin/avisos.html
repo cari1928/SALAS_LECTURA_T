@@ -1,6 +1,8 @@
 {include file='header.html'}
 {$ruta}
+<h3>Avisos Públicos</h3>
 {if isset($msg)}{include file='../mensajes.html'}{/if}
+
 <table class='table'>
 	<tr>
 		<td colspan='4' align='right'>
@@ -10,10 +12,10 @@
 </table>
 
 {if isset($avisos)}
-	<table class='table table-hover'>
+	<table class='table table-hover display' id="example" cellspacing="0" width="100%">
 		<tr class='info'>		
+			<th style="vertical-align:middle"><center>CLAVE</center></th>
 			<th style="vertical-align:middle"><center>INTRODUCCION</center></th>
-			<th style="vertical-align:middle"><center>TIPO</center></th>
 			<th style="vertical-align:middle"><center>FECHA</center></th>
 			<th style="vertical-align:middle"><center>EXPIRA</center></th>
 	    <th style="vertical-align:middle"><center>ACTUALIZAR</center></th>
@@ -21,23 +23,54 @@
 		</tr>
 		{foreach $avisos as $aviso}
 			<tr>
-				<td><center>{$aviso.introduccion}</center></td>
-				<td><center>{$aviso.descripcion}</center></td>
-				<td><center>{$aviso.fecha}</center></td>
-				<td><center>{$aviso.expira}</center></td>
+				<td style="vertical-align:middle"><center>{$aviso.cvemsj}</center></td>
+				<td style="vertical-align:middle"><center>{$aviso.introduccion}</center></td>
+				<td style="vertical-align:middle"><center>{$aviso.fecha}</center></td>
+				<td style="vertical-align:middle"><center>{$aviso.expira}</center></td>
 				<td><center>
 	        <a href="avisos.php?accion=actualizar_form&info1={$aviso.cvemsj}">
 						<img src="../Images/edit.png">
 					</a></center>
 				</td>
 				<td><center>		
-					<a href="avisos.php?accion=eliminar&info1={$aviso.cvemsj}">
+					<a href="avisos.php?accion=eliminar&info1={$aviso.cvemsj}" class='delete'>
 						<img src="../Images/cancelar.png">
 					</a></center>
 				</td>
 			</tr>
 		{/foreach}
 	</table>
+	
+	<script type="text/javascript">
+    $(document).ready(function() {
+    
+	    $('#example').on( 'click', 'a.delete', function () {
+        event.preventDefault();
+        
+        var data = table.row( $(this).parents('tr') ).data();
+				var url = data[5];
+				
+		    swal({
+		      title: "¿Seguro? Se borrará toda la información relacionada", 
+		      text: "Si está seguro ingrese la contraseña de seguridad", 
+		      type: "input",
+		      inputType: "password",
+		      showCancelButton: true,
+		      confirmButtonText: "Aceptar",
+		      cancelButtonText: "Cancelar"
+		      
+		    }, function(typedPassword) {
+		    	// console.log(typedPassword);
+		    	if(typedPassword != "") {
+		    		url += "&infoc=" + typedPassword;
+		      	window.open(url, '_self');	
+		      	return false;
+		    	}
+		    });
+	    } );
+    
+	  } );
+	</script>
 {/if}
 
 {include file='footer.html'}

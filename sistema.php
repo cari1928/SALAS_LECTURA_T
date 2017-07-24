@@ -60,14 +60,21 @@ class Sistema extends Conexion
   {
     $datos = $this->DB->GetAll($sql, $array);
     if (!isset($datos[0])) {
-      return "No se encuentra informacion";
+      return 'e1';
     }
+
+    // ¿para qué es nombrescolumnas?
     $nombrescolumnas = array_keys($datos[0]);
     $this->smarty->assign('nombrecolumna', $nombrescolumnas[1]);
-    $this->smarty->assign('msj', $datos);
 
-    $sql = "SELECT nombre FROM usuarios WHERE cveusuario=?";
-    $this->smarty->assign('promotor', $this->DB->GetAll($sql, $datos[0][4]));
+    $this->smarty->assign('msj', $datos);
+    $sql     = "SELECT nombre FROM usuarios WHERE cveusuario=?";
+    $usuario = $this->DB->GetAll($sql, $datos[0][4]);
+    if (!isset($usuario[0])) {
+      return 'e2';
+    }
+
+    $this->smarty->assign('promotor', $usuario);
     return $this->smarty->fetch('msj.component.html');
   }
 
@@ -830,19 +837,9 @@ class Sistema extends Conexion
     $encoded = str_replace(' ', '+', $encoded);
     $encoded = str_replace('data:image/jpeg;base64,', '', $encoded);
     $image   = base64_decode($encoded);
-    $sql     = "update usuarios set foto=? where cveusuario=?";
+    $sql     = "update usuarios set foto = ? where cveusuario = ?";
     $this->query($sql, array($_SESSION['cveUser'] . ".jpg", $_SESSION['cveUser']));
-    file_put_contents("/home/slslctr/archivos/fotos/" . $_SESSION['cveUser'] . ".jpg", $image);
-    //para mysql
-    //$image = mysql_escape_string($image);
-    //par postgres
-    //$image = pg_escape_bytea($image); y -> '{$image}'
-    //   $sql = "      UPDATE  empleado
-    //                    SET foto = '$image'
-    //                    WHERE id_empleado = $id ";
-    //   echo $sql;
-    // $this->query($sql);
-
+    file_put_contents("/home/slslctr/fotos/" . $_SESSION['cveUser'] . ".jpg", $image);
   }
 
   public function status($status, $mensaje)
