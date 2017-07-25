@@ -1,0 +1,85 @@
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AppSII.Model
+{
+    public class WSLogin
+    {
+            public WSLogin()
+            { }
+
+            /**
+             * Regresa si fue válido o inválido
+             * Dependiendo del servicio web
+             */
+            public async Task<String> getToken(String cveUser, String passUser)
+            {
+                var cteHttp = new HttpClient();
+                //cteHttp.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Encoding", "UTF-8");
+                
+                //se define la url base
+                cteHttp.BaseAddress = new Uri("http://ws.itcelaya.edu.mx:8080/");
+                //await = para el caso de que sea asíncrona
+                //se obtiene una respuesta de tipo String
+                var resp = await cteHttp.GetAsync("AuthToken/rest/acceso/get/token/" + cveUser + "/" + passUser + "/2");
+                //se manda la autenticación asíncrona usando el web service
+                //de resp se lee el contenido como un string y ya se obtiene el token o no válido
+                var tokenJson = resp.Content.ReadAsStringAsync().Result;
+                /**
+                 * obtenido de la otra clase: Login
+                 */
+                ObjAcceso objAcceso = new ObjAcceso();
+
+
+                if (tokenJson != null)
+                {
+                    //el json contiene resultados
+                    //se deserializa como objeto para poder acceder a él
+                    //objAcceso se puede trabajar como objAcceso.nombreUsuario
+                    objAcceso = JsonConvert.DeserializeObject<ObjAcceso>(tokenJson);
+                }
+
+                //variable estática que puede ser definida de forma global
+                App.nomUser = objAcceso.nomuser; 
+                App.emailUser = objAcceso.emailuser;
+                App.cveUser = cveUser;
+
+                App.emailPer = objAcceso.emailpersonal; 
+                App.descDepto = objAcceso.descdepto; 
+
+                //solo se regresa el token
+                return objAcceso.token;
+            }
+        }
+
+        /**
+         * Mapeo de lo que se quiere regresar
+         * Regresa todos los datos
+         */
+        public class ObjAcceso
+        {   
+            /**
+             * tokenAcceso nombre de la propiedad dentro del webService
+             */
+            [JsonProperty("tokenAcceso")]
+            public String token { get; set; }
+
+            [JsonProperty("nomUser")]
+            public String nomuser;
+
+            [JsonProperty("emailUser")]
+            public String emailuser;
+
+            [JsonProperty("mailPer")]
+            public String emailpersonal;
+
+            [JsonProperty("desDep")]
+            public String descdepto;
+
+        }
+}

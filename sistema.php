@@ -858,6 +858,7 @@ include 'controllers/ForoControllers.php';
 include 'controllers/admin/LibrosControllers.php';
 include 'controllers/admin/ReporteControllers.php';
 include 'controllers/promotor/ListAsiControllers.php';
+include 'controllers/promotor/RedactaControllers.php';
 
 //instanciamos web
 $web = new Sistema;

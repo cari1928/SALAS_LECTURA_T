@@ -23,6 +23,12 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"/>
   <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.13/datatables.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+  
+  {if isset($mensajes)}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="../JS/avisos_alumnos.js"></script>
+  {/if}
 
   <title>Salas Lectura</title>
 </head>
@@ -58,7 +64,8 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true" style="color: white">Cuenta<span class="caret"></span></a>
           <ul class="dropdown-menu">
-              <li><a href="datos.php">{$usuario}</a></li>   
+              <li><a href="datos.php">{$usuario}</a></li>  
+              <li><a href="foto.php">Foto</a></li>  
               <li><a href="../logout.php">Logout</a></li>      
           </ul>
         </li>

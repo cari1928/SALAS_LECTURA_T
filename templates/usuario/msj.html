@@ -2,89 +2,82 @@
 {$ruta}
 {if isset($msg)}{include file='../mensajes.html'}{/if}
 
-<!--¿se podría poner en usuario/header.html con un {if} para saber cuando se aplica?-->
-<head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-
 {if isset($mensajes)}
   <table class='table table-striped display' cellspacing="0" width="100%">
-    <tr>    
-      <th><center>ASUNTO</center></th>
-      <th><center>TIPO</center></th>
+    
+    <tr class='info'>    
+      <th width="500px"><center>ASUNTO</center></th>
       <th><center>FECHA</center></th>
       <th><center>EXPIRA</center></th>
       <th><center>VISUALIZAR</center></th>
     </tr>
     
     {foreach $mensajes as $msj}
-    <tr>
-      <td><center>{$msj.introduccion}</center></td>
-      <td><center>{$msj.descripcion}</center></td>
-      <td><center>{$msj.fecha}</center></td>
-      <td><center>{$msj.expira}</center></td>
-      <td><center><a href="msj.php?accion=leer&info={$msj.cvemsj}">
-        <img src="../Images/leer.png">
-      </a></center></td>
-    </tr>
-  {/foreach}
+      <tr>
+        <td><center>{$msj.introduccion}</center></td>
+        <td><center>{$msj.fecha}</center></td>
+        <td><center>{$msj.expira}</center></td>
+        <td><center><a href="msj.php?accion=leer&info={$msj.cvemsj}">
+          <img src="../Images/leer.png">
+        </a></center></td>
+      </tr>
+    {/foreach}
   
   </table>
 
 {/if}
 
 {if isset($mensaje)}
-
-  <div class="small-10 columns">
-    <label style="color:black;"> Asunto*</label>
-    <input class="span12" type="text" name="introduccion" id="subject" placeholder="Asunto" data-toggle="tooltip" 
-      title="Input Message Subject between 10 to 80" data-validation-required-message="Please enter subject" required 
-      value='{if isset($mensaje)}{$mensaje[0].introduccion}{/if}' {if isset($mensaje)}readonly{/if}>
+  <div class="container-fluid">
+    <div class="main row">
+      <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
+        <form>
+          
+          <div class="panel panel-default">
+            
+            <div class="panel-heading">
+              <h3 class="panel-title">Contenido del Aviso</h3>
+            </div>
+            
+            <div class="panel-body">
+              
+              <div class="small-10 columns form-group">
+                <label>Asunto</label>
+                <input class="form-control" {if isset($mensaje)}value='{$mensaje[0].introduccion}' readonly{/if}>
+              </div>
+              
+              <div class="small-10 columns form-group">
+                <label>Contenido del mensaje</label>
+                <textarea class="form-control" rows="10" cols="100" 
+                  {if isset($mensaje)}readonly{/if}>{if isset($mensaje)}{$mensaje[0].descripcion}{/if}
+                </textarea>                    
+              </div>
+              
+              <div class="small-10 columns form-group">
+                <label>Fecha de Expiracion</label>
+                <input type="date" class="form-control" {if isset($mensaje)}value='{$mensaje[0].expira}' readonly{/if}>
+              </div>
+              
+              <!--<div class="small-6 columns" style="margin-top:15px;"></div>-->
+              <!--<div class="small-6 columns"></div>-->
+              
+              {if isset($archivo)}
+                <div class="form-group" align="center">
+                  <a style="text-decoration:none; color:black; padding-right:10px" 
+                    href="{if !isset($eliminado)}msj.php?accion=archivo&info={$archivo}{else}#{/if}">
+                    <img src="../Images/docs.png"> {$archivo}
+                  </a>
+                </div>
+              {/if}
+              
+            </div>
+            
+          </div>
+          
+        </form>
+      </nav>
+    </div>
   </div>
-  
-  <div class="small-10 columns" style="margin-top:15px;">
-    <label style="color:black;"> Contenido del mensaje*</label>
-    <textarea class="form-control span12" name="descripcion" id="content" rows="10" cols="100" 
-      placeholder="Contenido del mensaje" data-validation-required-message="Please enter your message" minlength="5" 
-      data-validation-minlength-message="Min 5 characters" data-toggle="tooltip" 
-      title="Input Message Content between 50 to 500" required 
-      {if isset($mensaje)}readonly{/if}>{if isset($mensaje)}{$mensaje[0].descripcion}{/if}
-    </textarea>                    
-  </div>
-  
-  <div class="small-10 columns" style="margin-top:15px;">
-    <label style="color:black;"> Fecha de Expiracion*</label>
-    <input style="width:200px;" TYPE="date"  class="form-control" id="exampleInputEmail3" name="expira" id="producto" require 
-      value='{if isset($mensaje)}{$mensaje[0].expira}{/if}' {if isset($mensaje)}readonly{/if}>                      
-  </div>
-  
-  <div class="small-6 columns" style="margin-top:15px;"></div>
-  <div class="small-6 columns"></div>
-  
-  {if isset($archivo)}
-    <a style="text-decoration:none; color:black; padding-right:10px" 
-      href="{if !isset($eliminado)}msj.php?accion=archivo&info={$archivo}{else}#{/if}">
-      <img src="../Images/docs.png"> {$archivo}
-    </a>
-  {/if}
-  
 {/if}
-
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-36251023-1']);
-  _gaq.push(['_setDomainName', 'jqueryscript.net']);
-  _gaq.push(['_trackPageview']);
-  
-  (function() {
-  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
-
 
 {include file='footer.html'}
