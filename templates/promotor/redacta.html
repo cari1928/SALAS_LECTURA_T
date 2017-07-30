@@ -13,7 +13,7 @@
           <div class="panel panel-default">
           
             <div class="panel-heading">
-              <h3 class="panel-title"> Enviar Aviso Grupal | Individual ***** </h3>
+              <h3 class="panel-title"> Mensaje {$type} </h3>
             </div>
             
             <div class="panel-body">
@@ -57,9 +57,7 @@
             </div><!--end panel-body-->
           
           </div> <!--end panel panel-defaul-->
-          
-          <!--<div class="small-6 columns" style="margin-top:15px;"></div>-->
-          <!--<div class="small-6 columns"></div>-->
+
         </form>
       {/if} {/if}
       
@@ -72,7 +70,7 @@
           <div class="panel panel-default">
             
             <div class="panel-heading">
-              <h3 class="panel-title"> Enviar Aviso Grupal | Individual ***** </h3>
+              <h3 class="panel-title"> Mensaje {$type} </h3>
             </div>
             
             <div class="panel-body">
@@ -112,23 +110,19 @@
               {/if}
               
               {if isset($archivo)}
-                <a style="text-decoration:none; color:black; padding-right:10px" 
-                  href="{if !isset($eliminado)}msj.php?accion=archivo&info={$archivo}{else}#{/if}">
-                  <img src="../Images/docs.png"> {$archivo}
-                </a>
+                <div class="form-group" align="center">
+                  <a style="text-decoration:none; color:black; padding-right:10px" 
+                    href="{if !isset($eliminado)}msj.php?accion=archivo&info={$archivo}&info2={$mensaje[0].cveletra}{else}#{/if}">
+                    <img src="../Images/{if !isset($eliminado)}docs.png{else}file_error.png{/if}"> {$archivo}
+                  </a>
+                </div>
               {/if}
               
             </div>
           </div>
           
-          <div class="small-6 columns" style="margin-top:15px;"></div>
-          <div class="small-6 columns"></div>
         </form>
-      {else} {if !isset($cveperiodo)}
-        <div class="small-6 columns">
-          <label>No se a especificado destinatario</label>
-        </div>
-      {/if} {/if}
+      {/if}
       
     </div>
   </div>

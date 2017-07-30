@@ -1,19 +1,6 @@
 <?php
 include 'sistema.php';
 
-// if (isset($_GET['info'])) {
-//   $cvemsj  = $_GET['info'];
-//   $sql     = "SELECT * FROM msj WHERE cvemsj=?";
-//   $mensaje = $web->DB->GetAll($sql, $_GET['info']);
-//   if(!isset($mensaje[0])) {
-//     message('danger', 'No fue posible obtener el aviso');
-//   }
-
-//   $web->smarty->assign('aviso', $mensaje[0]);
-//   $web->smarty->display('mensajes_publicos.html');
-//   die();
-// }
-
 $date       = getdate();
 $fecha      = date('Y-m-j');
 $cveperiodo = $web->periodo();
@@ -25,7 +12,7 @@ $sql = "SELECT cvemsj, introduccion, msj.descripcion, usuarios.nombre, fecha, ex
   INNER JOIN tipomsj ON tipomsj.cvetipomsj = msj.tipo
   LEFT JOIN usuarios ON usuarios.cveusuario = msj.emisor
   WHERE tipomsj.cvetipomsj='PU' AND expira >= ? AND cveperiodo=?
-  ORDER BY fecha";
+  ORDER BY fecha DESC";
 $mensajes = $web->DB->GetAll($sql, array($fecha, $cveperiodo));
 if (!isset($mensajes[0])) {
   message('warning', 'No hay avisos por mostrar');

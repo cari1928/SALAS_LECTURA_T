@@ -14,29 +14,7 @@ if ($cveperiodo == "") {
   die();
 }
 
-if (isset($_GET['aviso'])) {
-
-  switch ($_GET['aviso']) {
-    case 1:
-      $web->simple_message('warning', 'Ya existe un archivo con el mismo nombre');
-      break;
-
-    case 2:
-      $web->simple_message('info', 'Se envió el mensaje satisfactoriamente');
-      break;
-
-    case 3:
-      $web->simple_message('danger', 'Ocurrió un error mientras se enviaba el mensaje');
-      break;
-
-    case 4:
-      $web->simple_message('warning', 'No existe el destinatario o no tiene permiso para mandar este mensaje');
-      break;
-    case 5:
-      $web->simple_message('warning', 'El archivo no existe o fue eliminado');
-      break;
-  }
-}
+mShowMessages();
 
 if (isset($_GET['accion'])) {
 
@@ -118,3 +96,51 @@ for ($i = 0; $i < sizeof($tablegrupos); $i++) {
 
 $web->smarty->assign('tablegrupos', $tablegrupos);
 $web->smarty->display('vergrupos.html');
+
+/**********************************************************************************************
+ * FUNCIONES
+ **********************************************************************************************/
+/**
+ *
+ */
+function mShowMessages()
+{
+  global $web;
+
+  if (isset($_GET['aviso'])) {
+    switch ($_GET['aviso']) {
+
+      case 1:
+        $web->simple_message('warning', 'Ya existe un archivo con el mismo nombre');
+        break;
+
+      case 2:
+        $web->simple_message('info', 'Mensaje publicado');
+        break;
+
+      case 3:
+        $web->simple_message('danger', 'Ocurrió un error mientras se enviaba el mensaje');
+        break;
+
+      case 4:
+        $web->simple_message('warning', 'No existe el destinatario o no tiene permiso para mandar este mensaje');
+        break;
+
+      case 5:
+        $web->simple_message('warning', 'El archivo no existe o fue eliminado');
+        break;
+
+      case 6:
+        $web->simple_message('warning', 'Hacen falta datos para mostrar los mensajes');
+        break;
+
+      case 7:
+        $web->simple_message('warning', 'No existe el mensaje seleccionado');
+        break;
+
+      case 8:
+        $web->simple_message('warning', 'No existe el grupo seleccionado');
+        break;
+    }
+  }
+}

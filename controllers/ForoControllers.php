@@ -5,7 +5,7 @@ class ForoControllers extends Sistema
   public function getAllLibros()
   {
     $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);
-    $sql = "SELECT sinopsis, titulo, autor, libro.cvelibro FROM libro
+    $sql = "SELECT DISTINCT sinopsis, titulo, autor, libro.cvelibro FROM libro
     LEFT JOIN comentario ON libro.cvelibro = comentario.cvelibro
     ORDER BY cvelibro";
     return $this->DB->GetAll($sql);

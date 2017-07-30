@@ -17,11 +17,24 @@
 {/if}
 
 {if isset($datos)}
+	
+	<div class="links" style="float:right; padding-bottom:10px">
+		
+		{if isset($formato_preguntas)}
+			<a href="grupo.php?accion=formato_preguntas"> 
+	  		<img src="../Images/reporte.png"> Formato-Reporte
+  		</a>
+		{/if}
+		
+		<a href="msj.php?accion=listado&info={$grupo}">
+			<img src="../Images/sobre.png"> Mensajes
+		</a>
+		
+		<a href="grupo.php?accion=form_libro&info1={$alumno.cvelectura}" style="text-decoration:none" >
+			<img src="../Images/libros.png" width="30"> Libros
+		</a>
 
-	{if isset($formato_preguntas)}
-		<a href="grupo.php?accion=formato_preguntas"> 
-  	<img src="../Images/reporte.png"></a>
-	{/if}
+	</div>
 
 	<table class='table table-striped' width='500'>
 		
@@ -33,7 +46,6 @@
 			<th><center>REPORTE</center></th>
 			<th><center>ACTIVIDADES</center></th>
 			<th><center>TERMINADO</center></th>
-			<th><center>OPCIONES</center></th>
 		</tr>
 
 		{foreach $datos as $alumno}
@@ -99,14 +111,6 @@
 							</div>
 						</div>
 						</br>
-					</td>
-					<td>
-						<a href="msj.php?accion=listado&info={$grupo}" style="text-decoration:none" >
-							<img src="../Images/sobre.png">
-						</a>
-						<a href="grupo.php?accion=form_libro&info1={$alumno.cvelectura}" style="text-decoration:none" >
-							<img src="../Images/libros.png" width="30">
-						</a>
 					</td>
 				</form>
 			</tr>
