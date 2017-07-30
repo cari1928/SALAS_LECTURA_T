@@ -5,6 +5,7 @@ if ($_SESSION['roles'] != 'A') {
   $web->checklogin();
 }
 
+$web        = new PeriodosControllers;
 $cveperiodo = $web->periodo();
 if ($cveperiodo == "") {
   $web->simple_message('warning', 'No hay periodo actual');
@@ -15,121 +16,23 @@ if (isset($_GET['accion'])) {
   switch ($_GET['accion']) {
 
     case 'form_insert':
-      $web->iniClases('admin', "index periodos nuevo");
-      $web->smarty->display('form_periodos.html');
-      die();
+      mMessage('index periodos nuevo', null, null); //despliega el formulario sin mostrar mensaje
       break;
 
     case 'form_update':
-      if (!isset($_GET['info2'])) {
-        $web->simple_message('danger', 'No se está recibiendo la información necesaria para continuar con la operación');
-        break;
-      }
-
-      $sql      = "SELECT * FROM periodo WHERE cveperiodo=?";
-      $periodos = $web->DB->GetAll($sql, $_GET['info2']);
-      if (sizeof($periodos) == 0) {
-        $web->simple_message('danger', 'No existe el periodo');
-        break;
-      }
-
-      $web->iniClases('admin', "index periodos actualizar");
-      $web->smarty->assign('periodos', $periodos[0]);
-      $web->smarty->display('form_periodos.html');
-      die();
+      mFormUpdate();
       break;
 
     case 'insert':
-      //verifica la existencia de los campos
-      if (!isset($_POST['datos']['fechaInicio']) ||
-        !isset($_POST['datos']['fechaFinal'])) {
-        message("index periodos nuevo", "No alteres la estructura de la interfaz", $web);
-      }
-
-      //verifica que los campos contengan algo
-      if ($_POST['datos']['fechaInicio'] == "" ||
-        $_POST['datos']['fechaFinal'] == "") {
-        message("index periodos nuevo", "Llena todos los campos", $web);
-      }
-
-      $web->DB->startTrans();
-      $sql        = "INSERT INTO periodo (fechainicio, fechafinal) VALUES(?, ?)";
-      $parameters = array(
-        $_POST['datos']['fechaInicio'],
-        $_POST['datos']['fechaFinal']);
-      $error           = $web->query($sql, $parameters);
-      $sql             = "SELECT * FROM periodo WHERE fechainicio=? AND fechafinal=?";
-      $cveperiodoNuevo = $web->DB->GetAll($sql, $parameters);
-      if (isset($cveperiodoNuevo[0])) {
-        mkdir("../periodos/" . $cveperiodoNuevo[0][2], 0777);
-        mkdir("../pdf/" . $cveperiodoNuevo[0][2], 0777);
-      }
-      //si hubo algún problema:
-      if ($web->DB->HasFailedTrans()) {
-        //si el msg de error contiente periodouq:
-        if (strpos($error, 'periodouq') > 0) {
-          message("index periodos nuevo", "Registro duplicado", $web);
-        } else {
-          message("index periodos nuevo", "No alteres la estructura de la interfaz", $web);
-        }
-        $web->DB->CompleteTrans();
-        break;
-      }
-      $web->DB->CompleteTrans();
-      header('Location: periodos.php');
+      mInsertPeriod();
       break;
 
     case 'update':
-      $web->iniClases('admin', "index periodos");
-
-      //verifica la existencia de los campos
-      if (!isset($_POST['datos']['fechaInicio']) ||
-        !isset($_POST['datos']['fechaFinal']) ||
-        !isset($_POST['cveperiodo'])) {
-        $web->simple_message('danger', 'Hacen falta datos para continuar');
-        break;
-      }
-      //verifica que la cveperiodo sea válida
-      $sql     = "SELECT * FROM periodo WHERE cveperiodo=?";
-      $periodo = $web->DB->GetAll($sql, $_POST['cveperiodo']);
-      if (!isset($periodo[0])) {
-        $web->simple_message('danger', 'No altere la estructura de la interfaz');
-        break;
-      }
-      $cveperiodo = $_POST['cveperiodo'];
-
-      //verifica que los campos contengan algo
-      if ($_POST['datos']['fechaInicio'] == "" ||
-        $_POST['datos']['fechaFinal'] == "") {
-        message("index periodos actualizar", "Llena todos los campos", $web, $periodo);
-      }
-
-      $web->DB->startTrans();
-      $sql        = "UPDATE periodo SET fechainicio=?, fechafinal=? WHERE cveperiodo=?";
-      $parameters = array(
-        $_POST['datos']['fechaInicio'],
-        $_POST['datos']['fechaFinal'],
-        $_POST['cveperiodo']);
-      $error = $web->query($sql, $parameters);
-
-      //si hubo algún problema:
-      if ($web->DB->HasFailedTrans()) {
-        //si el msg de error contiente periodouq:
-        if (strpos($error, 'periodouq') > 0) {
-          message("index periodos actualizar", "Registro duplicado", $web, $periodo);
-        } else {
-          message("index periodos actualizar", 'No fue posible realizar el cambio',
-            $web, $periodo);
-        }
-        $web->DB->CompleteTrans();
-        break;
-      }
-      $web->DB->CompleteTrans();
-      header('Location: periodos.php');
+      mUpdatePeriodo();
       break;
 
     case 'delete':
-      delete_lapse($web);
+      deletePeriodo();
       break;
 
     case 'historial':
@@ -140,34 +43,12 @@ if (isset($_GET['accion'])) {
   $web->iniClases('admin', "index periodos");
 }
 
-//para otro tipo de errores, cuANDo periodos.php es llamado desde algún header
-if (isset($_GET['e'])) {
-  switch ($_GET['e']) {
-    case 1:
-      $web->simple_message('danger',
-        'No fue posible generar el reporte, hacen falta datos');
-      break;
-    case 2:
-      $web->simple_message('danger',
-        'No fue posible generar el reporte, hay error con los datos seleccionados');
-      break;
-    case 3:
-      $web->simple_message('danger', 'No modifique la estructura de la interfaz');
-      break;
-    case 4:
-      $web->simple_message('danger', 'No se pudieron obtener los datos del promotor');
-      break;
-  }
-}
+$web->showMessages();
 
-$sql = 'SELECT cveperiodo, fechainicio, fechafinal FROM periodo ORDER BY cveperiodo';
-$web->DB->SetFetchMode(ADODB_FETCH_NUM);
-$periodos = $web->DB->GetAll($sql);
+$periodos = $web->getPeriodos();
 if (!isset($periodos[0])) {
-  $web->simple_message('danger', "No hay periodos registrados");
-  $web->smarty->display("periodos.html");
+  mMessage('index periodos', 'danger', "No hay periodos registrados", 'periodos.html');
 }
-
 $periodos = array('data' => $periodos);
 
 //se preparan los campos extra (eliminar y actualizar)
@@ -197,25 +78,30 @@ fwrite($file, $periodos);
 $web->smarty->assign('periodos', $periodos);
 $web->smarty->display("periodos.html");
 
+/**********************************************************************************************
+ * FUNCIONES
+ **********************************************************************************************/
 /**
- * Método para mostrar el template form_alumnos cuANDo ocurre algún error
+ * Método para mostrar el template form_alumnos cuando ocurre algún error
  * @param  String $iniClases    Ruta a mostrar en links
+ * @param  String $alert        Tipo de alerta
  * @param  String $msg          Mensaje a desplegar
  * @param  $web                 Para poder aplicar las funciones de $web
  * @param  String $cveperiodo   Usado en caso de que se trate de un formulario de actualización
  */
-function message($iniClases, $msg, $web, $periodo = null)
+function mMessage($iniClases, $alert, $msg, $html = 'form_periodos.html', $periodo = null)
 {
+  global $web;
   $web->iniClases('admin', $iniClases);
 
-  $web->smarty->assign('alert', 'danger');
-  $web->smarty->assign('msg', $msg);
-
+  if ($alert != null && $msg != null) {
+    $web->simple_message($alert, $msg);
+  }
   if ($periodo != null) {
     $web->smarty->assign('periodos', $periodo[0]);
   }
 
-  $web->smarty->display('form_periodos.html');
+  $web->smarty->display($html);
   die();
 }
 
@@ -224,68 +110,137 @@ function message($iniClases, $msg, $web, $periodo = null)
  * Tablas: lista_libros, evaluacion, laboral, msj, sala y perioodo
  * @param  Class  $web Objeto para poder usar smarty
  */
-function delete_lapse($web)
+function deletePeriodo()
 {
-  $web->iniClases('admin', "index periodos");
+  global $web;
+
   switch ($web->valida_pass($_SESSION['cveUser'])) {
     case 1:
-      $web->simple_message('danger', 'No se especificó la contraseña de seguridad');
-      return false;
-
+      mMessage('index periodos', 'danger', 'No se especificó la contraseña de seguridad', 'periodos.html');
     case 2:
-      $web->simple_message('danger', ' La contraseña de seguridad ingresada no es válida');
-      return false;
+      mMessage('index periodos', 'danger', 'La contraseña de seguridad ingresada no es válida', 'periodos.html');
   }
 
-  //verifica que se haya mANDado el periodo y que éste exista
   if (!isset($_GET['info1'])) {
-    $web->simple_message('danger', 'No altere la estructura de la interfaz, no se especificó el periodo');
-    return false;
+    mMessage('index periodos', 'warning', 'No se especificó el periodo', 'periodos.html');
   }
-  $sql     = "SELECT * FROM periodo WHERE cveperiodo=?";
-  $periodo = $web->DB->GetAll($sql, $_GET['info1']);
+
+  $periodo = $web->getPeriodo($_GET['info1']);
   if (!isset($periodo[0])) {
-    $web->simple_message('danger', 'No existe el periodo');
-    return false;
+    mMessage('index periodos', 'danger', 'No existe el periodo', 'periodos.html');
   }
 
   $web->DB->startTrans();
-  //elimina de lista_libros
-  $sql = "DELETE FROM lista_libros WHERE cveperiodo=?";
-  $web->query($sql, $_GET['info1']);
-
-  //obtener los grupos y cvelectura de ese periodo
-  $sql    = "SELECT distinct cveletra FROM laboral WHERE cveperiodo=? ORDER BY cveletra";
-  $grupos = $web->DB->GetAll($sql, $_GET['info1']);
-  for ($i = 0; $i < sizeof($grupos); $i++) {
-    $sql      = "SELECT cvelectura FROM lectura WHERE cveletra=?";
-    $lecturas = $web->DB->GetAll($sql, $grupos[$i]['cveletra']);
-
-    //elimina de evaluacion y lectura por cada cvelectura
-    for ($j = 0; $j < sizeof($lecturas); $j++) {
-      $sql = "DELETE FROM evaluacion WHERE cvelectura=?";
-      $web->query($sql, $lecturas[$j]['cvelectura']);
-      $sql = "DELETE FROM lectura WHERE cvelectura=?";
-      $web->query($sql, $lecturas[$j]['cvelectura']);
-    }
+  if (!$web->deletePeriodo($_GET['info1'])) {
+    mMessage('index periodos', 'danger', 'No fue posible eliminar el periodo seleccionado', 'periodos.html');
   }
 
-  //elimina de laboral, msg, sala y periodo
-  $sql = "DELETE FROM laboral WHERE cveperiodo=?";
-  $web->query($sql, $_GET['info1']);
-  $sql = "DELETE FROM msj WHERE cveperiodo=?";
-  $web->query($sql, $_GET['info1']);
-  $sql = "DELETE FROM sala WHERE cveperiodo=?";
-  $web->query($sql, $_GET['info1']);
-  $sql = "DELETE FROM periodo WHERE cveperiodo=?";
-  $web->query($sql, $_GET['info1']);
+  $web->deleteFiles($_GET['info1']); //elimina carpetas y archivos relacionados con el periodo
 
   if ($web->DB->HasFailedTrans()) {
-    $web->simple_message('danger', 'No fue posible completar la operación');
-    $web->DB->CompleteTrans();
-    return false;
+    mMessage('index periodos', 'danger', 'No fue posible eliminar el periodo seleccionado', 'periodos.html');
+  }
+  $web->DB->CompleteTrans();
+  header('Location: periodos.php?aviso=3');
+}
+
+/**
+ * Ingresa un nuevo periodo
+ */
+function mInsertPeriod()
+{
+  global $web;
+
+  if (!isset($_POST['datos']['fechaInicio']) || !isset($_POST['datos']['fechaFinal'])) {
+    mMessage("index periodos nuevo", 'warning', "No alteres la estructura de la interfaz"); //form_periodos
+  }
+  if ($_POST['datos']['fechaInicio'] == "" || $_POST['datos']['fechaFinal'] == "") {
+    mMessage("index periodos nuevo", 'warning', "Llena todos los campos"); //form_periodos
   }
 
+  $web->DB->startTrans();
+  if (!$web->insertPeriod(array($_POST['datos']['fechaInicio'], $_POST['datos']['fechaFinal']))) {
+    mMessage("index periodos nuevo", 'danger', "No fue posible guardar los datos", 'periodos.html');
+  }
+
+  $cveperiodo = $web->getLastPeriodo();
+  $periodo    = $web->getPeriodo($cveperiodo);
+  if (isset($periodo[0])) {
+    mkdir("../archivos/periodos/" . $periodo[0][2], 0777);
+    mkdir("../archivos/pdf/" . $periodo[0][2], 0777);
+    mkdir("../archivos/mensajes/" . $periodo[0][2], 0777);
+  }
+
+  //si hubo algún problema:
+  if ($web->DB->HasFailedTrans()) {
+    //si el msg de error contiente periodouq:
+    if (strpos($error, 'periodouq') > 0) {
+      mMessage('index periodos nuevo', 'warning', 'Registro duplicado');
+    }
+    mMessage("index periodos nuevo", 'warning', "No alteres la estructura de la interfaz");
+  }
   $web->DB->CompleteTrans();
-  header('Location: periodos.php');
+  header('Location: periodos.php?aviso=1'); //guardado correctamente
+}
+
+/**
+ * Muestra el formulario de actualización
+ */
+function mFormUpdate()
+{
+  global $web;
+  if (!isset($_GET['info2'])) {
+    mMessage('index periodos', 'warning', 'Hace falta mostrar el periodo', 'periodos.html');
+  }
+
+  $periodo = $web->getPeriodo($_GET['info2']);
+  if (!isset($periodo[0])) {
+    mMessage('index periodos', 'danger', 'No existe el periodo', 'periodos.html');
+  }
+
+  $web->smarty->assign('periodos', $periodo[0]);
+  mMessage('index periodos actualizar', null, null); //muestra el form_periodo.html sin mensaje
+}
+
+/**
+ * Actualiza un periodo
+ */
+function mUpdatePeriodo()
+{
+  global $web;
+
+  if (!isset($_POST['datos']['fechaInicio']) ||
+    !isset($_POST['datos']['fechaFinal']) ||
+    !isset($_POST['cveperiodo'])) {
+    mMessage('index periodos', 'warning', 'Hacen falta datos para continuar', 'periodos.html');
+  }
+
+  $periodo = $web->getPeriodo($_POST['cveperiodo']);
+  if (!isset($periodo[0])) {
+    mMessage('index periodos', 'warning', 'No altere la estructura de la interfaz', 'periodos.html');
+  }
+  $cveperiodo = $_POST['cveperiodo'];
+
+  if ($_POST['datos']['fechaInicio'] == "" ||
+    $_POST['datos']['fechaFinal'] == "") {
+    mMessage("index periodos actualizar", 'warning', "Llena todos los campos", 'form_periodos.html', $periodo);
+  }
+
+  $web->DB->startTrans();
+  $parameters = array(
+    $_POST['datos']['fechaInicio'],
+    $_POST['datos']['fechaFinal'],
+    $_POST['cveperiodo']);
+  $error = $web->updatePeriodo($parameters);
+  //si hubo algún problema:
+  if ($web->DB->HasFailedTrans()) {
+    //si el msg de error contiente periodouq:
+    if (strpos($error, 'periodouq') > 0) {
+      mMessage("index periodos actualizar", 'warning', "Registro duplicado", 'form_periodos.html', $periodo);
+    } else {
+      mMessage("index periodos actualizar", 'danger', 'No fue posible realizar el cambio', 'form_periodos.html', $periodo);
+    }
+  }
+  $web->DB->CompleteTrans();
+  header('Location: periodos.php?aviso=2');
 }

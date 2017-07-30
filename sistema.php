@@ -839,7 +839,7 @@ class Sistema extends Conexion
     $image   = base64_decode($encoded);
     $sql     = "update usuarios set foto = ? where cveusuario = ?";
     $this->query($sql, array($_SESSION['cveUser'] . ".jpg", $_SESSION['cveUser']));
-    file_put_contents("/home/slslctr/fotos/" . $_SESSION['cveUser'] . ".jpg", $image);
+    file_put_contents("/home/ubuntu/workspace/fotos/" . $_SESSION['cveUser'] . ".jpg", $image);
   }
 
   public function status($status, $mensaje)
@@ -857,6 +857,7 @@ class Sistema extends Conexion
 include 'controllers/ForoControllers.php';
 include 'controllers/admin/LibrosControllers.php';
 include 'controllers/admin/ReporteControllers.php';
+include 'controllers/admin/PeriodosControllers.php';
 include 'controllers/promotor/ListAsiControllers.php';
 include 'controllers/promotor/RedactaControllers.php';
 
