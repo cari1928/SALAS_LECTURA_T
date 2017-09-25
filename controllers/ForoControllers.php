@@ -11,6 +11,13 @@ class ForoControllers extends Sistema
     return $this->DB->GetAll($sql);
   }
 
+  public function getLibro($cvelibro)
+  {
+    $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);
+    $sql = "SELECT * FROM libro WHERE cvelibro=?";
+    return $this->DB->GetAll($sql, $cvelibro);
+  }
+
   public function checkPortada($cvelibro)
   {
     if (strlen($cvelibro) == 0) {
@@ -22,5 +29,11 @@ class ForoControllers extends Sistema
       return $nombre_fichero;
     }
     return 'no_disponible.jpg';
+  }
+
+  public function insertLibro($params)
+  {
+    $sql = "INSERT INTO comentario(cvelibro, cveusuario, contenido) VALUES(?,?,?)";
+    return $this->query($sql, $params);
   }
 }

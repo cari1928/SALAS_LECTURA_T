@@ -1,6 +1,6 @@
-{include file='foro_header.html'}
+{include file='foro/foro_header.html'}
 {$ruta}
-{if isset($msg)} {include file='mensajes.html'} {/if}
+{if isset($msg)} {include file='../../mensajes.html'} {/if}
 
 <section id="page-breadcrumb">
   <div class="vertical-center sun">
@@ -26,7 +26,7 @@
             <div class="single-blog blog-details two-column">
               
               <div class="post-thumb">
-                <a href="#"><img src="Images/portadas/{$libro.portada}" class="img-responsive" alt=""></a>
+                <a href="#"><img src="../Images/portadas/{$libro.portada}" class="img-responsive" alt=""></a>
               </div>
               
               <div class="post-content overflow">
@@ -35,7 +35,6 @@
                 <p align="justify">{$libro.sinopsis}</p>
                 <div class="post-bottom overflow">
                   <ul class="nav navbar-nav post-nav">
-                    <!-- PENDIENTE, no se muestra la imagen!!! -->
                     <li style="color:#337ab7"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> {$num_comentarios} comentarios</li>
                   </ul>
                 </div>
@@ -48,7 +47,7 @@
                   <span class='st_email_hcount'></span> -->
                 </div>
                 
-                {if isset($roles)}
+                {if isset($rol)}
                   <div class="response-area">
                     <h2 class="bold">Déjanos conocer tu opinión</h2>
                     <form action="foro_libro.php?action=comment&info={$libro.cvelibro}" method="post">
@@ -127,7 +126,7 @@
       <!--      <h3>Comments</h3>-->
       <!--      <div class="media">-->
       <!--        <div class="pull-left">-->
-      <!--          <a href="#"><img src="Images/foro/portfolio/project1.jpg" alt=""></a>-->
+      <!--          <a href="#"><img src="../Images/foro/portfolio/project1.jpg" alt=""></a>-->
       <!--        </div>-->
       <!--        <div class="media-body">-->
       <!--          <h4><a href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit,</a></h4>-->
@@ -137,7 +136,7 @@
             
       <!--      <div class="media">-->
       <!--        <div class="pull-left">-->
-      <!--          <a href="#"><img src="Images/foro/portfolio/project2.jpg" alt=""></a>-->
+      <!--          <a href="#"><img src="../Images/foro/portfolio/project2.jpg" alt=""></a>-->
       <!--        </div>-->
       <!--        <div class="media-body">-->
       <!--          <h4><a href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit,</a></h4>-->
@@ -147,7 +146,7 @@
             
       <!--      <div class="media">-->
       <!--        <div class="pull-left">-->
-      <!--          <a href="#"><img src="Images/foro/portfolio/project3.jpg" alt=""></a>-->
+      <!--          <a href="#"><img src="../Images/foro/portfolio/project3.jpg" alt=""></a>-->
       <!--        </div>-->
       <!--        <div class="media-body">-->
       <!--          <h4><a href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit,</a></h4>-->
@@ -186,12 +185,12 @@
       <!--    <div class="sidebar-item popular">-->
       <!--      <h3>Latest Photos</h3>-->
       <!--      <ul class="gallery">-->
-      <!--        <li><a href="#"><img src="Images/foro/portfolio/popular1.jpg" alt=""></a></li>-->
-      <!--        <li><a href="#"><img src="Images/foro/portfolio/popular2.jpg" alt=""></a></li>-->
-      <!--        <li><a href="#"><img src="Images/foro/portfolio/popular3.jpg" alt=""></a></li>-->
-      <!--        <li><a href="#"><img src="Images/foro/portfolio/popular4.jpg" alt=""></a></li>-->
-      <!--        <li><a href="#"><img src="Images/foro/portfolio/popular5.jpg" alt=""></a></li>-->
-      <!--        <li><a href="#"><img src="Images/foro/portfolio/popular1.jpg" alt=""></a></li>-->
+      <!--        <li><a href="#"><img src="../Images/foro/portfolio/popular1.jpg" alt=""></a></li>-->
+      <!--        <li><a href="#"><img src="../Images/foro/portfolio/popular2.jpg" alt=""></a></li>-->
+      <!--        <li><a href="#"><img src="../Images/foro/portfolio/popular3.jpg" alt=""></a></li>-->
+      <!--        <li><a href="#"><img src="../Images/foro/portfolio/popular4.jpg" alt=""></a></li>-->
+      <!--        <li><a href="#"><img src="../Images/foro/portfolio/popular5.jpg" alt=""></a></li>-->
+      <!--        <li><a href="#"><img src="../Images/foro/portfolio/popular1.jpg" alt=""></a></li>-->
       <!--      </ul>-->
       <!--    </div>-->
             
@@ -203,4 +202,4 @@
 </section>
 <!--/#blog-->
 
-{* include file="foro_footer.html" *}
+{* include file="foro/foro_footer.html" *}

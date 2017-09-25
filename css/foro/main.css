@@ -14,19 +14,13 @@
   body {
     background: #fff;
     font-family: 'Lato', sans-serif;
-    font-weight: 300;
     font-size: 14px;
-    line-height: 22px;
+    line-height: 22.5px;
     color: #000;
   }
 
   html {
     height: 100%;
-  }
-
-
-  a{
-    color:#C03035;
   }
 
   a:hover {
@@ -1687,7 +1681,7 @@ Blog with right sidebar
   margin-left: 0;
   width: 94px;
   height: 140px;
-  background: url(../images/blog/blog-arrow.png);
+  background: url(../../Images/foro/blog/blog-arrow.png);
   -webkit-animation: fadeInLeft 400ms;
   animation: fadeInLeft 400ms;
 }
@@ -1696,7 +1690,7 @@ Blog with right sidebar
   margin-left: 8px;
   font-weight: 700;
   font-size: 36px;
-  line-height: 18px;
+  line-height: 26px;
   position: absolute;
   top: 50px;
 }

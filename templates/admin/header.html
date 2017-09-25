@@ -78,14 +78,10 @@
 
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <form class="navbar-form navbar-left" role="Search" action="busqueda.php" method="get">
+        <a class="navbar-brand" href="datos.php" style="color:white">{$nombrecuenta}</a>
 
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Buscar" name="q">
-          </div>
-          <button type="submit" class="btn btn-default">Buscar</button>
-        </form>    
-       <ul class="nav navbar-nav navbar-right">       
+        <ul class="nav navbar-nav navbar-right">     
+          <li><a href="foros.php" style="color: white">Foros</a></li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true" style="color: white">Cuenta<span class="caret"></span></a>
             <ul class="dropdown-menu">
@@ -102,7 +98,7 @@
             {/if}
           </div>
         </ul>   
-        <label class="navbar-brand"><p style="color: white">{$nombrecuenta}</p></label>
       </div><!-- /.navbar-collapse -->
+      
     </div><!-- /.container-fluid -->
   </nav>

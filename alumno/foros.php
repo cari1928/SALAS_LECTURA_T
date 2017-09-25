@@ -1,8 +1,15 @@
 <?php
-include 'sistema.php';
+include '../sistema.php';
+
+if ($_SESSION['roles'] != 'U') {
+  $web->checklogin();
+}
 
 $web = new ForoControllers;
-$web->iniClases(null, "index foros");
+$web->iniClases('usuario', "index foros");
+$grupos = $web->grupos($_SESSION['cveUser']);
+$web->smarty->assign('grupos', $grupos);
+$web->smarty->setCompileDir('../templates_c'); //para que no aparezca la carpeta admin/templates_c
 
 $libros      = $web->getAllLibros();
 $totalLibros = count($libros);
@@ -19,8 +26,8 @@ for ($i = 0; $i < $totalLibros; $i++) {
   $libros[$i]['portada'] = ($numElements > 1) ? $portada[($numElements - 1)] : $portada[0];
 
   $web->smarty->assign('libro', $libros[$i]);
-  $web->smarty->assign('route', "");
-  $tmp[$i] = $web->smarty->fetch('foro.component.html');
+  $web->smarty->assign('route', "../");
+  $tmp[$i] = $web->smarty->fetch('../foro.component.html');
 }
 
 $libros = array();
@@ -41,7 +48,7 @@ $web->smarty->assign('pages', $pages);
 $web->smarty->assign('per_page', $per_page);
 $web->smarty->assign('libros', $libros);
 $web->smarty->assign('foros', true);
-$web->smarty->display('foros.html');
+$web->smarty->display('foro/foros.html');
 
 /************************************************************************************
  * FUNCIONES

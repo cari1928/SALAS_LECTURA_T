@@ -90,7 +90,7 @@ class Sistema extends Conexion
     if ($this->DB->ErrorMsg()) {
       $msg = $this->DB->ErrorMsg();
       echo $msg;
-      return $msg;
+      return false;
     } else {
       return true;
     }
@@ -839,7 +839,7 @@ class Sistema extends Conexion
     $image   = base64_decode($encoded);
     $sql     = "update usuarios set foto = ? where cveusuario = ?";
     $this->query($sql, array($_SESSION['cveUser'] . ".jpg", $_SESSION['cveUser']));
-    file_put_contents("/home/ubuntu/workspace/fotos/" . $_SESSION['cveUser'] . ".jpg", $image);
+    file_put_contents("/home/slslctr/fotos/" . $_SESSION['cveUser'] . ".jpg", $image);
   }
 
   public function status($status, $mensaje)

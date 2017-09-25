@@ -132,7 +132,7 @@ class PeriodosControllers extends Sistema
    */
   public function deleteFiles($cveperiodo)
   {
-    $route = "/home/ubuntu/workspace/archivos/";
+    $route = "/home/slslctr/archivos/";
 
     $tmp = $route . "mensajes/" . $cveperiodo; //elimina la carpeta de mensajes
     $this->delTree($tmp);
