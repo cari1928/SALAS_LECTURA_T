@@ -93,7 +93,7 @@ if (isset($_GET['accion'])) {
         $letra_subida = $web->DB->GetAll($sql, $libros[0]["cveletra"]);
 
         for ($i = 0; $i < count($libros); $i++) {
-          $nombre_fichero = "/home/slslctr/archivos/periodos/" .
+          $nombre_fichero = "/home/slslctr/periodos/" .
             $libros[$i]["cveperiodo"] . "/" .
             $letra_subida[0][0] . "/" .
             $libros[$i]["nocontrol"] . "/" .
@@ -101,7 +101,7 @@ if (isset($_GET['accion'])) {
             $libros[$i]["nocontrol"] . ".pdf";
           if (file_exists($nombre_fichero)) {
             $libros[$i]["archivoExiste"] = explode(
-              "/home/slslctr/archivos/periodos/",
+              "/home/slslctr/periodos/",
               $nombre_fichero)[1];
           }
           $sqlEstado = "SELECT * FROM estado";
@@ -145,7 +145,7 @@ if (isset($_GET['accion'])) {
     case 'reporte':
       header("Content-disposition: attachment; filename=" . $_GET['info3']);
       header("Content-type: MIME");
-      readfile("/home/slslctr/archivos/periodos/" . $_GET['info3']);
+      readfile("/home/slslctr/periodos/" . $_GET['info3']);
       break;
 
     case 'calificar_reporte': //info1 = cvelista, info2 = cvelectura, info3 = nocontrol
@@ -184,6 +184,9 @@ if (isset($_GET['accion'])) {
         message('danger', 'No se envio la calificación del reporte', $web);
       }
 
+      if ($_POST['calificacion'] > 100 || $_POST['calificacion'] < 0) {
+        message('danger', 'Envíe una califición válida', $web);
+      }
       $sql = "update lista_libros set calif_reporte = ? WHERE cvelista = ? ";
       $web->query($sql, array($_POST['calificacion'], $_GET['info1']));
 

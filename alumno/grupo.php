@@ -35,7 +35,7 @@ if (isset($_GET['accion'])) {
         message('danger', 'No existe el grupo', $web);
       }
 
-      $dir_subida = "/home/slslctr/archivos/periodos/" .
+      $dir_subida = "/home/slslctr/periodos/" .
         $cveperiodo . "/" .
         $letra_subida[0][0] . "/" .
         $_SESSION['cveUser'] . "/";
@@ -107,6 +107,7 @@ if (isset($_GET['accion'])) {
 
       $web->smarty->assign('cvelectura', $_GET['info1']);
       $web->smarty->assign('cmb_libro', $combo);
+
       $web->smarty->display('form_libro.html');
       die();
       break;
@@ -207,6 +208,7 @@ if (!isset($datos[0])) {
 $web->smarty->assign('bandera', 'true');
 $web->smarty->assign('cveperiodo', $cveperiodo);
 $web->smarty->assign('datos', $datos);
+$web->smarty->assign('cvelectura', $datos[0]['cvelectura']);
 $web->smarty->assign('grupo', $grupo);
 $web->smarty->display("grupo.html");
 

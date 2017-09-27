@@ -74,7 +74,7 @@
 					 		</div>
 						 	</br>
 						 	<center>
-						 		<input type="number" class="form-control" name="datos[asistencia]" required value = "{$alumno.asistencia}" style="width:65px ; display:block; "maxlength="3">
+						 		<input type="number" class="form-control" name="datos[asistencia]" required value = "{$alumno.asistencia}" style="width:65px ; display:block; "maxlength="3" max="0" min="100">
 						 	</center>
 						</td>
 	
@@ -88,7 +88,7 @@
 					 	</div>
 					 	</br>
 						<center>
-							<input type="number" class="form-control" name="datos[comprension]" required value = "{$alumno.comprension}" style="width:65px ; display:block; "maxlength="3">
+							<input type="number" class="form-control" name="datos[comprension]" required value = "{$alumno.comprension}" style="width:65px ; display:block; "maxlength="3" max="0" min="100">
 						</center>
 					 </td>
 	
@@ -103,7 +103,7 @@
 							</div>
 							</br>
 							<center>
-								<input type="number" class="form-control" name="datos[participacion]" required value = "{$alumno.participacion}" style="width:65px ; display:block; "maxlength="3">
+								<input type="number" class="form-control" name="datos[participacion]" required value = "{$alumno.participacion}" style="width:65px ; display:block; "maxlength="3" max="0" min="100">
 							</center>
 						</td>
 						
@@ -118,7 +118,7 @@
 						 	</div>
 						  </br>
 						 	<center>
-						 		<input type="number" class="form-control" name="datos[actividades]" required value = "{$alumno.actividades}" style="width:65px ; display:block; "maxlength="3">
+						 		<input type="number" class="form-control" name="datos[actividades]" required value = "{$alumno.actividades}" style="width:65px ; display:block; "maxlength="3" max="0" min="100">
 						 	</center>
 						</td>
 						
@@ -213,7 +213,7 @@
 					 		</br>
 							<input type="number" class="form-control" name="calificacion" required 
 								value="{$libro.calif_reporte}" style="width:65px; display:block;" 
-								maxlength="3" />
+								maxlength="3" max="100" min="0"/>
 							<input type="submit" style='display: none'/>
 					 	</center>
 					</td>
