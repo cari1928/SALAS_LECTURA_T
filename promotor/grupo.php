@@ -227,7 +227,6 @@ $grupo = $_GET['info1'];
 $sql = "SELECT cvepromotor FROM laboral WHERE cveletra in
 (SELECT cve FROM abecedario WHERE letra=?) and cveperiodo=?";
 $grupo_promotor = $web->DB->GetAll($sql, array($grupo, $cveperiodo));
-
 if (!isset($grupo_promotor[0])) {
   message('danger', 'No existe el grupo en este periodo', $web);
 }

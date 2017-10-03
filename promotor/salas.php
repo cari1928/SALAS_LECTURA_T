@@ -5,6 +5,7 @@ if ($_SESSION['roles'] != 'P') {
   $web->checklogin();
 }
 
+$web = new PromoSalaControllers;
 $web->iniClases('promotor', "index salas");
 $grupos = $web->grupos($_SESSION['cveUser']);
 $web->smarty->assign('grupos', $grupos);
@@ -16,6 +17,8 @@ if ($cveperiodo == "") {
   die();
 }
 
+mMessages();
+
 if (isset($_GET['accion'])) {
 
   switch ($_GET['accion']) {
@@ -25,7 +28,7 @@ if (isset($_GET['accion'])) {
       break;
 
     case 'insert':
-      register_room();
+      mRegisterRoom();
       break;
 
     default:
@@ -34,16 +37,13 @@ if (isset($_GET['accion'])) {
 }
 
 //antes que nada se verifica si el promotor ya tiene 3 grupos
-$sql    = "SELECT DISTINCT cveletra FROM laboral WHERE cvepromotor=? and cveperiodo=?";
-$grupos = $web->DB->GetAll($sql, array($_SESSION['cveUser'], $cveperiodo));
+$grupos = $web->checkPromoGroups($_SESSION['cveUser'], $cveperiodo);
 if (sizeof($grupos) == 3) {
-  $web->simple_message('warning', " Ya tiene 3 grupos, no es posible registrar otros");
+  $web->simple_message('warning', "Ya tiene 3 grupos, no puede registrar mas");
 
 } else {
-  $sql = "SELECT cvesala, ubicacion FROM sala WHERE cveperiodo=? ORDER BY cvesala";
   $web->DB->SetFetchMode(ADODB_FETCH_ASSOC);
-  $datos = $web->DB->GetAll($sql, $cveperiodo);
-  $datos = array('data' => $datos);
+  $datos = array('data' => $web->getEnableClass());
 
   for ($i = 0; $i < sizeof($datos['data']); $i++) {
     $datos['data'][$i]['cvesala'] = "<a href='salas.php?accion=horario&info=" . $datos['data'][$i]['cvesala'] . "'>" . $datos['data'][$i]['cvesala'] . "</a>";
@@ -74,9 +74,11 @@ $web->smarty->display("promosala.html");
  * @param  array $elementos Cuyo contenido debe contener los encabezados: cveperiodo, grupo, nombre, cvelibro_grupal
  * @return int | boolean
  */
-function verificaciones($op, $web, $elementos = null)
+function verificaciones($op, $elementos = null)
 {
+  global $web;
   $cont = 0;
+
   for ($i = 1; $i <= 6; $i++) {
     for ($j = 0; $j < 2; $j++) {
 
@@ -84,19 +86,17 @@ function verificaciones($op, $web, $elementos = null)
         case 1: //checa existencia de campos y que sean numéricos
           if (!isset($_POST['datos']['horas' . $i . '_' . $j]) ||
             !is_numeric($_POST['datos']['horas' . $i . '_' . $j])) {
-            $web->simple_message('danger', 'No alteres la estructura de la interfaz');
-            return false;
+            header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=2');
+            die();
           }
           break;
 
         case 2: //verfica que se seleccione alguna hora y que no haya sido modificada
           if ($_POST['datos']['horas' . $i . '_' . $j] != -1) {
-            $sql  = "SELECT * FROM horas WHERE cvehoras=?";
-            $hora = $web->DB->GetAll($sql, $_POST['datos']['horas' . $i . '_' . $j]);
-
+            $hora = $web->getHours($_POST['datos']['horas' . $i . '_' . $j]);
             if (!isset($hora[0])) {
-              $web->simple_message('danger', 'No alteres la estructura de la interfaz');
-              return false;
+              header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=2');
+              die();
             }
           } else {
             $cont++;
@@ -104,125 +104,147 @@ function verificaciones($op, $web, $elementos = null)
           break;
 
         case 3: //checa que no se duplique periodo, horas y dias con la ubicación
-          // $cveperiodo = $web->periodo();
           if ($_POST['datos']['horas' . $i . '_' . $j] != -1) {
             $sql = "SELECT * FROM laboral
               INNER JOIN sala on laboral.cvesala = sala.cvesala
-              WHERE laboral.cveperiodo=? and cvehoras=? and cvedia=? and ubicacion in
-              (SELECT ubicacion FROM sala WHERE cvesala=?)";
-            $parametros = array($elementos, $_POST['datos']['horas' . $i . '_' . $j], $i, $_POST['datos']['cvesala']);
-            $datos      = $web->DB->GetAll($sql, $parametros);
+              WHERE laboral.cveperiodo=? AND cvedia=? ";
 
+            $sql .= ($j == 0) ? "AND cvehorario1 IN (SELECT cvehorario1 FROM horario WHERE cvehora=?) " :
+            "AND cvehorario2 IN (SELECT cvehorario2 FROM horario WHERE cvehora=?) ";
+
+            $sql .= "AND ubicacion IN (SELECT ubicacion FROM sala WHERE cvesala=?);";
+
+            $parametros = array($elementos, $i, $_POST['datos']['horas' . $i . '_' . $j], $_POST['datos']['cvesala']);
+            $datos      = $web->DB->GetAll($sql, $parametros);
             if (isset($datos[0])) {
-              $web->simple_message('danger', 'La sala u horario ya están ocupados');
-              return false;
+              header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=5');
+              die();
             }
           }
           break;
 
         case 4: //insert final
-          if ($_POST['datos']['horas' . $i . '_' . $j] != -1) {
-            $web->DB->startTrans();
-            $sql        = "INSERT INTO laboral(cveperiodo, cvehoras, cvedia, cvesala, cveletra, nombre, cvepromotor, cvelibro_grupal) values(?, ?, ?, ?, ?, ?, ?, ?)";
-            $parametros = array($elementos['cveperiodo'], $_POST['datos']['horas' . $i . '_' . $j], $i, $_POST['datos']['cvesala'], $elementos['grupo'], $elementos['nombre'], $_SESSION['cveUser'], $elementos['cvelibro_grupal']);
-            $web->query($sql, $parametros);
-            $sql   = "SELECT letra FROM abecedario WHERE cve=?";
-            $letra = $web->DB->GetAll($sql, $elementos['grupo']);
-            mkdir("../periodos/" . $elementos['cveperiodo'] . "/" . $letra[0]['letra'], 0777);
-            if ($web->DB->HasFailedTrans()) {
-              $web->simple_message('danger', 'No fue posible registrar el grupo, contacte al administrador');
-              return false;
-            }
-            $web->DB->CompleteTrans();
+          if ($_POST['datos']['horas' . $i . '_' . $j] == -1) {
+            break;
           }
-          break;
+
+          $flag = false;
+          //verifica si el horario ya está registrado
+          if (!is_array($web->getSchedule($_POST['datos']['horas' . $i . '_' . $j], $i))) {
+            $web->insertSchedule($_POST['datos']['horas' . $i . '_' . $j], $i); //inserta en la tabla horario
+            $flag = true;
+          }
+
+          //se obtiene la información del horario
+          $horario = ($flag) ?
+          $web->getSchedule($_POST['datos']['horas' . $i . '_' . $j], $i) : /*obtiene el horario en base a hora y día*/
+          $web->getLastSchedule(); //obtiene el último horario registrado
+
+          $web->DB->startTrans();
+          if ($j == 0) {
+            $result = $web->insertLaboral($elementos['cveperiodo'], $_POST['datos']['cvesala'], $elementos['grupo'], $elementos['nombre'], $_SESSION['cveUser'], $elementos['cvelibro_grupal'], $_POST['datos']['horas' . $i . '_' . $j]);
+          } else {
+            $laboral = $web->getLastLaboral();
+            $result  = $web->updateLaboral($_POST['datos']['horas' . $i . '_' . $j], $laboral[0]['cvelaboral']);
+          }
+
+          if (!$result) {
+            header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=6');
+            die();
+          }
+
+          if ($j != 0) {
+            $letra = $web->getLetter($elementos['grupo']);
+            mkdir("../archivos/periodos/" . $elementos['cveperiodo'] . "/" . $letra[0]['letra'], 0777, true);
+          }
+
+          if ($web->DB->HasFailedTrans()) {
+            header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=6');
+            die();
+          }
+          $web->DB->CompleteTrans();
       }
     }
   }
 
   if ($op == 2) {
     return $cont;
-  } else {
-    return true;
   }
+  return true;
 }
 
-/*
- *
+/**
+ * Creación del grupo
  */
-function register_room()
+function mRegisterRoom()
 {
   global $web, $cveperiodo;
   $flag = true;
 
-  if (!verificaciones(1, $web)) {return false;}
+  if (!verificaciones(1)) {return false;} //checa existencia de campos y que sean numéricos
 
   for ($i = 1; $i <= 6 && $flag; $i++) {
-    if ($_POST['datos']['horas' . $i . '_0'] == $_POST['datos']['horas' . $i . '_1']
-      && $_POST['datos']['horas' . $i . '_0'] != -1) {
-      $web->simple_message('danger', 'No duplique los horarios en un mismo día');
-      $flag = false;
+    if ($_POST['datos']['horas' . $i . '_0'] == $_POST['datos']['horas' . $i . '_1'] &&
+      $_POST['datos']['horas' . $i . '_0'] != -1) {
+      header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=1');
+      die();
     }
   }
   if (!$flag) {return false;}
 
   if (!isset($_POST['datos']['cvesala']) ||
     $_POST['datos']['cvesala'] == "") {
-    $web->simple_message('danger', 'No alteres la estructura de la interfaz');
-    return false;
+    header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=2');
+    die();
   }
 
-  $sql  = "SELECT * FROM sala WHERE cvesala=? and cveperiodo=?";
-  $sala = $web->DB->GetAll($sql, array($_POST['datos']['cvesala'], $cveperiodo));
+  $sala = $web->getClass($_POST['datos']['cvesala']);
   if (!isset($sala[0])) {
-    $web->simple_message('danger', 'No alteres la estructura de la interfaz');
-    return false;
+    header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=2');
+    die();
   }
 
-  $res = verificaciones(2, $web);
+  $res = verificaciones(2); //verfica que se seleccione alguna hora y que no haya sido modificada
   if (!$res) {return false;}
 
   // Para cuando el usario no escoge nada
   if ($res == 12) {
-    $web->simple_message('danger', 'Seleccione alguna hora, por favor');
-    return false;
+    header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=3');
+    die();
   }
   // Para cuando el usuario escoge mas de dos horas
   if ($res < 10) {
-    $web->simple_message('danger', 'Solo debe seleccionar dos horas');
-    return false;
+    header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=3');
+    die();
   }
 
   if (!isset($_POST['datos']['cvelibro'])) {
-    $web->simple_message('danger', 'No altere la estructura de la interfaz');
-    return false;
+    header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=2');
+    die();
   }
 
   if ($_POST['datos']['cvelibro'] == -1) {
-    $web->simple_message('danger', 'Seleccione un libro grupal');
-    return false;
+    header('Location: salas.php?accion=horario&info=' . $_POST['datos']['cvesala'] . '&e=4');
+    die();
   }
 
   $cvelibro = $_POST['datos']['cvelibro'];
-  $sql      = "SELECT COALESCE(MAX(cveletra),0) as cveletra FROM laboral WHERE cveperiodo=?";
-  $grupo    = $web->DB->GetAll($sql, $cveperiodo);
+  $grupo    = $web->getLastLetterLaboral($cveperiodo);
   $grupo    = ($grupo[0]['cveletra'] + 1);
 
-  $sql    = "SELECT letra FROM abecedario WHERE cve=?";
-  $letra  = $web->DB->GetAll($sql, $grupo);
+  $letra  = $web->getLetter($grupo);
   $nombre = "SALA - " . $letra[0]['letra'];
 
-  if (!verificaciones(3, $web, $cveperiodo)) {break;}
+  if (!verificaciones(3, $cveperiodo)) {return false;} //checa que no se duplique periodo, horas y dias con la ubicación
 
-  verificaciones(4, $web, array('cveperiodo' => $cveperiodo, 'grupo' => $grupo, 'nombre' => $nombre, 'cvelibro_grupal' => $cvelibro));
-
+  //insert final
+  verificaciones(4, array('cveperiodo' => $cveperiodo, 'grupo' => $grupo, 'nombre' => $nombre, 'cvelibro_grupal' => $cvelibro));
   mCreateFolders($letra[0]['letra']);
-
   header('Location: grupos.php');
 }
 
-/*
- *
+/**
+ * Asigna el horario a los promotores
  */
 function mSchedule()
 {
@@ -231,29 +253,18 @@ function mSchedule()
   $web->iniClases('promotor', "index salas horario");
   if (!isset($_GET['info'])) {
     $web->simple_message('danger', 'No se especificó la sala');
-    break;
+    return false;
   }
 
-  $sql  = "SELECT * FROM sala WHERE cvesala=? AND cveperiodo=?";
-  $sala = $web->DB->GetAll($sql, array($_GET['info'], $cveperiodo));
+  $sala = $web->getClass($_GET['info']);
   if (!isset($sala[0])) {
     $web->simple_message('danger', 'No existe la sala seleccionada');
-    break;
+    return false;
   }
 
-  $sql          = "SELECT * FROM dia";
-  $dias         = $web->DB->GetAll($sql);
-  $horas_semana = array();
+  $dias = $web->getDays();
   for ($i = 1; $i <= sizeof($dias); $i++) {
-    $sql = "SELECT cvehoras, hora_inicial, hora_final FROM horas
-    EXCEPT
-    SELECT horas.cvehoras, hora_inicial, hora_final FROM laboral
-    INNER JOIN horas ON laboral.cvehoras = horas.cvehoras
-    INNER JOIN sala ON sala.cvesala = laboral.cvesala
-    WHERE cvedia=? AND ubicacion=? AND laboral.cveperiodo=?
-    ORDER BY hora_inicial, hora_final";
-    $horas = $web->DB->GetAll($sql, array($i, $sala[0]['ubicacion'], $cveperiodo));
-
+    $horas = $web->getPromoHours($i, $sala[0]['cvesala'], $cveperiodo);
     if (isset($horas[0])) {
       $web->smarty->assign('horas' . $i, $horas);
     }
@@ -269,14 +280,43 @@ function mSchedule()
 }
 
 /**
- *
+ * Crea la carpeta necesaria para guardar los recursos de los avisos grupales e individuales para este nuevo grupo
  */
 function mCreateFolders($letra)
 {
   global $web, $cveperiodo;
-
-  // crea la carpeta necesaria para guardar los recursos de los avisos grupales e individuales para este nuevo grupo
-  if (!mkdir("/home/slslctr/archivos_msj/" . $cveperiodo . "/" . $letra, 7777, true)) {
+  if (!mkdir("/home/slslctr/archivos/msj/" . $cveperiodo . "/" . $letra, 0777, true)) {
     $web->simple_message('warning', 'No fue posible crear los recursos necesarios');
+  }
+}
+
+function mMessages()
+{
+  global $web;
+
+  if (isset($_GET['m'])) {
+
+  }
+  if (isset($_GET['e'])) {
+    switch ($_GET['e']) {
+      case 1:
+        $web->simple_message('danger', 'No duplique los horarios en un mismo día');
+        break;
+      case 2:
+        $web->simple_message('danger', 'No alteres la estructura de la interfaz');
+        break;
+      case 3:
+        $web->simple_message('danger', 'Por favor, seleccione dos hora');
+        break;
+      case 4:
+        $web->simple_message('danger', 'Por favor, seleccione un libro grupal');
+        break;
+      case 5:
+        $web->simple_message('danger', 'La sala u horario ya están ocupados');
+        break;
+      case 6:
+        $web->simple_message('danger', 'No fue posible registrar el grupo, contacte al administrador');
+        break;
+    }
   }
 }

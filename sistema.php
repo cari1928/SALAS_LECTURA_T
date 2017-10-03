@@ -322,7 +322,6 @@ class Sistema extends Conexion
     if ($ubicacion != null) {
       $nombre = $this->tipoCuenta();
       $this->smarty->assign('nombrecuenta', $nombre);
-      // $this->smarty->assign('usuario', $_SESSION['nombre']);
       $this->smarty->setTemplateDir('../templates/' . $ubicacion . '/');
     }
 
@@ -393,18 +392,22 @@ class Sistema extends Conexion
     if ($rol == 'P') {
       //es un promotor
       $sql = "SELECT DISTINCT letra, nombre, ubicacion FROM laboral
-              INNER JOIN sala ON laboral.cvesala = sala.cvesala
-              INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
-              WHERE cvepromotor=? AND laboral.cveperiodo=? ORDER BY letra";
+        INNER JOIN sala ON laboral.cvesala = sala.cvesala
+        INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
+        WHERE cvepromotor=? AND laboral.cveperiodo=? ORDER BY letra";
+      $datos_rs = $this->DB->GetAll($sql, array($_SESSION['cveUser'], $periodo));
     } else {
       //es un alumno
-      $sql = "SELECT DISTINCT letra, nombre, ubicacion FROM laboral
-              INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
-              INNER JOIN lectura ON lectura.cveletra = abecedario.cve
-              INNER JOIN sala ON laboral.cvesala = sala.cvesala
-              WHERE nocontrol=? AND laboral.cveperiodo=? ORDER BY letra";
+      $sql = "SELECT letra, la.nombre, ubicacion
+        FROM lectura le
+        INNER JOIN abecedario abc ON abc.cve = le.cveletra
+        INNER JOIN laboral la ON la.cveletra = abc.cve
+        INNER JOIN sala s ON s.cvesala = la.cvesala
+        WHERE la.cveperiodo=? AND le.cveperiodo=? AND nocontrol=?
+        ORDER BY letra";
+      $datos_rs = $this->DB->GetAll($sql, array($periodo, $periodo, $_SESSION['cveUser']));
     }
-    $datos_rs = $this->DB->GetAll($sql, array($_SESSION['cveUser'], $periodo));
+
     if (sizeof($datos_rs) == 0) {
       return "No existentes";
     } else {
@@ -791,11 +794,13 @@ class Sistema extends Conexion
    * @param  array $array Arreglo a mostrar
    * @return Contenido del arreglo
    */
-  public function debug($array)
+  public function debug($array, $opt = true)
   {
     echo "<pre>";
     print_r($array);
-    die();
+    if ($opt) {
+      die();
+    }
   }
 
   public function debug_line($dato)
@@ -858,8 +863,11 @@ include 'controllers/ForoControllers.php';
 include 'controllers/admin/LibrosControllers.php';
 include 'controllers/admin/ReporteControllers.php';
 include 'controllers/admin/PeriodosControllers.php';
+include 'controllers/alumno/InscripcionControllers.php';
+include 'controllers/alumno/GruposControllers.php';
 include 'controllers/promotor/ListAsiControllers.php';
 include 'controllers/promotor/RedactaControllers.php';
+include 'controllers/promotor/PromoSalaControllers.php';
 
 //instanciamos web
 $web = new Sistema;

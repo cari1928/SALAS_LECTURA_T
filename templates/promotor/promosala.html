@@ -10,14 +10,14 @@
   <table id="example" class="display" cellspacing="0" width="100%">
     <thead>
       <tr>
-        <th>CLAVE</th>
-        <th>UBICACION</th>
+        <th style="vertical-align:middle"><center>#</center></th>
+        <th style="vertical-align:middle"><center>UBICACION</center></th>
       </tr>
     </thead>
     <tfoot>
       <tr>
-        <th>CLAVE</th>
-        <th>UBICACION</th>
+        <th style="vertical-align:middle"><center>#</center></th>
+        <th style="vertical-align:middle"><center>UBICACION</center></th>
       </tr>
     </tfoot>
   </table>
@@ -29,7 +29,11 @@
         "columns": [
           { "data": "cvesala" },
           { "data": "ubicacion" }
-        ]
+        ],
+        "columnDefs": [ {
+          "className": "dt-center", 
+          "targets": "_all"
+        }]
       } );
     } );
   </script>
@@ -43,12 +47,12 @@
   <form method="post" action="salas.php?accion=insert">
     <table class="table">
       <tr>
-        <td>LUNES</td>
-        <td>MARTES</td>
-        <td>MIÉRCOLES</td>
-        <td>JUEVES</td>
-        <td>VIERNES</td>
-        <td>SÁBADO</td>
+        <td><center>LUNES</center></td>
+        <td><center>MARTES</center></td>
+        <td><center>MIÉRCOLES</center></td>
+        <td><center>JUEVES</center></td>
+        <td><center>VIERNES</center></td>
+        <td><center>SÁBADO</center></td>
       </tr>
       <tr>
         <td>
@@ -183,12 +187,12 @@
     <input type="hidden" name="datos[cvesala]" value="{$cvesala}"/>
     
     <div class="form-group">
-      <h3>Seleccione libro grupal:</h3>
+      <h3>Seleccione el libro grupal:</h3>
       {$libros}
     </div>
     
     <div class="form-group" align='right'>
-      <input type="submit" class="btn btn-primary"/>  
+      <input type="submit" class="btn btn-primary" value="Guardar"/>  
     </div>
     
   </form>

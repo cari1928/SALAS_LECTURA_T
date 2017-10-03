@@ -1,8 +1,8 @@
 {include file="header.html"}
 {$ruta}   
-
 {if isset($msg)} {include file='../mensajes.html'} {/if}
 
+<h3>Listado de Salas</h3>
 <table class='table'>
 	<tr><td colspan='4' align='right'>
 		<a href='salas.php?accion=form_insert&tabla=sala'>
@@ -14,15 +14,17 @@
 {if isset($salones)}
 	<table id="example" class='table table-striped display' cellspacing="0" width="100%">
 		<tr>		
-			<th>CLAVE SALA</th>
-			<th>UBICACION</th>
+			<th><center>CLAVE</center></th>
+			<th><center>UBICACION</center></th>
+			<th><center>ESTADO</center></th>
 			<th><center>ELIMINAR</center></th>
 			<th><center>ACTUALIZAR</center></th>
 		</tr>
 	{foreach $salones as $salon}
 		<tr>
-			<td>{$salon.cvesala}</td>
-			<td>{$salon.ubicacion}</td>
+			<td><center>{$salon.cvesala}</center></td>
+			<td><center>{$salon.ubicacion}</center></td>
+			<td><center>{if $salon.disponible eq 'f'}No Disponible{else}Disponible{/if}</center></td>
 			<td><center><a class="delete" href="salas.php?accion=delete&info1={$salon.cvesala}">
 				<img src="../Images/cancelar.png">
 			</a></center></td>

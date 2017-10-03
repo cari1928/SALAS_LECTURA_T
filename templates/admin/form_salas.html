@@ -3,40 +3,38 @@
 <div class="container-fluid">
   <div class="main row">
     <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
-      {if isset($msg)} 
-        <div class="alert alert-{$alert} alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <strong>¡Aviso!</strong> {$msg}
-        </div>
-      {/if}
+      {if isset($msg)} {include file='../mensajes.html'} {/if}
       <form action="salas.php?accion={if isset($salas)}update{else}insert{/if}" method="post">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">
-            {if isset($salas)} Actualizar Sala
-            {else} Nueva Sala {/if}
-          </h3>
-        </div>
-        <div class="panel-body">
-          {if isset($salas)}
-            <input type="hidden" name="cvesala" value="{$salas.cvesala}">
-          {/if}
-          <div class="form-group">
-            <label>Clave:</label>
-            <input class="form-control" placeholder="Clave de la Sala" name="datos[cvesala]" maxlength="3" required
-            {if isset($salas)} value="{$salas.cvesala}" readonly {/if}>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              {if isset($salas)} Actualizar{else} Nueva{/if} Sala
+            </h3>
           </div>
-          <div class="form-group">
-            <label>Ubicacion:</label>
-            <input class="form-control" placeholder="Ubicacion de la Sala" name="datos[ubicacion]" required
-            {if isset($salas)} value="{$salas.ubicacion}" {/if}>
+          <div class="panel-body">
+            {if isset($salas)}
+              <input type="hidden" name="datos[cvesala]" value="{$salas.cvesala}">
+            {/if}
+            <div class="form-group">
+              <label>Ubicación:</label>
+              <input class="form-control" placeholder="Ingrese la ubicación de la Sala" name="datos[ubicacion]" required
+                {if isset($salas)} value="{$salas.ubicacion}" {/if}>
+            </div>
+            <div class="form-group">
+              <label>Estado:</label>
+              <select class="form-control" name="datos[disponible]">
+                <option {if isset($salas)} {if {$salas.disponible} eq 'f'} selected {/if} {/if} value="false">No Disponible</option>
+                <option {if isset($salas)} {if {$salas.disponible} eq 't'} selected {/if} {/if} value="true">Disponible</option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
-      <button type="submit" class="btn btn-primary">
-        {if isset($salas)} Actualizar 
-        {else} Guardar {/if}
-      </button>
+        <div align="right">
+          <button type="submit" class="btn btn-primary">
+            {if isset($salas)} Actualizar {else} Guardar {/if}
+          </button>
+        </div>
+      </form>
     </nav>
   </div>
 </div>

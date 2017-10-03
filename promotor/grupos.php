@@ -62,14 +62,14 @@ if (isset($_GET['accion'])) {
   }
 }
 
-$sql = "SELECT DISTINCT letra, nombre, ubicacion, titulo FROM laboral
-INNER JOIN sala ON laboral.cvesala = sala.cvesala
-INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
-LEFT JOIN libro ON laboral.cvelibro_grupal = libro.cvelibro
-WHERE cvepromotor=? AND laboral.cveperiodo=?
-ORDER BY letra";
-$tablegrupos = $web->DB->GetAll($sql, array($_SESSION['cveUser'], $cveperiodo));
-
+$sql = "SELECT letra, la.nombre, ubicacion
+  FROM lectura le
+  INNER JOIN abecedario abc ON abc.cve = le.cveletra
+  INNER JOIN laboral la ON la.cveletra = abc.cve
+  INNER JOIN sala s ON s.cvesala = la.cvesala
+  WHERE la.cveperiodo=? AND le.cveperiodo=? AND nocontrol=?
+  ORDER BY letra";
+$tablegrupos = $web->DB->GetAll($sql, array($cveperiodo, $cveperiodo, $_SESSION['cveUser']));
 if (!isset($tablegrupos[0])) {
   $web->simple_message('danger', 'No ha registrado algún grupo');
 }
@@ -109,35 +109,27 @@ function mShowMessages()
 
   if (isset($_GET['aviso'])) {
     switch ($_GET['aviso']) {
-
       case 1:
         $web->simple_message('warning', 'Ya existe un archivo con el mismo nombre');
         break;
-
       case 2:
         $web->simple_message('info', 'Mensaje publicado');
         break;
-
       case 3:
         $web->simple_message('danger', 'Ocurrió un error mientras se enviaba el mensaje');
         break;
-
       case 4:
         $web->simple_message('warning', 'No existe el destinatario o no tiene permiso para mandar este mensaje');
         break;
-
       case 5:
         $web->simple_message('warning', 'El archivo no existe o fue eliminado');
         break;
-
       case 6:
         $web->simple_message('warning', 'Hacen falta datos para mostrar los mensajes');
         break;
-
       case 7:
         $web->simple_message('warning', 'No existe el mensaje seleccionado');
         break;
-
       case 8:
         $web->simple_message('warning', 'No existe el grupo seleccionado');
         break;

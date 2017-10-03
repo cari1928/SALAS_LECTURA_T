@@ -1,8 +1,98 @@
 {include file="header.html"}
 {$ruta}
+
+<style type="text/css">
+.box{
+  margin: 25px auto;
+  width: 300px;
+  height: 50px;
+}
+
+.container-1{
+  width: 900px;
+  vertical-align: middle;
+  white-space: nowrap;
+  position: relative;
+  background: #004f7f;
+}
+
+.container-1 input#search{
+  width: 300px;
+  height: 50px;
+  background: #004f7f;
+  border: none;
+  font-size: 10pt;
+  float: left;
+  color: white;
+  padding-left: 45px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  
+  -webkit-transition: background .55s ease;
+  -moz-transition: background .55s ease;
+  -ms-transition: background .55s ease;
+  -o-transition: background .55s ease;
+  transition: background .55s ease;
+}
+
+.container-1 input#search::-webkit-input-placeholder {
+   color: #eaeff2;
+}
+ 
+.container-1 input#search:-moz-placeholder {
+   color: #eaeff2;  
+}
+ 
+.container-1 input#search::-moz-placeholder {  
+   color: #eaeff2;  
+}
+ 
+.container-1 input#search:-ms-input-placeholder {  
+   color: #eaeff2;  
+}
+
+.container-1 #icon{
+  position: absolute;
+  top: 50%;
+  margin-left: 17px;
+  margin-top: 17px;
+  z-index: 1;
+  color: #eaeff2;
+}
+
+.container-1 input#search:hover, .container-1 input#search:focus, .container-1 input#search:active{
+  outline:none;
+  background: #337ab7;
+}
+</style>
+
+<!--<div class="box">-->
+<!--  <div class="container-1">-->
+<!--    <span class="glyphicon glyphicon-search" id="icon"></span>-->
+<!--    <input type="search" id="search" placeholder="Search..." />-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--<div class="contenedor">-->
+<!--  <div class="ex1">-->
+<!--    <a href="#"><img src="../Images/portadas/prueba.jpg" width="130px"></img></a>-->
+<!--    <a href="#"><img src="../Images/portadas/prueba2.jpg" width="130px"></img></a>-->
+<!--    <a href="#"><img src="../Images/portadas/prueba2.jpg" width="130px"></img></a>-->
+<!--    <a href="#"><img src="../Images/portadas/prueba2.jpg" width="130px"></img></a>-->
+<!--    <a href="#"><img src="../Images/portadas/prueba2.jpg" width="130px"></img></a>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--ciclo mandar el número total y las claves, las imágenes están como cvelibro.jpg-->
+
+<div class="page-header">
+  <h2>Selección de Libros</h2>
+</div>
+
 <div class="container-fluid">
   <div class="main row">
-    <nav class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-push-3">
+    <nav class="col-xs-12 col-sm-12 col-md-10 col-lg-6 col-md-push-3">
       
       {if isset($msg)}{include file='../mensajes.html'}{/if}
       
@@ -19,7 +109,7 @@
             </div>
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" align="right">
           <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
       </form>
@@ -28,17 +118,21 @@
 </div>
 
 <!--Tabla de libros-->
-  {if isset($libros)}
+{if isset($libros)}
   
-    <!--CSS-->
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../css/bootstrap/fileinput/css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
-    
-    <!--Javascript-->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../css/bootstrap/fileinput/js/fileinput.min.js" type="text/javascript"></script>
-    
-    <form action="grupo.php?accion=fileinput&info1={$cvelectura}" method="post" enctype="multipart/form-data">
+  <!--CSS-->
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../css/bootstrap/fileinput/css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+  
+  <!--Javascript-->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="../css/bootstrap/fileinput/js/fileinput.min.js" type="text/javascript"></script>
+  
+  <div class="page-header">
+    <h2>Reporte</h2>
+  </div>
+  
+  <form action="grupo.php?accion=fileinput&info1={$cvelectura}" method="post" enctype="multipart/form-data">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Subir reporte</h3>
@@ -49,10 +143,11 @@
         </div>
       </div>
     </div>
-  
+    
     <div class="page-header">
       <h2>Lista de Libros</h2>
     </div>
+    
     <table class='table table-striped'>
       <tr>
         <th><center>CLAVE</center></th>
@@ -65,14 +160,13 @@
           <td><center>{$libro.cvelibro}</center></td>
           <td><center>{$libro.titulo}</center></td>
           <td><center>
-            <input id="r4" type="radio" class="btn btn-default" value='{$libro.cvelibro}' 
-              name="datos[reporte]">
+            <input id="r4" type="radio" class="btn btn-default" value='{$libro.cvelibro}' name="datos[reporte]">
           </center></td>
           <td><center>{$libro.estado}</center></td>
         </tr>
       {/foreach}
     </table>
-  {/if}
-</form>
+  </form>
+{/if}
 
 {include file="footer.html"}
