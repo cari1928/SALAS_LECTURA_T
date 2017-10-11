@@ -93,7 +93,7 @@ function message($alert, $msg)
  */
 function form_libro()
 {
-  global $web;
+  global $web, $cveperiodo;
 
   if (!isset($_GET['info1'])) {
     message('danger', 'Información incompleta');
@@ -166,7 +166,7 @@ function fileinput()
     message('danger', 'El libro no existe');
   }
 
-  $nombre = $cvelibro_subida[0][0] . "_" . $_SESSION['cveUser'] . ".pdf";
+  $nombre = $cvelibro_subida[0][2] . "_" . $_SESSION['cveUser'] . ".pdf";
   if (move_uploaded_file($_FILES['datos']['tmp_name']['archivo'], $dir_subida . $nombre)) {
     message('success', 'Se subió el reporte satisfactoriamente');
   } else {

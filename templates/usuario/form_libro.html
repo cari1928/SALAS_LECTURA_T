@@ -150,14 +150,12 @@
     
     <table class='table table-striped'>
       <tr>
-        <th><center>CLAVE</center></th>
         <th><center>TITULO</center></th>
         <th><center>REPORTE</center></th>
         <th><center>ESTADO</center></th>
       </tr>
       {foreach $libros as $libro}
         <tr>
-          <td><center>{$libro.cvelibro}</center></td>
           <td><center>{$libro.titulo}</center></td>
           <td><center>
             <input id="r4" type="radio" class="btn btn-default" value='{$libro.cvelibro}' name="datos[reporte]">
