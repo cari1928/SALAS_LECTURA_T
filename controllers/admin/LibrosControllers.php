@@ -2,7 +2,7 @@
 
 class LibrosControllers extends Sistema
 {
-  public $route = "/home/slslctr/Images/portadas/";
+  public $route = "/home/ubuntu/workspace/Images/portadas/";
 
   public function __construct()
   {
@@ -12,8 +12,8 @@ class LibrosControllers extends Sistema
 
   public function getLastCveLibro()
   {
-    $sql = "SELECT MAX(cvelibro) FROM libro";
-    return $this->DB->GetAll($sql);
+    $sql = "SELECT MAX(cvelibro) FROM libro where status = ?";
+    return $this->DB->GetAll($sql, 'existente');
   }
 
   public function getExtension($file)
@@ -30,7 +30,7 @@ class LibrosControllers extends Sistema
   public function deleteOldBanner($cvelibro)
   {
     // delete all files in a directory matching a pattern in one line of code
-    array_map('unlink', glob($this->route . $cvelibro . ".*"));
+    array_map('unlink', glob($this->route_images . "/portadas/" . $cvelibro . ".*"));
   }
 
 }

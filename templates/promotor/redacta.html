@@ -43,12 +43,12 @@
               {if !isset($mensaje)} {if !isset($mensaje)}
               <div class="small-10 columns form-group">
                 <label>Subir archivo</label>
-                <input type="file" id="input12" name="archivo">
+                <input id="file-1" type="file" class="file-loading" multiple=true data-preview-file-type="any" name="archivo">
               </div>
               {/if}{/if}
               
               <div class="small-10 columns form-group" align="right">
-                <input type="reset" value="Cancelar" class="btn btn-danger" data-toggle="tooltip" data-placement="top" 
+                <input type="reset" value="Limpiar" class="btn btn-danger" data-toggle="tooltip" data-placement="top" 
                   title="Borrar datos" id="_cancel" name="_cancel">
                 <input type="submit" value="Enviar" class="btn btn-success" data-toggle="tooltip" data-placement="top" 
                   title="Publicar aviso" id="_send" name="_send">
@@ -59,6 +59,7 @@
           </div> <!--end panel panel-defaul-->
 
         </form>
+      
       {/if} {/if}
       
       {if isset($accion)}
@@ -98,7 +99,7 @@
               {if !isset($mensaje)}
                 <div class="small-10 columns form-group">
                   <label>Subir archivo</label>
-                  <input type="file" id="input12" name="archivo">
+                  <input id="file-1" type="file" class="file-loading" multiple=true data-preview-file-type="any" name="archivo">
                 </div>
                 
                 <div class="small-6 columns form-group" align="right">

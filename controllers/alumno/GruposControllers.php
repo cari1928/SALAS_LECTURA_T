@@ -2,18 +2,26 @@
 
 class GruposControllers extends Sistema
 {
+  public $route = "/home/slslctr/archivos/periodos/";
+
   public function __construct()
   {
     parent::__construct();
     $this->smarty->setCompileDir('../templates_c'); //para que no aparezca la carpeta alumno/templates_c
   }
 
+  /**
+   *
+   */
   public function getReading($cvelectura)
   {
     $sql = "SELECT * FROM lectura WHERE cvelectura=?";
     return $this->DB->GetAll($sql, $cvelectura);
   }
 
+  /**
+   *
+   */
   public function getBooks($nocontrol, $cvelectura)
   {
     $sql = "SELECT libro.cvelibro, titulo, estado FROM lista_libros
@@ -25,18 +33,27 @@ class GruposControllers extends Sistema
     return $this->DB->GetAll($sql, array($nocontrol, $cvelectura));
   }
 
+  /**
+   *
+   */
   public function getLetter($cvelectura)
   {
     $sql = "SELECT letra FROM abecedario WHERE cve IN (SELECT cveletra FROM lectura WHERE cvelectura=?)";
     return $this->DB->GetAll($sql, $cvelectura);
   }
 
+  /**
+   *
+   */
   public function getBook($cvelibro)
   {
     $sql = "SELECT * FROM libro WHERE cvelibro=?";
     return $this->DB->GetAll($sql, $cvelibro);
   }
 
+  /**
+   *
+   */
   public function getReadingMesh($cvelectura, $cveperiodo)
   {
     $sql = "SELECT * FROM lectura
@@ -47,12 +64,18 @@ class GruposControllers extends Sistema
     return $this->DB->GetAll($sql, array($cvelectura, $cveperiodo));
   }
 
+  /**
+   *
+   */
   public function insertBookList($cvelibro, $cvelectura, $cveperiodo)
   {
     $sql = "INSERT INTO lista_libros(cvelibro, cvelectura, cveperiodo, cveestado, calif_reporte) VALUES (?, ?, ?, 1, 0)";
     return $this->query($sql, array($cvelibro, $cvelectura, $cveperiodo));
   }
 
+  /**
+   *
+   */
   public function getGroups($letra, $cveperiodo, $nocontrol)
   {
     $sql = "SELECT distinct nocontrol FROM laboral
@@ -63,6 +86,9 @@ class GruposControllers extends Sistema
     return $this->DB->GetAll($sql, array($letra, $cveperiodo, $nocontrol));
   }
 
+  /**
+   *
+   */
   public function getInfoHeader($nocontrol, $cveperiodo, $letra)
   {
     $sql = "SELECT distinct letra, laboral.nombre AS \"nombre_grupo\", sala.ubicacion, fechainicio, fechafinal,
@@ -77,6 +103,9 @@ class GruposControllers extends Sistema
     return $this->DB->GetAll($sql, array($nocontrol, $cveperiodo, $letra));
   }
 
+  /**
+   *
+   */
   public function getDataUsers($letra, $cveperiodo, $nocontrol)
   {
     $sql = "SELECT distinct usuarios.nombre, asistencia, comprension, reporte, asistencia, actividades,
@@ -90,4 +119,21 @@ class GruposControllers extends Sistema
       ORDER BY usuarios.nombre";
     return $this->DB->GetAll($sql, array($letra, $cveperiodo, $nocontrol));
   }
+
+  /**
+   *
+   */
+  public function getFile($dir, $cvelibro)
+  {
+    //obtiene una lista de archivos dentro de un directorio
+    $files = array_diff(scandir($this->route_periodos . $dir), array('.', '..'));
+    foreach ($files as $file) {
+      //verifica si el nombre del archivo contiene la cvelibro y el nocontrol
+      if (preg_match('/' . $cvelibro . '_' . $_SESSION['cveUser'] . '/', $file)) {
+        return $file;
+      }
+    }
+    return null;
+  }
+
 }

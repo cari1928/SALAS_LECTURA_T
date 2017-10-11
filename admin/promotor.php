@@ -5,61 +5,46 @@ if ($_SESSION['roles'] != 'A') {
   $web->checklogin();
 }
 
+$web = new PromotorControllers;
 //por si viene de historial
 $flag = false;
+showMessages();
 
 if (isset($_GET['accion'])) {
 
   switch ($_GET['accion']) {
-
     case 'form_insert':
       show_form_insert($web);
       break;
-
     case 'form_update':
       show_form_update($web);
       break;
-
     case 'insert':
       insert_professor($web);
       break;
-
     case 'update':
-      update_professor($web);
+      update_professor();
       break;
-
     case 'delete':
-      delete_professor($web);
+      delete_professor();
       break;
-
     case 'mostrar':
-      show_professor_groups($web);
+      show_professor_groups();
       break;
-
     case 'historial':
       $flag = show_history($web);
       break;
   }
 }
 
-//viene de historial
-if ($flag) {
-  $promotores = $flag;
-
-} else {
+$promotores = $flag; //viene de historial
+if (!$flag) {
   //no viene de historial
-  $sql = "SELECT u.cveusuario, u.nombre, u.correo, otro AS \"Otro\", e.nombre AS \"Especialidad\",
-  eu.cveespecialidad FROM usuarios u
-  INNER JOIN especialidad_usuario eu ON eu.cveusuario = u.cveusuario
-  INNER JOIN especialidad e ON e.cveespecialidad = eu.cveespecialidad
-  WHERE u.cveusuario in (SELECT cveusuario FROM usuario_rol WHERE cverol=2)
-  ORDER BY u.cveusuario";
   $web->DB->SetFetchMode(ADODB_FETCH_NUM);
-  $promotores = $web->DB->GetAll($sql);
+  $promotores = $web->getPromotores();
 }
 
 $web->iniClases('admin', "index promotor");
-
 if (!isset($promotores[0])) {
   $web->simple_message('warning', 'No hay promotores registrados');
 }
@@ -97,10 +82,30 @@ fwrite($file, $datos);
 
 $web->smarty->assign('datos', $datos);
 $web->smarty->display("promotor.html");
-
 /*************************************************************************************************
  * FUNCIONES
  *************************************************************************************************/
+/**
+ * Muestra avisos
+ */
+function showMessages()
+{
+  global $web;
+  if (isset($_GET['a'])) {
+    switch ($_GET['a']) {
+      case 'value':
+        $web->simple_message('info', 'Los cambios han sido guardados correctamente');
+        break;
+      case 1:
+        $web->simple_message('info', 'Se ha eliminado el promotor correctamente');
+        break;
+      case 2:
+        $web->simple_message('danger', 'No se ha podido eliminar al promotor seleccionado');
+        break;
+    }
+  }
+}
+
 /**
  * Define lo que se mostrará en caso de que la especialidad esté indicada o no con la opción 'Otro'
  */
@@ -113,7 +118,6 @@ function arreglaEspecialidad($web)
       $promotores[$i][3] = $promotores[$i][4];
     }
   }
-  // $web->debug($promotores);
 }
 
 /**
@@ -124,23 +128,22 @@ function arreglaEspecialidad($web)
  * @param  Class  $web        Objeto para usar las herramientas smarty
  * @return Error desplegado en una plantilla
  */
-function errores($msg, $ruta, $web, $cveusuario = null)
+function errores($msg, $ruta, $cveusuario = null)
 {
+  global $web;
   $web->simple_message('danger', $msg);
   $web->iniClases('admin', $ruta);
 
-  $sql     = "SELECT cveespecialidad, nombre FROM especialidad WHERE cveespecialidad <> 'O'";
+  $sql = "SELECT cveespecialidad, nombre FROM especialidad
+    WHERE cveespecialidad <> 'O' ORDER BY nombre";
   $combito = $web->combo($sql, null, '../');
   $web->smarty->assign('combito', $combito);
 
   if ($cveusuario != null) {
-    $sql   = 'SELECT * FROM usuarios WHERE cveusuario=?';
-    $datos = $web->DB->GetAll($sql, $cveusuario);
+    $datos = $web->getAll('*', array('cveusuario' => $cveusuario), 'usuarios');
     $web->smarty->assign('promotores', $datos[0]);
   }
-
-  $web->smarty->display('form_promotores.html');
-  die();
+  $web->smarty->display('form_promotores.html');die();
 }
 
 /**
@@ -149,8 +152,10 @@ function errores($msg, $ruta, $web, $cveusuario = null)
  * @param  Class    $web Objeto para hacer uso de smarty
  * @return boolean  false = Mostrar mensaje de error
  */
-function delete_professor($web)
+function delete_professor()
 {
+  global $web;
+  $cveperiodo = $web->periodo();
   //se valida la contraseña
   switch ($web->valida_pass($_SESSION['cveUser'])) {
     case 1:
@@ -170,57 +175,28 @@ function delete_professor($web)
   }
 
   //verifica que el promotor exista
-  $sql   = "SELECT * FROM usuarios WHERE cveusuario=?";
-  $datos = $web->DB->GetAll($sql, $_GET['info1']);
+  $datos = $web->getAll('*', array('cveusuario' => $_GET['info1']), 'usuarios');
   if (!isset($datos[0])) {
     $web->simple_message('danger', "El promotor no existe");
     return false;
   }
 
   //obtiene grupos del promotor
-  $sql    = "SELECT DISTINCT cveletra, sala FROM laboral WHERE cvepromotor=?";
-  $grupos = $web->DB->GetAll($sql, $_GET['info1']);
-
+  $grupos = $web->getAll(array('DISTINCT cveletra', 'sala'), array('cvepromotor' => $_GET['info1']), 'laboral');
   for ($i = 0; $i < sizeof($grupos); $i++) {
     //obtiene la cvelectura de cada grupo
-    $sql     = "SELECT cvelectura FROM lectura WHERE cveletra=?";
-    $lectura = $web->DB->GetAll($sql, $grupos[$i]['cveletra']);
-
+    $lectura = $web->getAll(array('cvelectura'), array('cveletra' => $grupos[$i]['cveletra']), 'lectura');
     for ($j = 0; $j < sizeof($lectura); $j++) {
-      //elimina de evaluacion, lista_libros y lectura
-      $sql = "DELETE FROM evaluacion WHERE cvelectura=?";
-      $web->query($sql, $lectura[$j]['cvelectura']);
-      $sql = "DELETE FROM lista_libros WHERE cvelectura=?";
-      $web->query($sql, $lectura[$j]['cvelectura']);
-      $sql = "DELETE FROM lectura WHERE cvelectura=?";
-      $web->query($sql, $lectura[$j]['cvelectura']);
+      //trigger, elimina de evaluacion, lista_libros y lectura
+      $web->dbFunction('*', 'del_reading', array($lectura[$j]['cvelectura']));
     }
   }
 
-  //obtiene las salas que ha apartado el promotor
-  $sql   = "SELECT DISTINCT cvesala FROM laboral WHERE cvepromotor=?";
-  $salas = $web->DB->GetAll($sql, $_GET['info1']);
-  //elimina las salas
-  for ($i = 0; $i < sizeof($salas); $i++) {
-    $sql = "DELETE FROM sala WHERE cvesala=?";
-    $web->query($sql, $salas[$i]['cvesala']);
-  }
-
   //elimina laboral, msj, usuario_rol, especialidad_usuario y promotor
-  $sql = "DELETE FROM laboral WHERE cvepromotor=?";
-  $web->query($sql, $_GET['info1']);
-  $sql = "DELETE FROM msj WHERE emisor=? or receptor=?";
-  $web->query($sql, array($_GET['info1'], $_GET['info1']));
-  $sql = "DELETE FROM usuario_rol WHERE cveusuario=?";
-  $web->query($sql, $_GET['info1']);
-  $sql = "DELETE FROM especialidad_usuario WHERE cveusuario=?";
-  $web->query($sql, $_GET['info1']);
-  $sql = "DELETE FROM usuarios WHERE cveusuario=?";
-  if (!$web->query($sql, $_GET['info1'])) {
-    $web->simple_message('danger', 'No se pudo completar la operación');
-    return false;
+  if (!$web->dbFunction('*', 'del_laboral', array($cveperiodo, $grupos[$i]['cveletra']))) {
+    header('Location: promotor.php?a=2');die();
   }
-  header('Location: promotor.php');
+  header('Location: promotor.php?a=1');die();
 }
 
 /**
@@ -228,8 +204,9 @@ function delete_professor($web)
  * @param  Class    $web Objeto para hacer uso de smarty
  * @return boolean  false = Mostrar mensaje de error
  */
-function show_professor_groups($web)
+function show_professor_groups()
 {
+  global $web;
   //verifica que se mandó y sea válido la cvepromotor
   if (!isset($_GET['info1'])) {
     $web->simple_message('danger', 'No altere la estructura de la interfaz, no se especificó el promotor');
@@ -243,53 +220,34 @@ function show_professor_groups($web)
   if (isset($_GET['info2'])) {
     $web->iniClases('admin', "index historial grupos");
     $web->smarty->assign('bandera', 'historial');
-    //ya manda la cveperiodo
-    $cveperiodo = $_GET['info2'];
+    $cveperiodo = $_GET['info2']; //ya manda la cveperiodo
     $web->smarty->assign('cveperiodo', $cveperiodo);
+
   } else {
     $cveperiodo = $web->periodo();
   }
 
-  $sql      = "SELECT * FROM usuarios WHERE cveusuario=?";
-  $promotor = $web->DB->GetAll($sql, $_GET['info1']);
+  $promotor = $web->getAll('*', array('cveusuario' => $_GET['info1']), 'usuarios');
   if (!isset($promotor[0])) {
     $web->simple_message('danger', 'No existe el promotor');
     return false;
   }
-
   if ($cveperiodo == '') {
     $web->simple_message('danger', 'No se ha iniciado un periodo nuevo');
     return false;
   }
 
-  $sql = "SELECT DISTINCT letra, nombre, ubicacion, titulo, laboral.cveperiodo
-  FROM laboral
-  INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
-  INNER JOIN sala ON laboral.cvesala = sala.cvesala
-  LEFT JOIN libro ON laboral.cvelibro_grupal = libro.cvelibro
-  WHERE cvepromotor=? AND laboral.cveperiodo=?
-  ORDER BY letra";
-  $tablegrupos = $web->DB->GetAll($sql, array($_GET['info1'], $cveperiodo));
+  $tablegrupos = $web->getTableGroups($_GET['info1'], $cveperiodo);
   if (!isset($tablegrupos[0])) {
     $web->simple_message('danger', 'No ha creado algún grupo');
     return false;
   }
 
-  $sql = "SELECT dia.cvedia, abecedario.letra, dia.nombre, horas.hora_inicial,
-  horas.hora_final
-  FROM laboral
-  INNER JOIN dia ON dia.cvedia=laboral.cvedia
-  INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
-  INNER JOIN horas ON horas.cvehoras=laboral.cvehoras
-  WHERE cvepromotor=? AND laboral.cveperiodo=?
-  ORDER BY letra, dia.cvedia, horas.hora_inicial";
-  $horas = $web->DB->GetAll($sql, array($_GET['info1'], $cveperiodo));
-
+  $horas = $web->getHours($cveperiodo);
   for ($i = 0; $i < sizeof($tablegrupos); $i++) {
     $tablegrupos[$i]['horario'] = "";
 
     for ($j = 0; $j < sizeof($horas); $j++) {
-
       if ($tablegrupos[$i]['letra'] == $horas[$j]['letra']) {
         $tablegrupos[$i]['horario'] .= $horas[$j]['nombre'] . ' - ' . $horas[$j]['hora_inicial'] . ' a ' . $horas[$j]['hora_final'] . "<br>";
       }
@@ -311,18 +269,8 @@ function show_history($web)
 {
   $web->iniClases('admin', "index historial promotor");
 
-  $sql = "SELECT DISTINCT u.cveusuario ,u.nombre, u.correo, otro AS \"Otro\",
-  e.nombre AS \"Especialidad\", eu.cveespecialidad
-  FROM usuarios u
-  INNER JOIN especialidad_usuario eu ON eu.cveusuario = u.cveusuario
-  INNER JOIN especialidad e ON e.cveespecialidad = eu.cveespecialidad
-  INNER JOIN laboral ON laboral.cvepromotor = u.cveusuario
-  WHERE u.cveusuario IN (SELECT cveusuario FROM usuario_rol WHERE cverol=2)
-  AND cveperiodo=?
-  ORDER BY u.cveusuario";
   $web->DB->SetFetchMode(ADODB_FETCH_NUM);
-  $promotores = $web->DB->GetAll($sql, $_GET['info1']);
-
+  $promotores = $web->getPromotoresByPeriod($_GET['info1']);
   if (!isset($promotores[0])) {
     header('Location: historial.php?e=1&info1=' . $_GET['info1']);
     return false;
@@ -366,14 +314,7 @@ function show_form_update($web)
   }
 
   $web->iniClases('admin', "index promotor actualizar");
-
-  $sql = 'SELECT u.cveusuario, u.nombre AS "nombreUsuario", e.nombre, eu.cveespecialidad,
-  eu.otro, u.correo
-  FROM usuarios u
-  INNER JOIN especialidad_usuario eu ON eu.cveusuario = u.cveusuario
-  INNER JOIN especialidad e ON e.cveespecialidad = eu.cveespecialidad
-  WHERE u.cveusuario=?';
-  $datos = $web->DB->GetAll($sql, $_GET['info1']);
+  $datos = $web->getPromotor($_GET['info1']);
   if (!isset($datos[0])) {
     $web->simple_message('danger', "No existe el promotor");
     return false;
@@ -405,7 +346,7 @@ function insert_professor($web)
     !isset($_POST['datos']['correo']) ||
     !isset($_POST['datos']['contrasena']) ||
     !isset($_POST['datos']['confcontrasena'])) {
-    errores('No alteres la estructura de la interfaz', 'index promotor nuevo', $web);
+    errores('No alteres la estructura de la interfaz', 'index promotor nuevo');
   }
 
   if (($_POST['datos']['usuario']) == '' ||
@@ -413,31 +354,29 @@ function insert_professor($web)
     ($_POST['datos']['correo']) == '' ||
     ($_POST['datos']['contrasena']) == '' ||
     ($_POST['datos']['confcontrasena'] == '')) {
-    errores('Llene todos los campos', 'index promotor nuevo', $web);
+    errores('Llene todos los campos', 'index promotor nuevo');
   }
 
   if (strlen($_POST['datos']['usuario']) != 13) {
-    errores('La longitud del usuario debe de ser de 13 caracteres', 'index promotor nuevo', $web);
+    errores('La longitud del usuario debe de ser de 13 caracteres', 'index promotor nuevo');
   }
 
   if (!$web->valida($_POST['datos']['correo'])) {
-    errores('Ingrese un correo valido', 'index promotor nuevo', $web);
+    errores('Ingrese un correo valido', 'index promotor nuevo');
   }
 
   if ($_POST['datos']['contrasena'] != $_POST['datos']['confcontrasena']) {
-    errores('Las contraseñas no coinciden', 'index promotor nuevo', $web);
+    errores('Las contraseñas no coinciden', 'index promotor nuevo');
   }
 
-  $sql   = "SELECT * FROM usuarios WHERE correo=?";
-  $datos = $web->DB->GetAll($sql, $_POST['datos']['correo']);
+  $datos = $web->getAll('*', array('correo' => $_POST['datos']['correo']), 'usuarios');
   if (isset($datos[0])) {
-    errores('El correo ya existe', 'index promotor nuevo', $web);
+    errores('El correo ya existe', 'index promotor nuevo');
   }
 
-  $sql   = "SELECT * FROM usuarios WHERE cveusuario=?";
-  $datos = $web->DB->GetAll($sql, $_POST['datos']['usuario']);
+  $datos = $web->getAll('*', array('cveusuario' => $_POST['datos']['usuario']), 'usuarios');
   if (isset($datos[0])) {
-    errores('El usuario ya existe', 'index promotor nuevo', $web);
+    errores('El usuario ya existe', 'index promotor nuevo');
   }
 
   $usuario    = $_POST['datos']['usuario'];
@@ -446,30 +385,26 @@ function insert_professor($web)
   $correo     = $_POST['datos']['correo'];
 
   $web->DB->startTrans();
-
-  $sql = "INSERT INTO usuarios(cveusuario, nombre, pass, correo, validacion)
-  VALUES(?,?,?,?, 'Aceptado')";
-  $tmp = array($usuario, $nombre, md5($contrasena), $correo);
-  $web->query($sql, $tmp);
-  $sql = "INSERT INTO usuario_rol VALUES(?, ?)";
-  $web->query($sql, array($usuario, 2));
+  $web->insert('usuarios', array(
+    'cveusuario' => $usuario, 'nombre' => $nombre, 'pass' => md5($contrasena), 'correo' => $correo, 'validacion' => 'Aceptado'));
+  $web->insert('usuario_rol', array('cveusuario' => $usuario, 'cverol' => 2));
 
   if (isset($_POST['datos']['especialidad'])) {
 
     if ($_POST['datos']['especialidad'] == 'true') {
-      $sql = "INSERT INTO especialidad_usuario (cveusuario, cveespecialidad) VALUES(?, ?)";
-      $web->query($sql, array($usuario, $_POST['datos']['cveespecialidad']));
+      $web->insert('especialidad_usuario', array(
+        'cveusuario' => $usuario, 'cveespecialidad' => $_POST['datos']['cveespecialidad']));
     } else {
-      $sql = "INSERT INTO especialidad_usuario VALUES(?, ?, ?)";
-      $web->query($sql, array($usuario, 'O', $_POST['datos']['otro']));
+      $web->insert('especialidad_usuario', array(
+        'cveusuario' => $usuario, 'cveespecialidad' => 'O', 'otro' => $_POST['datos']['otro']));
     }
   } else {
-    $sql = "INSERT INTO especialidad_usuario (cveusuario, cveespecialidad) VALUES(?, ?)";
-    $web->query($sql, array($usuario, $_POST['datos']['cveespecialidad']));
+    $web->insert('especialidad_usuario', array(
+      'cveusuario' => $usuario, 'cveespecialidad' => $_POST['datos']['cveespecialidad']));
   }
 
   if ($web->DB->HasFailedTrans()) {
-    $web->simple_message('danger', 'No se pudo completar la operación');
+    $web->simple_message('danger', 'No se pudo completar la operación, E003');
     $web->DB->CompleteTrans();
     return false;
   }
@@ -482,42 +417,37 @@ function insert_professor($web)
  * @param  Class    $web Objeto para hacer uso de smarty
  * @return boolean  false = Mostrar mensaje de error
  */
-function update_professor($web)
+function update_professor()
 {
-  global $cveperiodo;
+  global $web, $cveperiodo;
   $cveusuario = $_POST['cveusuario'];
 
   if (!isset($_POST['datos']['nombre']) ||
     !isset($_POST['datos']['cveespecialidad']) ||
     !isset($_POST['datos']['correo'])) {
-    errores('No alteres la estructura de la interfaz', 'index promotor nuevo', $cveusuario, $web);
+    errores('No alteres la estructura de la interfaz', 'index promotor actualizar', $cveusuario);
   }
-
   if (($_POST['datos']['nombre']) == '' ||
     ($_POST['datos']['cveespecialidad']) == '' ||
     ($_POST['datos']['correo']) == '') {
-    errores('Llene todos los campos', 'index promotor nuevo', $cveusuario, $web);
+    errores('Llene todos los campos', 'index promotor actualizar', $cveusuario);
   }
 
-  $sql   = "SELECT * FROM usuarios WHERE cveusuario=?";
-  $datos = $web->DB->GetAll($sql, $cveusuario);
+  $datos = $web->getAll('*', array('cveusuario' => $cveusuario), 'usuarios');
   if (!isset($datos[0])) {
-    errores('El promotor no existe', 'index promotor nuevo', $cveusuario, $web);
+    errores('El promotor no existe', 'index promotor actualizar', $cveusuario);
   }
 
   $datosp = $datos;
   if (!$web->valida($_POST['datos']['correo'])) {
-    errores('Ingrese un correo valido', 'index promotor nuevo', $cveusuario, $web);
+    errores('Ingrese un correo valido', 'index promotor actualizar', $cveusuario);
   }
 
-  $sql            = "SELECT correo FROM usuarios WHERE cveusuario=?";
-  $correo_usuario = $web->DB->GetAll($sql, $cveUsuario);
-
-  $sql     = "SELECT correo FROM usuarios WHERE correo=?";
-  $correos = $web->DB->GetAll($sql, $correo);
+  $correo_usuario = $web->getAll(array('correo'), array('cveusuario' => $cveusuario), 'usuarios');
+  $correos        = $web->getAll(array('correo'), array('correo' => $_POST['datos']['correo']), 'usuarios');
   if (sizeof($correos) == 1) {
     if ($correo_usuario[0]['correo'] != $correos[0]['correo']) {
-      errores('El correo ya existe', 'index promotor nuevo', $cveusuario, $web);
+      errores('El correo ya existe', 'index promotor nuevo', $cveusuario);
     }
   }
 
@@ -526,61 +456,66 @@ function update_professor($web)
     if (!isset($_POST['datos']['contrasena']) ||
       !isset($_POST['datos']['contrasenaN']) ||
       !isset($_POST['datos']['confcontrasenaN'])) {
-      errores('No altere la estructura de la interfaz', 'index promotor nuevo', $cveusuario, $web);
+      errores('No altere la estructura de la interfaz', 'index promotor nuevo', $cveusuario);
     }
-
     if (isset($_POST['datos']['contrasena']) == '' ||
       isset($_POST['datos']['contrasenaN']) == '' ||
       isset($_POST['datos']['confcontrasenaN']) == '') {
-      errores('Llene todos los campos', 'index promotor nuevo', $cveusuario, $web);
+      errores('Llene todos los campos', 'index promotor nuevo', $cveusuario);
     }
-
     if ($datosp[0]['pass'] != md5($_POST['datos']['contrasena'])) {
-      errores('La contraseña es incorrecta', 'index promotor nuevo', $cveusuario, $web);
+      errores('La contraseña es incorrecta', 'index promotor nuevo', $cveusuario);
     }
-
     if ($_POST['datos']['confcontrasenaN'] != $_POST['datos']['contrasenaN']) {
-      errores('La contraseña nueva debe coincidir con la confirmación', 'index promotor nuevo', $cveusuario, $web);
+      errores('La contraseña nueva debe coincidir con la confirmación', 'index promotor nuevo', $cveusuario);
     }
 
-    $sql = "UPDATE usuarios SET nombre=?, correo= ?, pass=? WHERE cveusuario=?";
     $tmp = array(
       $_POST['datos']['nombre'],
       $_POST['datos']['correo'],
       md5($_POST['datos']['contrasenaN']),
       $cveusuario);
-
-    if (!$web->query($sql, $tmp)) {
-      $web->simple_message('danger', 'No se pudo completar la operación');
+    if (!$web->updatePromoPass($tmp)) {
+      $web->simple_message('danger', 'No se pudo completar la operación, E001');
       return false;
     }
   } else {
-    $sql = "UPDATE usuarios SET nombre=?, correo= ? WHERE cveusuario=?";
+    if ($correo_usuario[0][0] == $_POST['datos']['correo']) {
+      // UPDATE SIN CORREO
+      $web->update(
+        array('nombre' => $_POST['datos']['nombre'], 'pass' => md5($_POST['datos']['contrasenaN'])),
+        array('cveusuario' => $cveusuario),
+        'usuarios');
+    } else {
+      // UPDATE CON CORREO
+      $web->update(
+        array('nombre' => $_POST['datos']['nombre'],
+          'correo'       => $_POST['datos']['correo'],
+          'pass'         => md5($_POST['datos']['contrasenaN'])),
+        array('cveusuario' => $cveusuario),
+        'usuarios');
+    }
+
     $tmp = array($_POST['datos']['nombre'], $_POST['datos']['correo'], $cveusuario);
-    if (!$web->query($sql, $tmp)) {
-      $web->simple_message('danger', 'No se pudo completar la operación');
+    if (!$web->updatePromotor($tmp)) {
+      $web->simple_message('danger', 'No se pudo completar la operación, E002');
       return false;
     }
 
     if (isset($_POST['datos']['especialidad'])) {
       if ($_POST['datos']['especialidad'] == 'true') {
-        $sql = "UPDATE especialidad_usuario SET cveespecialidad=?, otro=null WHERE cveusuario=? ";
-        $web->query($sql, array($_POST['datos']['cveespecialidad'], $cveusuario));
+        $web->updateEspUsuario($_POST['datos']['cveespecialidad'], null, $cveusuario);
       } else {
-        $sql = "UPDATE especialidad_usuario SET cveespecialidad='O', otro=? WHERE cveusuario=? ";
-        $web->query($sql, array($_POST['datos']['otro'], $cveusuario));
+        $web->updateEspUsuario('O', $_POST['datos']['otro'], $cveusuario);
       }
     } else {
-      $sql             = "SELECT cveespecialidad FROM especialidad_usuario WHERE cveusuario=?";
-      $cveespecialidad = $web->DB->GetAll($sql, $cveusuario);
+      $cveespecialidad = $web->getAll(array('cveespecialidad'), array('cveusuario' => $cveusuario), 'especialidad_usuario');
       if ($cveespecialidad[0]['cveespecialidad'] == 'O') {
-        $sql = "UPDATE especialidad_usuario SET cveespecialidad='O', otro=? WHERE cveusuario=? ";
-        $web->query($sql, array($_POST['datos']['otro'], $cveusuario));
+        $web->updateEspUsuario('O', $_POST['datos']['otro'], $cveusuario);
       } else {
-        $sql = "UPDATE especialidad_usuario SET cveespecialidad=?, otro=null WHERE cveusuario=? ";
-        $web->query($sql, array($_POST['datos']['cveespecialidad'], $cveusuario));
+        $web->updateEspUsuario($_POST['datos']['cveespecialidad'], null, $cveusuario);
       }
     }
   }
-  header('Location: promotor.php');
+  header('Location: promotor.php?a=1');
 }

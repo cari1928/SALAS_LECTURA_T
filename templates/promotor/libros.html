@@ -1,0 +1,34 @@
+{include file='header.html'}
+{$ruta}
+{if isset($msg)} {include file='../mensajes.html'} {/if}
+
+<table class='table'>
+	<tr>
+		<td colspan='4' align='right'>
+			<a href='libros.php?accion=form_add&info={$cvelectura}&info2={$nocontrol}&info3={$grupo}'>
+				<img src='../Images/add.png'/> 
+			</a>
+		</td>
+	</tr> 
+</table>
+
+<table id="example" class="display" cellspacing="0" width="100%">
+	<thead>
+    <tr>
+      <th>AUTOR</th>
+      <th>TITULO</th>
+      <th>EDITORIAL</th>
+      <th>ASIGNAR LIBRO</th>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <th>AUTOR</th>
+      <th>TITULO</th>
+      <th>EDITORIAL</th>
+      <th>ASIGNAR LIBRO</th>
+    </tr>
+  </tfoot>
+</table>
+	
+{include file='footer.html'}

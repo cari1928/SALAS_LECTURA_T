@@ -285,7 +285,7 @@ function mSchedule()
 function mCreateFolders($letra)
 {
   global $web, $cveperiodo;
-  if (!mkdir("/home/slslctr/archivos/msj/" . $cveperiodo . "/" . $letra, 0777, true)) {
+  if (!mkdir($web->route_msj . $cveperiodo . "/" . $letra, 0777, true)) {
     $web->simple_message('warning', 'No fue posible crear los recursos necesarios');
   }
 }

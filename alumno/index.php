@@ -1,23 +1,11 @@
 <?php
-include 'sistema.php';
+include '../sistema.php';
 
-$date  = getdate();
-$fecha = date('Y-m-j');
-
-if (isset($_GET['m'])) {
-  switch ($_GET['m']) {
-    case 1:
-      $web->simple_message('warinig', 'No se ha iniciado sesión');
-      break;
-    case 2:
-      $web->simple_message('warning', 'Falta información del foro');
-      break;
-  }
+if ($_SESSION['roles'] != 'U') {
+  $web->checklogin();
 }
 
-$sql = "SELECT introduccion, cvemsj FROM msj
-WHERE tipo='PU' AND expira >= ?
-ORDER BY fecha";
-$mensajes = $web->muestraMSJ($sql, $fecha);
-$web->smarty->assign('mensaje', $mensajes);
+$web->iniClases('usuario', "index");
+$grupos = $web->grupos($_SESSION['cveUser']);
+$web->smarty->assign('grupos', $grupos);
 $web->smarty->display('index.html');

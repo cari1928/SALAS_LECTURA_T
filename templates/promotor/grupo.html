@@ -152,22 +152,29 @@
 							</a>
 							<input type="submit" style='display: none'/>
 							<a style="text-decoration:none"
-								href="grupo.php?accion=libros&info={$alumno.cvelectura}&info2={$alumno.nocontrol}">
+								href="grupo.php?accion=libros&info={$alumno.cvelectura}&info2={$alumno.nocontrol}&info3={$info.letra}">
 								<img src="../Images/libros.png">
 							</a>
 						</td>
-	
 					</form>
-	
 				</tr>
 			{/foreach}
 		</table>		
-		</div>
-		
+	</div>
 	{/if}
 {/if}
 
 {if isset($libros)}
+	<table class='table'>
+		<tr>
+			<td colspan='4' align='right'>
+				<a href='libros.php?info={$cvelectura}&info2={$nocontrol}&info3={$grupo}'>
+					<img src='../Images/add.png'/> 
+				</a>
+			</td>
+		</tr> 
+	</table>
+
 	<div class="page-header">
     <h2>Lista de Libros del Alumno</h2>
   </div>
@@ -175,7 +182,6 @@
   <table class='table table-striped' width='500'>
     
     <tr>
-    	<th><center>CLAVE</center></th>
 			<th><center>TITULO</center></th>
 			<th><center>ESTADO</center></th>
 			<th><center>REPORTE</center></th>
@@ -185,22 +191,20 @@
 		{foreach $libros as $libro}
 			<tr>
 				<form class='form-inline' 
-					action="grupo.php?accion=calificar_reporte&info1={$libro.cvelista}&info2={$libro.cvelectura}&info3={$libro.nocontrol}" 
+					action="grupo.php?accion=calificar_reporte&info1={$libro.cvelista}&info2={$libro.cvelectura}&info3={$libro.nocontrol}&info4={$grupo}" 
 					method='post'>
-				
-					<td><center>{$libro.cvelibro}</center></td>
-					<td><center>{$libro.titulo}</center></td>
-					<td><center>{$libro.combo}</center></td>
-					<td><center>
+					<td style="vertical-align:middle"><center>{$libro.titulo}</center></td>
+					<td style="vertical-align:middle"><center>{$libro.combo}</center></td>
+					<td style="vertical-align:middle"><center>
 						{if isset($libro.archivoExiste)}
-							<a href="grupo.php?accion=reporte&info1={$libro.cvelibro}&info2={$libro.cvelectura}&info3={$libro.archivoExiste}"> 
+							<a href="grupo.php?accion=reporte&info={$libro.archivoExiste}&info2={$grupo}"> 
 					  	<img src="../Images/reporte.png"></a>
 						{else}
 							<img src="../Images/noexiste.png"></a>
 						{/if}
 					</center></td>
 					
-					<td width='500'>
+					<td style="vertical-align:middle" width='500'>
 						<center>
 						 	<div id="myprogress" style=" position: relative; width: 130px; height: 30px; background-color: #ddd;">	
 						 		<div id="mybar" style="position: absolute; width: {$libro.calif_reporte}% ;height: 100%; background-color: #4caf50;">

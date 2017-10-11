@@ -1,0 +1,17 @@
+{include file="header.html"}
+{$ruta}
+
+<form action="formato_reporte.php?accion=fileinput" method="post" enctype="multipart/form-data">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Subir formato del reporte</h3>
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+          <input id="file-1" type="file" class="file-loading" multiple=true data-preview-file-type="any" name="datos[archivo]">
+      </div>
+    </div>
+  </div>
+</form>
+  
+{include file="footer.html"}

@@ -3,6 +3,7 @@ include "../sistema.php";
 
 if ($_SESSION['roles'] != 'P') {$web->checklogin();}
 
+$web = new PromoGruposControllers;
 $web->iniClases('promotor', "index grupos");
 $grupos = $web->grupos($_SESSION['cveUser']);
 $web->smarty->assign('grupos', $grupos);
@@ -21,73 +22,24 @@ if (isset($_GET['accion'])) {
   switch ($_GET['accion']) {
 
     case 'form_update':
-      if (!isset($_GET['info'])) {
-        $web->simple_message('danger', 'No se especificó el grupo');
-        break;
-      }
-
-      $sql = "SELECT * FROM laboral WHERE cveletra IN
-          (SELECT cve FROM abecedario WHERE letra=?)";
-      $grupo = $web->DB->GetAll($sql, $_GET['info']);
-
-      if (!isset($grupo[0])) {
-        $web->simple_message('danger', 'No existe el grupo seleccionado');
-        break;
-      }
-
-      $web->iniClases('promotor', "index grupos actualizar");
-      $web->smarty->assign('grupos', $grupo[0]);
-      $web->smarty->display('form_vergrupos.html');
-      die();
+      form_update();
       break;
 
     case 'update':
-      if (!isset($_POST['datos']['nombre'])) {
-        $web->simple_message('warning', "No alteres la estructura de la interfaz");
-        break;
-      }
-
-      if ($_POST['datos']['nombre'] == "") {
-        $web->simple_message('warning', "Llena todos los campos");
-        break;
-      }
-
-      $nombre   = $_POST['datos']['nombre'];
-      $cveletra = $_POST['datos']['cveletra'];
-
-      $sql = "UPDATE laboral SET nombre=? WHERE cveletra=?";
-      $web->query($sql, array($nombre, $cveletra));
-      header('Location: grupos.php');
+      update();
       break;
   }
 }
 
-$sql = "SELECT letra, la.nombre, ubicacion
-  FROM lectura le
-  INNER JOIN abecedario abc ON abc.cve = le.cveletra
-  INNER JOIN laboral la ON la.cveletra = abc.cve
-  INNER JOIN sala s ON s.cvesala = la.cvesala
-  WHERE la.cveperiodo=? AND le.cveperiodo=? AND nocontrol=?
-  ORDER BY letra";
-$tablegrupos = $web->DB->GetAll($sql, array($cveperiodo, $cveperiodo, $_SESSION['cveUser']));
+$horas       = $web->getSchedule($_SESSION['cveUser'], $cveperiodo);
+$tablegrupos = $web->getReading($_SESSION['cveUser'], $cveperiodo);
 if (!isset($tablegrupos[0])) {
   $web->simple_message('danger', 'No ha registrado algún grupo');
 }
 
-$sql = "SELECT dia.cvedia, abecedario.letra, dia.nombre, horas.hora_inicial, horas.hora_final
-FROM laboral
-INNER JOIN dia ON dia.cvedia=laboral.cvedia
-INNER JOIN abecedario ON laboral.cveletra = abecedario.cve
-INNER JOIN horas ON horas.cvehoras = laboral.cvehoras
-WHERE cvepromotor=? AND laboral.cveperiodo=?
-ORDER BY letra, dia.cvedia, horas.hora_inicial";
-$horas = $web->DB->GetAll($sql, array($_SESSION['cveUser'], $cveperiodo));
-
 for ($i = 0; $i < sizeof($tablegrupos); $i++) {
   $tablegrupos[$i]['horario'] = "";
-
   for ($j = 0; $j < sizeof($horas); $j++) {
-
     if ($tablegrupos[$i]['letra'] == $horas[$j]['letra']) {
       $tablegrupos[$i]['horario'] .= $horas[$j]['nombre'] . ' - ' . $horas[$j]['hora_inicial'] . ' a ' . $horas[$j]['hora_final'] . "<br>";
     }
@@ -96,12 +48,11 @@ for ($i = 0; $i < sizeof($tablegrupos); $i++) {
 
 $web->smarty->assign('tablegrupos', $tablegrupos);
 $web->smarty->display('vergrupos.html');
-
 /**********************************************************************************************
  * FUNCIONES
  **********************************************************************************************/
 /**
- *
+ * Muestra avisos de error e informativos
  */
 function mShowMessages()
 {
@@ -133,6 +84,53 @@ function mShowMessages()
       case 8:
         $web->simple_message('warning', 'No existe el grupo seleccionado');
         break;
+      case 9:
+        $web->simple_message('danger', 'No es posible descargar el archivo');
+        break;
     }
   }
+}
+
+/**
+ * Muestra el formulario para actualizar
+ */
+function form_update()
+{
+  global $web, $cveperiodo;
+
+  if (!isset($_GET['info'])) {
+    $web->simple_message('danger', 'No se especificó el grupo');
+    break;
+  }
+
+  $grupo = $web->getLaboral($_GET['info'], $cveperiodo);
+  if (!isset($grupo[0])) {
+    $web->simple_message('danger', 'No existe el grupo seleccionado');
+    break;
+  }
+
+  $web->iniClases('promotor', "index grupos actualizar");
+  $web->smarty->assign('grupos', $grupo[0]);
+  $web->smarty->display('form_vergrupos.html');
+  die();
+}
+
+/**
+ * Realiza la actualización
+ */
+function update()
+{
+  global $web, $cveperiodo;
+
+  if (!isset($_POST['datos']['nombre'])) {
+    $web->simple_message('warning', "No alteres la estructura de la interfaz");
+    break;
+  }
+  if ($_POST['datos']['nombre'] == "") {
+    $web->simple_message('warning', "Llena todos los campos");
+    break;
+  }
+
+  $web->updateLaboral($_POST['datos']['nombre'], $_POST['datos']['cveletra'], $cveperiodo);
+  header('Location: grupos.php');
 }

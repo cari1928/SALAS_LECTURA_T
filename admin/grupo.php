@@ -6,6 +6,7 @@ if ($_SESSION['roles'] != 'A') {
   $web->checklogin();
 }
 
+$web = new AdminGrupoControllers;
 //verifica el periodo
 $cveperiodo = $web->periodo();
 if ($cveperiodo == "") {
@@ -26,11 +27,8 @@ if (isset($_GET['accion'])) {
       break;
 
     case 'insert':
-      if (isset($_POST['promotor'])) {
-        insertar_libro_alumno($web, 'promotor');
-      } else {
-        insertar_libro_alumno($web);
-      }
+      $type = (isset($_POST['promotor'])) ? 'promotor' : 'alumno';
+      insertar_libro_alumno($type);
       break;
 
     case 'delete':
@@ -75,9 +73,7 @@ if (isset($_GET['e'])) {
     $web->simple_message('warning', 'Falta información para continuar');
   }
 }
-
 $web->smarty->display('grupo.html');
-
 /************************************************************************************************
  * FUNCIONES
  ************************************************************************************************/
@@ -100,11 +96,7 @@ function mostrar_alumnos($web)
   }
 
   //verifica la existencia del grupo
-  $sql = "SELECT * FROM lectura
-  INNER JOIN laboral on laboral.cveletra = lectura.cveletra
-  WHERE laboral.cveletra in (SELECT cve FROM abecedario WHERE letra=?)
-        and lectura.cveperiodo = ?";
-  $grupo = $web->DB->GetAll($sql, array($_GET['info1'], $cveperiodo));
+  $grupo = $web->getGroup($_GET['info1'], $cveperiodo);
   if (!isset($grupo[0])) {
     $web->iniClases('admin', "index alumnos grupos");
     $web->simple_message('danger', 'El grupo seleccionado no existe');
@@ -311,9 +303,9 @@ function mostrar_libros($web, $alumno)
  * @param  Class   $web Objeto para hacer uso de smarty
  * @return boolean False -> Mostrar mensaje de error
  */
-function insertar_libro_alumno($web, $tipo = 'alumno')
+function insertar_libro_alumno($tipo = 'alumno')
 {
-  global $cveperiodo;
+  global $web, $cveperiodo;
 
   if (!isset($_POST['datos']['cvelibro']) ||
     !isset($_POST['datos']['cvelectura'])) {
@@ -462,8 +454,7 @@ function mostrar_grupos_promotor($web)
   }
 
   //Verificar que exista el promotor
-  $sql         = "SELECT cveusuario FROM usuarios WHERE cveusuario=?";
-  $Aux_usuario = $web->DB->GetAll($sql, $_GET['info2']);
+  $Aux_usuario = $web->getAll(array('cveusuario'), array('cveusuario' => $_GET['info2']), 'usuarios');
   if (!isset($Aux_usuario[0]['cveusuario'])) {
     $web->iniClases('admin', "index promotor grupos");
     $web->simple_message('danger', 'No existe el promotor');

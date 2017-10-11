@@ -5,18 +5,19 @@ if ($_SESSION['roles'] != 'P') {
   $web->checklogin();
 }
 
+$web = new RedactaControllers;
 $web->iniClases('promotor', "index grupos redactar");
 $grupos = $web->grupos($_SESSION['cveUser']);
 $web->smarty->assign('grupos', $grupos);
 $web->smarty->assign('avisos', true);
+
+mShowMessages();
 
 $accion  = $para  = "";
 $periodo = $web->periodo();
 if ($periodo == "") {
   mMessage('danger', 'No hay periodo actual', 'redacta.html');
 }
-
-mShowMessages();
 
 if (isset($_GET['info'])) {
   $para = $_GET['info'];
@@ -29,7 +30,6 @@ if (isset($_GET['accion'])) {
 }
 
 switch ($accion) {
-
   case 'redactar':
     mRedactar();
     break;
@@ -57,7 +57,7 @@ header("Location: grupos.php");
  * FUNCIONES
  **********************************************************************************************/
 /**
- *
+ * Muestra mensajes
  */
 function mMessage($alert, $msg, $html)
 {
@@ -73,18 +73,16 @@ function mRedactar()
 {
   global $web, $periodo, $para;
 
-  $sql   = "SELECT cve FROM abecedario WHERE letra=?";
-  $datos = $web->DB->GetAll($sql, $_GET['info']);
+  $datos = $web->getAll(array('*'), array('letra' => $_GET['info']), 'abecedario');
   if (!isset($datos[0])) {
     mMessage('warning', 'No modifique la interfaz', 'redacta.html');
   }
 
   $letra = $datos[0]['cve'];
-  $sql   = "SELECT * FROM lectura WHERE cveperiodo=? AND cveletra=? AND cveletra in
-    (SELECT cveletra FROM laboral WHERE cvepromotor=? and cveperiodo=?)";
-  $datos = $web->DB->GetAll($sql, array($periodo, $letra, $_SESSION['cveUser'], $periodo));
+  $datos = $web->getReading($periodo, $letra, $_SESSION['cveUser']);
   if (isset($datos[0])) {
     $web->smarty->assign('para', $para);
+    $web->smarty->assign('upload', true);
     $web->smarty->assign('cveperiodo', $periodo);
     $web->smarty->assign('type', 'Grupal');
     $web->smarty->display('redacta.html');
@@ -95,7 +93,7 @@ function mRedactar()
 }
 
 /**
- *
+ * Muestra el formulario para redactar un mensaje a un destinatario específico
  */
 function mRedactarIndividual()
 {
@@ -106,18 +104,11 @@ function mRedactarIndividual()
   }
 
   $receptor = $_GET['info2'];
-  $grupo    = "";
-  if (isset($_GET['info1'])) {
-    $grupo = $_GET['info1'];
-  }
+  $grupo    = (isset($_GET['info1'])) ? $_GET['info1'] : "";
 
-  $sql   = "SELECT cveusuario FROM usuarios WHERE cveusuario=?";
-  $datos = $web->DB->GetAll($sql, $receptor);
+  $datos = $web->getAll(array('cveusuario'), array('cveusuario' => $receptor), 'usuarios');
   if (isset($datos[0])) {
-    $sql = "SELECT * FROM lectura
-      INNER JOIN abecedario ON abecedario.cve = lectura.cveletra
-      WHERE abecedario.letra=? AND lectura.cveperiodo=?";
-    $datos_g = $web->DB->GetAll($sql, array($grupo, $periodo));
+    $datos_g = $web->getIndividualReading($grupo, $periodo);
     if (isset($datos_g[0])) {
       $web->smarty->assign('receptor', $receptor);
       $web->smarty->assign('accion', $accion);
@@ -126,8 +117,8 @@ function mRedactarIndividual()
         $web->smarty->assign('cveperiodo', $periodo);
       }
 
-      $sql   = "SELECT cve FROM abecedario WHERE letra=?";
-      $datos = $web->DB->GetAll($sql, $grupo);
+      $datos = $web->getAll(array('cve'), array('letra' => $grupo), 'abecedario');
+      $web->smarty->assign('upload', true);
       $web->smarty->assign('grupo', $datos[0]['cve']);
       $web->smarty->assign('type', 'Individual');
       $web->smarty->display('redacta.html');
@@ -218,31 +209,18 @@ function mEnviarGrupal()
   if (isset($_GET['para'])) {
     $letra = $_GET['para'];
   }
-
-  $sql   = "SELECT * FROM abecedario WHERE letra=?";
-  $datos = $web->DB->GetAll($sql, $letra);
-  $letra = $datos[0]['cve'];
-
   if (!isset($_POST)) {
     header('Location: grupos.php?aviso=3'); // ocurrió un error
     die();
   }
 
+  $datos  = $web->getAll(array('*'), array('letra' => $letra), 'abecedario');
+  $letra  = $datos[0]['cve'];
   $nombre = mUploadFiles('G', $datos[0]['letra']);
 
-  $sql = "INSERT INTO msj(introduccion, descripcion, tipo, emisor, fecha, expira, cveletra, cveperiodo, archivo)
-    VALUES (?, ?, 'G', ?, ?, ?, ?, ?, ?)";
-  $parameters = array(
-    $_POST['introduccion'],
-    $_POST['descripcion'],
-    $_SESSION['cveUser'],
-    date('Y-m-j'),
-    $_POST['expira'],
-    $letra,
-    $periodo,
-    $nombre,
-  );
-  if (!$web->query($sql, $parameters)) {
+  if (!$web->insertMsj($_POST['introduccion'], $_POST['descripcion'], $_SESSION['cveUser'], $_POST['expira'], $letra,
+    $periodo, $nombre)) {
+    unlink($web->route_msj . $periodo . "/" . $datos[0]['letra'] . "/" . $nombre); //elimina el archivo
     header('Location: grupos.php?aviso=3'); // Ocurrio un error al enviar el mensaje
     die();
   }
@@ -258,12 +236,11 @@ function mEnviarGrupal()
 function mUploadFiles($type, $letra, $receptor = null)
 {
   global $web, $periodo;
-  $web      = new RedactaControllers;
   $max_size = 2000000;
 
   if ($_FILES['archivo']['size'] > 0) {
     if ($_FILES['archivo']['size'] <= $max_size) {
-      $fileRoute = "/home/slslctr/archivos_msj/" . $periodo . "/" . $letra . "/";
+      $fileRoute = $web->route_msj . $periodo . "/" . $letra . "/";
       $nombre    = $_FILES['archivo']['name'];
       $data      = $web->getNameAndExtension($nombre);
 
@@ -286,7 +263,6 @@ function mUploadFiles($type, $letra, $receptor = null)
       return $nombre[($nameSize - 1)];
     }
   }
-
   return '';
 }
 

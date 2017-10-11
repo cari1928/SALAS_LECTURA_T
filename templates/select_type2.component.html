@@ -1,5 +1,5 @@
-<select class="form-control" name="datos[{$nombrecolumna}]" {if isset($redireccion)} onchange="location=this.value" {/if} required>
-  <option value="{if isset($redireccion)}{$redireccion.pagina}{$redireccion.accion}{$redireccion.nombre}={$tipo[0]}{$redireccion.get}&info4=1{else}-1{/if}">Selecciona una opción</option>
+<select class="form-control" name="$column_name" {if isset($redireccion)}onchange="location=this.value"{/if}>
+  <option value="-1">Selecciona una opción</option>
     {foreach $datos as $tipo}
       {if isset($redireccion)}
         <option value="{$redireccion.pagina}{$redireccion.accion}{$redireccion.nombre}={$tipo[0]}{$redireccion.get}" 

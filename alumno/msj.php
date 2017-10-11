@@ -5,6 +5,7 @@ if ($_SESSION['roles'] != 'U') {
   $web->checklogin();
 }
 
+$web = new MsjControllers;
 $web->iniClases('usuario', "index grupos grupo");
 $grupos = $web->grupos($_SESSION['cveUser']);
 $web->smarty->assign('grupos', $grupos);
@@ -26,25 +27,7 @@ if (isset($_GET['accion'])) {
       break;
 
     case 'archivo':
-      if (!isset($_GET['info']) ||
-        !isset($_GET['info2'])) {
-        mMessage('warning', 'Hacen falta datos');
-      }
-
-      $sql  = "SELECT * FROM abecedario WHERE cve=?";
-      $data = $web->DB->GetAll($sql, $_GET['info2']);
-      if (!isset($data[0])) {
-        mMessage('warning', 'No hay mensajes para este grupo');
-      }
-
-      $nombre_fichero = "/home/slslctr/archivos_msj/" . $cveperiodo . "/" . $data[0]['letra'] . "/" . $_GET['info'];
-      if (!file_exists($nombre_fichero)) {
-        header('Location: grupos.php?aviso=5'); //El archivo no existe
-        die();
-      }
-      header("Content-disposition: attachment; filename=" . $_GET['info']);
-      header("Content-type: MIME");
-      readfile("/home/slslctr/archivos_msj/" . $cveperiodo . "/" . $data[0]['letra'] . "/" . $_GET['info']);
+      archivo();
       break;
   }
 }
@@ -73,31 +56,19 @@ function mListado()
   if (!isset($_GET['info'])) {
     mMessage('warning', 'Falta información');
   }
-
-  $sql = "SELECT * FROM laboral
-  WHERE cveletra in (SELECT cve FROM abecedario WHERE letra=?)
-  AND cveletra in (SELECT cveletra FROM lectura WHERE cveletra in (SELECT cve FROM abecedario WHERE letra=?))
-  AND laboral.cveperiodo=?";
-  $grupo = $web->DB->GetAll($sql, array($_GET['info'], $_GET['info'], $cveperiodo));
+  $grupo = $web->getLaboral($_GET['info'], $cveperiodo);
   if (!isset($grupo[0])) {
     mMessage('warning', 'El grupo no existe o no cuenta con los permisos para acceder');
   }
 
-  $sql = "SELECT cvemsj, introduccion, tipomsj.descripcion, fecha, expira FROM msj
-  INNER JOIN tipomsj ON tipomsj.cvetipomsj = msj.tipo
-  WHERE cveperiodo=?
-  AND (tipo='G' OR tipo='I')
-  AND cveletra in (SELECT cve FROM abecedario WHERE letra=?)
-  AND expira > NOW()
-  ORDER BY fecha DESC";
-  $parameters = array($cveperiodo, $_GET['info']);
-  $mensajes   = $web->DB->GetAll($sql, $parameters);
+  $mensajes = $web->getMsj($cveperiodo, $_GET['info']);
   if (!isset($mensajes[0])) {
     mMessage('danger', 'No hay mensajes');
   }
 
   $web->smarty->assign('mensajes', $mensajes);
   $web->smarty->display('msj.html');
+  die();
 }
 
 /**
@@ -112,14 +83,12 @@ function mLeer()
     $cvemsj = $_GET['info'];
   }
 
-  $sql     = "SELECT * FROM msj WHERE cvemsj=?";
-  $mensaje = $web->DB->GetAll($sql, $cvemsj);
+  $mensaje = $web->getMessages($cvemsj);
   if (!isset($mensaje[0])) {
     mMessage('warning', 'No hay mensajes');
   }
 
-  $sql  = "SELECT * FROM abecedario WHERE cve=?";
-  $data = $web->DB->GetAll($sql, $mensaje[0]['cveletra']);
+  $data = $web->getAll('*', array('cve' => $mensaje[0]['cveletra']), 'abecedario');
   if (!isset($data[0])) {
     mMessage('warning', 'No hay mensajes para este grupo');
   }
@@ -128,7 +97,7 @@ function mLeer()
   $web->smarty->assign('accion', $accion);
 
   if ($mensaje[0]['archivo'] != '') {
-    $nombre_fichero = "/home/slslctr/archivos_msj/" . $cveperiodo . "/" . $data[0]['letra'] . "/" . $mensaje[0]['archivo'];
+    $nombre_fichero = $web->route_msj . $cveperiodo . "/" . $data[0]['letra'] . "/" . $mensaje[0]['archivo'];
     if (!file_exists($nombre_fichero)) {
       $mensaje[0]['archivo'] = "El archivo " . $mensaje[0]['archivo'] . " ha sido eliminado";
       $web->smarty->assign('eliminado', true);
@@ -136,5 +105,30 @@ function mLeer()
     $web->smarty->assign('archivo', $mensaje[0]['archivo']);
   }
   $web->smarty->display('msj.html');
-  exit();
+  die();
+}
+
+function archivo()
+{
+  global $web, $cveperiodo;
+
+  if (!isset($_GET['info']) ||
+    !isset($_GET['info2'])) {
+    mMessage('warning', 'Hacen falta datos');
+  }
+
+  $data = $web->getAll('*', array('cve' => $_GET['info2']), 'abecedario');
+  if (!isset($data[0])) {
+    mMessage('warning', 'No hay mensajes para este grupo');
+  }
+
+  $nombre_fichero = $web->route_msj . $cveperiodo . "/" . $data[0]['letra'] . "/" . $_GET['info'];
+  if (!file_exists($nombre_fichero)) {
+    header('Location: grupos.php?aviso=5'); //El archivo no existe
+    die();
+  }
+
+  header("Content-disposition: attachment; filename=" . $_GET['info']);
+  header("Content-type: MIME");
+  readfile($web->route_msj . $cveperiodo . "/" . $data[0]['letra'] . "/" . $_GET['info']);
 }

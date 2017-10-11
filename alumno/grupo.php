@@ -15,9 +15,11 @@ if ($cveperiodo == "") {
   message('danger', 'No hay periodos actuales');
 }
 
-$nombre_fichero = "/home/slslctr/archivos/pdf/" . $cveperiodo . "/formato_preguntas.pdf";
+showMessages();
+
+$nombre_fichero = $web->route_pdf . $cveperiodo . "/formato_reporte.pdf";
 if (file_exists($nombre_fichero)) {
-  $web->smarty->assign('formato_preguntas', true);
+  $web->smarty->assign('formato_reporte', true);
 }
 
 if (isset($_GET['accion'])) {
@@ -36,10 +38,8 @@ if (isset($_GET['accion'])) {
       insert();
       break;
 
-    case 'formato_preguntas':
-      header("Content-disposition: attachment; filename=formato_preguntas.pdf");
-      header("Content-type: MIME");
-      readfile("/home/slslctr/archivos/pdf/" . $cveperiodo . "/formato_preguntas.pdf");
+    case 'down':
+      down();
       break;
   }
 
@@ -93,9 +93,9 @@ function message($alert, $msg)
  */
 function form_libro()
 {
-  global $web, $cveperiodo;
+  global $web;
 
-  if (!isset($_GET['info1'])) {
+  if (!isset($_GET['info1']) || !isset($_GET['info2'])) {
     message('danger', 'Información incompleta');
   }
 
@@ -108,14 +108,14 @@ function form_libro()
 
   //para no mostrar los libros que ya fueron registrados para ese alumno en ese periodo
   $sql = "SELECT cvelibro, titulo FROM libro
-    WHERE cvelibro NOT IN
+    WHERE status = ? and cvelibro NOT IN
     (SELECT cvelibro FROM lista_libros
       INNER JOIN lectura ON lectura.cvelectura = lista_libros.cvelectura
       INNER JOIN abecedario ON abecedario.cve = lectura.cveletra
       INNER JOIN laboral ON laboral.cveletra = abecedario.cve
       WHERE nocontrol=? AND laboral.cveperiodo=? AND lectura.cvelectura=?)
     ORDER BY titulo";
-  $combo = $web->combo($sql, null, '../', array($lectura[0]['nocontrol'], $cveperiodo, $_GET['info1']));
+  $combo = $web->combo($sql, null, '../', array('existente', $lectura[0]['nocontrol'], $cveperiodo, $_GET['info1']));
 
   $libros = $web->getBooks($lectura[0]['nocontrol'], $_GET['info1']);
   if (!isset($libros[0])) {
@@ -124,9 +124,13 @@ function form_libro()
     if (sizeof($libros) < 5) {
       $web->simple_message('warning', 'Debe seleccionar mínimo 5 libros');
     }
+
+    $libros = existsReports($libros, $lectura); // CHECAR SI HA SUBIDO LOS REPORTES DE LOS LIBROS
     $web->smarty->assign('libros', $libros);
   }
 
+  $web->smarty->assign('upload', true);
+  $web->smarty->assign('grupo', $_GET['info2']);
   $web->smarty->assign('cvelectura', $_GET['info1']);
   $web->smarty->assign('cmb_libro', $combo);
   $web->smarty->display('form_libro.html');
@@ -146,7 +150,7 @@ function fileinput()
     message('danger', 'No existe el grupo');
   }
 
-  $dir_subida = "/home/slslctr/archivos/periodos/" .
+  $dir_subida = $web->route .
     $cveperiodo . "/" .
     $letra_subida[0][0] . "/" .
     $_SESSION['cveUser'] . "/";
@@ -182,7 +186,6 @@ function insert()
     !isset($_POST['datos']['cvelectura'])) {
     message("danger", "No alteres la estructura de la interfaz");
   }
-
   if ($_POST['datos']['cvelibro'] == "" ||
     $_POST['datos']['cvelectura'] == "") {
     message("danger", "Llena todos los campos");
@@ -203,4 +206,80 @@ function insert()
 
   $web->insertBookList($cvelibro, $cvelectura, $cveperiodo);
   header('Location: grupo.php?accion=form_libro&info1=' . $cvelectura);
+}
+
+/**
+ *
+ */
+function existsReports($libros, $lectura)
+{
+  global $web, $cveperiodo;
+
+  $dir_subida = $web->route .
+  $cveperiodo . "/" .
+  $web->getLetter($lectura[0][0])[0][0] . "/" .
+    $_SESSION['cveUser'] . "/";
+
+  for ($i = 0; $i < count($libros); $i++) {
+    if (file_exists($dir_subida . $libros[$i][0] . "_" . $_SESSION['cveUser'] . ".pdf")) {
+      $libros[$i][3]         = 1;
+      $libros[$i]['reporte'] = 1;
+    } else {
+      $libros[$i][3]         = 0;
+      $libros[$i]['reporte'] = 0;
+    }
+  }
+  return $libros;
+}
+
+/**
+ *
+ */
+function down()
+{
+  global $web, $cveperiodo;
+
+  if (!isset($_GET['info2'])) {
+    header('Location: grupo.php?e=1');
+    die();
+  }
+  if (!isset($_GET['info'])) {
+    header('Location: grupo.php?info1=' . $_GET['info2'] . "&e=2");
+    die();
+  }
+
+  $file = "formato_reporte.pdf";
+  $dir  = $web->route_pdf . $cveperiodo . "/";
+  if ($_GET['info'] != 1) {
+    if (!isset($_GET['info3'])) {
+      header('Location: grupo.php?info1=' . $_GET['info2'] . "&e=2");
+      die();
+    }
+    $dir  = $cveperiodo . "/" . $_GET['info2'] . "/" . $_SESSION['cveUser'] . "/";
+    $file = $web->getFile($dir, $_GET['info3']);
+    $dir  = $web->route . $dir;
+  }
+
+  header("Content-disposition: attachment; filename=" . $file);
+  header("Content-type: MIME");
+  readfile($dir . $file);
+}
+
+/**
+ *
+ */
+function showMessages()
+{
+  global $web;
+
+  if (isset($_GET['e'])) {
+    switch ($_GET['e']) {
+      case 1:
+        $web->simple_message('danger', 'No fue posible localizar el grupo');
+        break;
+      case 2:
+        $web->simple_message('danger', 'No modifique la estructura de la interfaz');
+        break;
+    }
+  }
 }

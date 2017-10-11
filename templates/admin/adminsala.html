@@ -1,0 +1,212 @@
+{include file='header.html'}
+{$ruta}
+{if isset($msg)}{include file='../mensajes.html'}{/if}
+
+{if !isset($horas)}{if isset($datos)}
+  <div class="page-header">
+    <h1>Selección de Sala</h1>
+  </div>
+  
+  <table id="example" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>CLAVE</th>
+        <th>UBICACION</th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th>CLAVE</th>
+        <th>UBICACION</th>
+      </tr>
+    </tfoot>
+  </table>
+  
+{/if}{/if}
+
+{if isset($cvesala)}
+  <div class="page-header">
+    <h1>Creación de su horario</h1>
+    Seleccione 2 horas en total, pueden ser en el mismo día o en diferentes
+  </div>
+  <form method="post" action="grupos.php?accion=add_group&step=3">
+    <table class="table">
+      <tr>
+        <td>LUNES</td>
+        <td>MARTES</td>
+        <td>MIÉRCOLES</td>
+        <td>JUEVES</td>
+        <td>VIERNES</td>
+        <td>SÁBADO</td>
+      </tr>
+      <tr>
+        <td>
+          {if isset($horas1)}
+            {section name=cont loop=2}
+              <div class="form-group">
+                <select name="datos[horas1_{$smarty.section.cont.index}]" class="form-control">
+                  <option value="-1">Seleccione una Hora</option>
+                  {foreach from=$horas1 key=myId item=i}
+                    <option value="{$i.cvehoras}">{$i.hora_inicial} - {$i.hora_final}</option>
+                  {/foreach}
+                </select>
+              </div>
+            {/section}
+          {else}
+            <div class="alert alert-warning" role="alert">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Aviso:</span>
+              No hay horas disponibles
+            </div>
+          {/if}
+        </td>
+        <td>
+          {if isset($horas2)}
+            {section name=cont loop=2}
+              <div class="form-group">
+                <select name="datos[horas2_{$smarty.section.cont.index}]" class="form-control">
+                  <option value="-1">Seleccione una Hora</option>
+                  {foreach from=$horas2 key=myId item=i}
+                    <option value="{$i.cvehoras}">{$i.hora_inicial} - {$i.hora_final}</option>
+                  {/foreach}
+                </select>
+            </div>
+            {/section}
+          {else}
+            <div class="alert alert-warning" role="alert">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Aviso:</span>
+              No hay horas disponibles
+            </div>
+          {/if}
+        </td>
+        <td>
+          {if isset($horas3)}
+            {section name=cont loop=2}
+              <div class="form-group">
+                <select name="datos[horas3_{$smarty.section.cont.index}]" class="form-control">
+                  <option value="-1">Seleccione una Hora</option>
+                  {foreach from=$horas3 key=myId item=i}
+                    <option value="{$i.cvehoras}">{$i.hora_inicial} - {$i.hora_final}</option>
+                  {/foreach}
+                </select>
+            </div>
+            {/section}
+          {else}
+            <div class="alert alert-warning" role="alert">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Aviso:</span>
+              No hay horas disponibles
+            </div>
+          {/if}
+        </td>
+        <td>
+          {if isset($horas4)}
+            {section name=cont loop=2}
+              <div class="form-group">
+                <select name="datos[horas4_{$smarty.section.cont.index}]" class="form-control">
+                  <option value="-1">Seleccione una Hora</option>
+                  {foreach from=$horas4 key=myId item=i}
+                    <option value="{$i.cvehoras}">{$i.hora_inicial} - {$i.hora_final}</option>
+                  {/foreach}
+                </select>
+            </div>
+            {/section}
+          {else}
+            <div class="alert alert-warning" role="alert">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Aviso:</span>
+              No hay horas disponibles
+            </div>
+          {/if}
+        </td>
+        <td>
+          {if isset($horas5)}
+            {section name=cont loop=2}
+              <div class="form-group">
+                <select name="datos[horas5_{$smarty.section.cont.index}]" class="form-control">
+                  <option value="-1">Seleccione una Hora</option>
+                  {foreach from=$horas5 key=myId item=i}
+                    <option value="{$i.cvehoras}">{$i.hora_inicial} - {$i.hora_final}</option>
+                  {/foreach}
+                </select>
+            </div>
+            {/section}
+          {else}
+            <div class="alert alert-warning" role="alert">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Aviso:</span>
+              No hay horas disponibles
+            </div>
+          {/if}
+        </td>
+        <td>
+          {if isset($horas6)}
+            {section name=cont loop=2}
+              <div class="form-group">
+                <select name="datos[horas6_{$smarty.section.cont.index}]" class="form-control">
+                  <option value="-1">Seleccione una Hora</option>
+                  {foreach from=$horas6 key=myId item=i}
+                    <option value="{$i.cvehoras}">{$i.hora_inicial} - {$i.hora_final}</option>
+                  {/foreach}
+                </select>
+              </div>
+            {/section}
+          {else}
+            <div class="alert alert-warning" role="alert">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Aviso:</span>
+              No hay horas disponibles
+            </div>
+          {/if}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="6">
+          <div class="form-group" align="right">
+          </div>
+        </td>
+      </tr>
+    </table>
+    
+    <input type="hidden" name="datos[cvesala]" value="{$cvesala}"/>
+    
+    <div class="form-group">
+      <h3>Seleccione libro grupal:</h3>
+      {$libros}
+    </div>
+    
+    
+{/if}
+
+{if isset($promodisponibles)}
+  <div class="page-header">
+    <h1>Selección de Promotor</h1>
+  </div>
+  
+  <table id="example" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>CLAVE</th>
+        <th>PROMOTOR</th>
+        <th>SELECCION</th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th>CLAVE</th>
+        <th>PROMOTOR</th>
+        <th>SELECCION</th>
+      </tr>
+    </tfoot>
+  </table>
+  
+  <div class="form-group" align='right' style="margin-top: 25px">
+    <input type="submit" value="Guardar" class="btn btn-primary btn-block"/>  
+  </div>
+    
+  </form>
+  
+{/if}
+
+{include file='footer.html'}

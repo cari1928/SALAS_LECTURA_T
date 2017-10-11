@@ -17,6 +17,7 @@ if (isset($_GET['accion'])) {
 
     case 'form_insert':
       $web->iniClases('admin', "index libros nuevo");
+      $web->smarty->assign('upload', true);
       $web->smarty->assign('upload_libros', 'INSERT');
       $web->smarty->assign('portada', 'no_disponible.jpg');
       $web->smarty->display('form_libros.html');
@@ -24,25 +25,7 @@ if (isset($_GET['accion'])) {
       break;
 
     case 'form_update':
-      if (!isset($_GET['info2'])) {
-        $web->simple_message('warning', 'No se especificó el libro');
-        break;
-      }
-
-      $sql    = "SELECT * FROM libro WHERE cvelibro=?";
-      $libros = $web->DB->GetAll($sql, $_GET['info2']);
-      if (sizeof($libros) == 0) {
-        $web->simple_message('warning', 'No existe el libro');
-        break;
-      }
-
-      $libros[0]['portada'] = (empty($libros[0]['portada'])) ? "no_disponible.jpg" : $libros[0]['portada'];
-      $web->iniClases('admin', "index libros actualizar");
-      $web->smarty->assign('libros', $libros[0]);
-      $web->smarty->assign('upload_libros', 'UPDATE');
-      $web->smarty->assign('portada', $libros[0]['portada']);
-      $web->smarty->display('form_libros.html');
-      die();
+      form_update();
       break;
 
     case 'insert':
@@ -65,9 +48,8 @@ if (isset($_GET['accion'])) {
 
 $web->iniClases('admin', "index libros");
 
-$sql = "SELECT cvelibro, autor, titulo, editorial, cantidad FROM libro ORDER BY cvelibro";
 $web->DB->SetFetchMode(ADODB_FETCH_NUM);
-$datos = $web->DB->GetAll($sql);
+$datos = $web->getAll(array('cvelibro', 'autor', 'titulo', 'editorial', 'cantidad'), array('status' => 'existente'), 'libro', array('cvelibro'));
 $datos = array('data' => $datos);
 
 //se preparan los campos extra (estado_credito, eliminar, actualizar y mostrar)
@@ -101,15 +83,12 @@ function showMessage()
 
   if (isset($_GET['msg'])) {
     switch ($_GET['msg']) {
-
       case 1:
         $web->simple_message('info', 'Libro guardado correctamente');
         break;
-
       case 2:
         $web->simple_message('info', 'Libro actualizado correctamente');
         break;
-
       case 3:
         $web->simple_message('danger', 'Ocurrió un error al intentar guardar o actualizar la portada');
         break;
@@ -217,12 +196,13 @@ function mInsertBook()
     message("index libros nuevo", 'warning', "Llena todos los campos");
   }
 
-  $sql = "INSERT INTO libro (autor, titulo, editorial, cantidad, sinopsis) VALUES (?, ?, ?, ?, ?)";
+  $sql = "INSERT INTO libro (autor, titulo, editorial, cantidad, sinopsis, status) VALUES (?, ?, ?, ?, ?, ?)";
   $tmp = array($_POST['autor'],
     $_POST['titulo'],
     $_POST['editorial'],
     $_POST['cantidad'],
-    $_POST['sinopsis']);
+    $_POST['sinopsis'],
+    'existente');
   if (!$web->query($sql, $tmp)) {
     message("index libros insertar", 'danger', "No fue posible guardar el libro");
   }
@@ -259,10 +239,6 @@ function mUploadNewFile($cvelibro, $typeMessage)
 function mUpdateBook()
 {
   global $web;
-
-  // echo "<pre>";
-  // print_r($_POST);
-  // $web->debug($_FILES);
 
   if (!isset($_POST['autor']) ||
     !isset($_POST['titulo']) ||
@@ -308,4 +284,32 @@ function mUpdateBook()
       }
     }
   }
+}
+
+/**
+ *
+ */
+function form_update()
+{
+  global $web;
+
+  if (!isset($_GET['info2'])) {
+    $web->simple_message('warning', 'No se especificó el libro');
+    break;
+  }
+
+  $libros = $web->getAll('*', array('cvelibro' => $_GET['info2']), 'libro');
+  if (sizeof($libros) == 0) {
+    $web->simple_message('warning', 'No existe el libro');
+    break;
+  }
+
+  $libros[0]['portada'] = (empty($libros[0]['portada'])) ? "no_disponible.jpg" : $libros[0]['portada'];
+  $web->iniClases('admin', "index libros actualizar");
+  $web->smarty->assign('libros', $libros[0]);
+  $web->smarty->assign('upload', true);
+  $web->smarty->assign('upload_libros', 'UPDATE');
+  $web->smarty->assign('portada', $libros[0]['portada']);
+  $web->smarty->display('form_libros.html');
+  die();
 }

@@ -32,16 +32,11 @@
   <script type="text/javascript" src="../JS/alerts.js"></script>
   
   <!--Upload files-->
-  {if isset($upload_libros)}
-    <link rel="stylesheet" 
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.3.5/css/fileinput.min.css" />
-      
+  {if isset($upload)}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.3.5/css/fileinput.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    
-    <script 
-      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.3.5/js/plugins/canvas-to-blob.min.js" 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.3.5/js/plugins/canvas-to-blob.min.js" 
       type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.3.5/js/plugins/sortable.min.js" 
       type="text/javascript"></script>
@@ -51,11 +46,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.3.5/themes/gly/theme.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.3.5/js/locales/es.js"></script>
     
-    <link rel="stylesheet" href="../css/libros_portada.css" type="text/css" />
-    <script type="text/javascript" src="../JS/portada_libros.js"></script>
+    {if isset($upload_libros)}
+      <link rel="stylesheet" href="../css/libros_portada.css" type="text/css" />
+      <script type="text/javascript" src="../JS/portada_libros.js"></script>
+    {elseif isset($upload_report)}
+      <script type="text/javascript" src="../JS/formato_reporte.js"></script>
+    {/if}
+    
   {/if}
   
-  {if isset($aviso_header)} <link rel="stylesheet" href="../css/avisos.css" type="text/css" /> {/if}
+  {if isset($adminsala_sala)}
+    <script type="text/javascript" src="../JS/adminsala_sala.js"></script>
+  {elseif isset($promodisponibles)}
+    <script type="text/javascript" src="../JS/adminsala_promotor.js"></script>
+  {elseif isset($aviso_header)} 
+    <link rel="stylesheet" href="../css/avisos.css" type="text/css" /> 
+  {/if}
 
   <title>Salas Lectura</title>
 </head>

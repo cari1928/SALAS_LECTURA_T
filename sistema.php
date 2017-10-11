@@ -33,6 +33,12 @@ class Sistema extends Conexion
   public $rol        = "";
   public $smarty;
 
+  //Rutas
+  public $route_msj      = "/home/slslctr/archivos/mensajes/";
+  public $route_periodos = "/home/slslctr/archivos/periodos/";
+  public $route_pdf      = "/home/slslctr/archivos/pdf/";
+  public $route_images   = "/home/slslctr/Images/";
+
   public function combo($query, $selected = null, $ruta = "", $parameters = array(), $redireccion = null)
   {
     $datosList = $this->DB->GetAll($query, $parameters);
@@ -86,10 +92,9 @@ class Sistema extends Conexion
   public function query($query, $parameters = array())
   {
     $this->query = $query;
-    $this->rs    = &$this->DB->Execute($this->query, $parameters);
+    $this->rs    = $this->DB->Execute($this->query, $parameters);
     if ($this->DB->ErrorMsg()) {
-      $msg = $this->DB->ErrorMsg();
-      echo $msg;
+      echo $this->DB->ErrorMsg();
       return false;
     } else {
       return true;
@@ -803,9 +808,12 @@ class Sistema extends Conexion
     }
   }
 
-  public function debug_line($dato)
+  public function debug_line($dato, $opt = true)
   {
     echo $dato . "<br>";
+    if ($opt) {
+      die();
+    }
   }
 
   /**
@@ -857,17 +865,209 @@ class Sistema extends Conexion
     die();
   }
 
+/*************************************************************************************************
+ * QUERIES BASE DE DATOS
+ *************************************************************************************************/
+  public function getMessages($cvemsj)
+  {
+    $sql = "SELECT * FROM msj WHERE cvemsj=?";
+    return $this->DB->GetAll($sql, $cvemsj);
+  }
+
+  /**
+   *
+   */
+  public function getAll($arrColumns, $arrWhere = null, $table, $arrOrder = null)
+  {
+    $sql = "SELECT " . $this->setColumns($arrColumns) . " FROM " . $table;
+    if (!is_null($arrWhere)) {
+      $whColumns = $this->getFields($arrWhere);
+      $sql .= " WHERE " . $this->setWhereColumns($whColumns);
+    }
+    if (!is_null($arrOrder)) {
+      $sql .= " ORDER BY " . $this->setOrderColumns($arrOrder);
+    }
+
+    // if($table == 'horario') {
+    //   $this->debug_line($sql, false);
+    //   $this->debug($this->getParameters($arrWhere, $whColumns), false);
+    // }
+
+    return $this->DB->GetAll($sql, $this->getParameters($arrWhere, $whColumns));
+  }
+
+  public function setColumns($arrColumns)
+  {
+    $sql = "";
+    for ($i = 0; $i < count($arrColumns); $i++) {
+      $sql .= $arrColumns[$i];
+      if ($i != count($arrColumns) - 1) {
+        $sql .= ",";
+      }
+    }
+    return $sql;
+  }
+
+  public function getFields($arrColumns)
+  {
+    return array_keys($arrColumns);
+  }
+
+  public function setWhereColumns($whColumns, $type = 1)
+  {
+    $sql = "";
+    for ($i = 0; $i < count($whColumns); $i++) {
+
+      $sql .= ($type == 1) ? $whColumns[$i] . "=?" : (($type == 2) ? $whColumns[$i] : "?");
+      if ($i != count($whColumns) - 1) {
+        $sql .= ($type == 1) ? " AND " : ", ";
+      }
+    }
+    return $sql;
+  }
+
+  public function setOrderColumns($arrOrder)
+  {
+    $sql = "";
+    for ($i = 0; $i < count($arrOrder); $i++) {
+      $sql .= $arrOrder[$i];
+      if ($i != count($arrOrder) - 1) {
+        $sql .= ", ";
+      }
+    }
+    return $sql;
+  }
+
+  public function getParameters($arrColumns, $arrKeys = null)
+  {
+    $tmp = array();
+    if (is_null($arrKeys)) {
+      return $tmp;
+    }
+    for ($i = 0; $i < count($arrColumns); $i++) {
+      array_push($tmp, $arrColumns[$arrKeys[$i]]);
+    }
+    return $tmp;
+  }
+
+  /**
+   *
+   */
+  public function update($arrColumns, $arrWhere, $table)
+  {
+    $columns   = $this->getFields($arrColumns);
+    $whColumns = $this->getFields($arrWhere);
+    $sql       = "UPDATE " . $table . " SET " . $this->setWhereColumns($columns);
+    if (!is_null($arrWhere)) {
+      $sql .= " WHERE " . $this->setWhereColumns($whColumns);
+    }
+
+    $cntColumns   = $this->getContent($arrColumns, $columns);
+    $cntWhColumns = $this->getContent($arrWhere, $whColumns);
+
+    // $this->debug($this->getQueryArray($cntColumns, $cntWhColumns), false);
+    // $this->debug($sql);
+
+    return $this->query($sql, $this->getQueryArray($cntColumns, $cntWhColumns));
+  }
+
+  public function getContent($arrData, $arrKey)
+  {
+    $tmp = array();
+    for ($i = 0; $i < count($arrData); $i++) {
+      array_push($tmp, $arrData[$arrKey[$i]]);
+    }
+    return $tmp;
+  }
+
+  public function getQueryArray($arrColumns, $whColumns = array())
+  {
+    $tmp = array();
+    $j   = 0;
+
+    for ($i = 0; $i < (count($arrColumns) + count($whColumns)); $i++) {
+      if ($i < count($arrColumns)) {
+        array_push($tmp, $arrColumns[$i]);
+      } else {
+        array_push($tmp, $whColumns[$j]);
+        ++$j;
+      }
+    }
+    return $tmp;
+  }
+
+  /**
+   *
+   */
+  public function delete($table, $arrWhere = null)
+  {
+    $sql          = "DELETE FROM " . $table;
+    $cntWhColumns = array();
+
+    if (!is_null($arrWhere)) {
+      $whColumns = $this->getFields($arrWhere);
+      $sql .= " WHERE " . $this->setWhereColumns($whColumns);
+      $cntWhColumns = $this->getContent($arrWhere, $whColumns);
+    }
+
+    // $this->debug($sql, false);
+    // $this->debug($cntWhColumns, false);
+
+    return $this->query($sql, $cntWhColumns);
+  }
+
+  /**
+   *
+   */
+  public function insert($table, $arrValues)
+  {
+    $sql = "INSERT INTO " . $table;
+
+    $heaColumns = $this->getFields($arrValues);
+    $cntColumns = $this->getContent($arrValues, $heaColumns);
+
+    $sql .= "(" . $this->setColumns($heaColumns) . ") VALUES(" . $this->setWhereColumns($cntColumns, 3) . ");";
+
+    // $this->debug($sql, false);
+    // $this->debug($cntColumns, false);
+
+    return $this->query($sql, $cntColumns);
+  }
+
+  /**
+   *
+   */
+  public function dbFunction($arrS, $function, $arrC)
+  {
+    $cntColumns = array();
+    if ($arrS == '*') {
+      $sql = "SELECT * FROM " . $function . "(" . $this->setColumns($arrC) . ");";
+    } else {
+      $heaColumns = $this->getFields($arrC);
+      $cntColumns = $this->getContent($arrC, $heaColumns);
+      $sql        = "SELECT " . $this->setColumns($arrS) . " FROM " . $function . "(" . $this->setWhereColumns($cntColumns, 3) . ");";
+    }
+    return $this->query($sql, $cntColumns);
+  }
 }
 
 include 'controllers/ForoControllers.php';
 include 'controllers/admin/LibrosControllers.php';
 include 'controllers/admin/ReporteControllers.php';
 include 'controllers/admin/PeriodosControllers.php';
+include 'controllers/admin/PromotorControllers.php';
+include 'controllers/admin/AdminGruposControllers.php';
+include 'controllers/admin/AdminGrupoControllers.php';
 include 'controllers/alumno/InscripcionControllers.php';
 include 'controllers/alumno/GruposControllers.php';
+include 'controllers/alumno/MsjControllers.php';
+include 'controllers/alumno/AlumnoDatosControllers.php';
 include 'controllers/promotor/ListAsiControllers.php';
 include 'controllers/promotor/RedactaControllers.php';
 include 'controllers/promotor/PromoSalaControllers.php';
+include 'controllers/promotor/GrupoControllers.php';
+include 'controllers/promotor/PromoGruposControllers.php';
+include 'controllers/promotor/PromoLibrosControllers.php';
 
 //instanciamos web
 $web = new Sistema;

@@ -2,15 +2,21 @@
 {$ruta} 
 {if isset($msg)}{include file='../mensajes.html'}{/if}
 
+<table class='table'>
+	<tr><td colspan='4' align='right'>
+		<a href='grupos.php?accion=add_group&step=1'>
+			<img src='../Images/add.png'/>
+		</a>
+	</td></tr>
+</table>
+
 {if isset($tablegrupos)}
 	<table class="table table-hover">
 		
 		<tr class='info'>
 			<th style="vertical-align:middle"><center>GRUPO</center></th>
 			<th style="vertical-align:middle"><center>SALA</center></th>
-			{if isset($table)}
-			  {if $table eq 'grupos'}<th><center>PROMOTOR</center></th>{/if}
-			{/if}
+			{if isset($tablegrupos[0].nombre_promotor)}<th style="vertical-align:middle"><center>PROMOTOR</center></th>{/if}
 			<th style="vertical-align:middle"><center>UBICACIÓN</center></th>
 			<th style="vertical-align:middle" width="150"><center>LIBRO GRUPAL</center></th>
 			<th style="vertical-align:middle" width="300"><center>HORARIO</center></th>
@@ -34,13 +40,7 @@
 			  </center></td>
 
 				<td style="vertical-align:middle"><center>{$grupo.nombre}</center></td>
-
-				{if isset($table)}{if $table eq 'grupos'}
-				  <td style="vertical-align:middle">
-				    <center>{$grupo.nombre_promotor}</center>
-			    </td>
-  			{/if}{/if}
-
+				{if isset($grupo.nombre_promotor)}<td style="vertical-align:middle"><center>{$grupo.nombre_promotor}</center></td>{/if}
 				<td style="vertical-align:middle"><center>{$grupo.ubicacion}</center></td>
 				<td style="vertical-align:middle"><center>{$grupo.titulo}</center></td>
 				<td style="vertical-align:middle"><center>{$grupo.horario}</center></td>
@@ -54,7 +54,7 @@
 			  {/if}{/if}
 
 			  {if isset($bandera)}{if $bandera eq 'index_grupos'}
-		      <td><center>
+		      <td style="vertical-align:middle"><center>
   					<a class="delete" href="grupos.php?accion=delete&info1={$grupo.letra}">
   						<img src="../Images/cancelar.png">
   					</a>
