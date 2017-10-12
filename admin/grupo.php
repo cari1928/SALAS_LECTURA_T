@@ -63,7 +63,7 @@ if (isset($_GET['accion'])) {
       break;
 
     case 'index_grupos':
-      mostrar_alumnos_grupo($web);
+      mostrar_alumnos_grupo();
       break;
   }
 }
@@ -281,14 +281,14 @@ function mostrar_libros($web, $alumno)
     $letra_subida = $web->DB->GetAll($sql, $libros[0]["cveletra"]);
 
     for ($i = 0; $i < count($libros); $i++) {
-      $nombre_fichero = "/home/slslctr/archivos/periodos/" .
+      $nombre_fichero = $web->route_periodos .
         $libros[$i]["cveperiodo"] . "/" .
         $letra_subida[0][0] . "/" .
         $libros[$i]["nocontrol"] . "/" .
         $libros[$i]["cvelibro"] . "_" .
         $libros[$i]["nocontrol"] . ".pdf";
       if (file_exists($nombre_fichero)) {
-        $libros[$i]["archivoExiste"] = explode("/home/slslctr/archivos/periodos/", $nombre_fichero)[1];
+        $libros[$i]["archivoExiste"] = explode($web->route_periodos, $nombre_fichero)[1];
       }
     }
 
@@ -521,9 +521,9 @@ function mostrar_grupos_promotor($web)
  * @param  Class   $web Objeto para hacer uso de smarty
  * @return boolean False -> Mostrar mensaje de error
  */
-function mostrar_alumnos_grupo($web)
+function mostrar_alumnos_grupo()
 {
-  global $cveperiodo;
+  global $web, $cveperiodo;
 
   //verifica que se haya mandado y sea válido la letra
   if (!isset($_GET['info1'])) {
@@ -531,15 +531,9 @@ function mostrar_alumnos_grupo($web)
     return false;
   }
 
-  $sql = "SELECT distinct usuarios.nombre, comprension, actividades, reporte, participacion, asistencia,
-  terminado, nocontrol, laboral.cvepromotor, abecedario.letra
-  FROM lectura
-  INNER JOIN evaluacion on evaluacion.cvelectura = lectura.cvelectura
-  INNER JOIN usuarios on usuarios.cveusuario = lectura.nocontrol
-  INNER JOIN abecedario on abecedario.cve = lectura.cveletra
-  INNER JOIN laboral on laboral.cveletra= lectura.cveletra
-  WHERE letra=? and lectura.cveperiodo=?";
-  $grupo_alumnos = $web->DB->GetAll($sql, array($_GET['info1'], $cveperiodo));
+  //Info de encabezado
+  $info          = $web->getInfoHeader($cveperiodo, $_GET['info1']);
+  $grupo_alumnos = $web->getStudents($_GET['info1'], $cveperiodo, $info[0]['cvepromotor']);
   if (!isset($grupo_alumnos[0])) {
     $web->simple_message('danger', 'No hay alumnos inscritos a este grupo o el grupo seleccionado no existe');
   } else {
@@ -548,17 +542,6 @@ function mostrar_alumnos_grupo($web)
 
   $web->iniClases('admin', "index grupos grupo-" . $_GET['info1']);
 
-  //Info de encabezado
-  $sql = "SELECT distinct letra, laboral.nombre as \"nombre_grupo\", sala.ubicacion,
-  fechainicio, fechafinal, usuarios.nombre as \"nombre_promotor\" FROM laboral
-  INNER JOIN sala on laboral.cvesala = sala.cvesala
-  INNER JOIN abecedario on laboral.cveletra = abecedario.cve
-  INNER JOIN periodo on laboral.cveperiodo= periodo.cveperiodo
-  INNER JOIN lectura on abecedario.cve = abecedario.cve
-  INNER JOIN usuarios on laboral.cvepromotor = usuarios.cveusuario
-  WHERE laboral.cveperiodo=? and letra=?
-  ORDER BY letra";
-  $info = $web->DB->GetAll($sql, array($cveperiodo, $_GET['info1']));
   $web->smarty->assign('info', $info[0]);
   $web->smarty->assign('bandera_mensajes', 'true'); //La agregue para que aparesca el icono de mensaje en el header
   $web->smarty->assign('bandera', 'index_grupos_libros');
@@ -582,7 +565,7 @@ function ver_reporte($web)
 
   header("Content-disposition: attachment; filename=" . $_GET['info']);
   header("Content-type: MIME");
-  readfile("/home/slslctr/archivos/periodos/" . $_GET['info']);
+  readfile($web->route_periodos . $_GET['info']);
   return true;
 }
 

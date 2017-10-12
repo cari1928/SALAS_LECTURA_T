@@ -25,8 +25,7 @@ if (isset($_GET['accion'])) {
         mMessage('index salas', 'warning', 'Hace falta información para continuar', 'salas.html');
       }
 
-      $sql   = "SELECT * FROM sala WHERE cvesala=?";
-      $salas = $web->DB->GetAll($sql, $_GET['info2']);
+      $salas = $web->getAll('*', array('cvesala' => $_GET['info2']), 'sala');
       if (sizeof($salas) == 0) {
         mMessage('index salas', 'danger', 'No existe la sala', 'salas.html');
       }

@@ -93,7 +93,7 @@ function message($alert, $msg)
  */
 function form_libro()
 {
-  global $web;
+  global $web, $cveperiodo;
 
   if (!isset($_GET['info1']) || !isset($_GET['info2'])) {
     message('danger', 'Información incompleta');

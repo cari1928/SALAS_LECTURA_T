@@ -133,10 +133,4 @@ class PromoSalaControllers extends Sistema
     return $this->DB->GetAll($sql, array($cvepromotor, $cveperiodo));
   }
 
-  public function getEnableClass()
-  {
-    $sql = "SELECT cvesala, ubicacion FROM sala WHERE disponible=true ORDER BY cvesala";
-    return $this->DB->GetAll($sql);
-  }
-
 }

@@ -23,8 +23,8 @@
             <div class="form-group">
               <label>Estado:</label>
               <select class="form-control" name="datos[disponible]">
-                <option {if isset($salas)} {if {$salas.disponible} eq 'f'} selected {/if} {/if} value="false">No Disponible</option>
-                <option {if isset($salas)} {if {$salas.disponible} eq 't'} selected {/if} {/if} value="true">Disponible</option>
+                <option {if isset($salas)} {if {$salas.disponible} eq 'f'} selected {/if} {/if} value="f">No Disponible</option>
+                <option {if isset($salas)} {if {$salas.disponible} eq 't'} selected {/if} {/if} value="t">Disponible</option>
               </select>
             </div>
           </div>

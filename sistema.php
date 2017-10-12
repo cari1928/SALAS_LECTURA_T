@@ -879,7 +879,8 @@ class Sistema extends Conexion
    */
   public function getAll($arrColumns, $arrWhere = null, $table, $arrOrder = null)
   {
-    $sql = "SELECT " . $this->setColumns($arrColumns) . " FROM " . $table;
+    $sql       = "SELECT " . $this->setColumns($arrColumns) . " FROM " . $table;
+    $whColumns = array();
     if (!is_null($arrWhere)) {
       $whColumns = $this->getFields($arrWhere);
       $sql .= " WHERE " . $this->setWhereColumns($whColumns);
@@ -888,10 +889,8 @@ class Sistema extends Conexion
       $sql .= " ORDER BY " . $this->setOrderColumns($arrOrder);
     }
 
-    // if($table == 'horario') {
-    //   $this->debug_line($sql, false);
-    //   $this->debug($this->getParameters($arrWhere, $whColumns), false);
-    // }
+    // $this->debug($sql, false);
+    // $this->debug($this->getParameters($arrWhere, $whColumns), false);
 
     return $this->DB->GetAll($sql, $this->getParameters($arrWhere, $whColumns));
   }

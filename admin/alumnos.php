@@ -18,9 +18,8 @@ if (isset($_GET['accion'])) {
     case 'form_insert':
       $web->iniClases('admin', "index alumnos nuevo");
 
-      $sql   = "select cveespecialidad, nombre from especialidad
-      where cveespecialidad <> 'O'
-      order by nombre";
+      $sql = "SELECT cveespecialidad, nombre FROM especialidad
+      WHERE cveespecialidad <> 'O' ORDER BY nombre";
       $combo = $web->combo($sql, null, '../');
 
       $web->smarty->assign('cmb_especialidad', $combo);
@@ -444,7 +443,7 @@ function form_update_student($web)
     return false;
   }
 
-  $sql   = "select * from especialidad
+  $sql = "select * from especialidad
   where cveespecialidad <> 'O'
   order by nombre";
   $combo = $web->combo($sql, $alumno[0]['cveespecialidad']);
@@ -523,7 +522,7 @@ function show_groups($web)
   }
 
   $web->smarty->assign('tablegrupos', $tablegrupos);
-  
+
   $web->smarty->display('grupos.html');
   die();
 }

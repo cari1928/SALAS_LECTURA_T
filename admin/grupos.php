@@ -20,9 +20,8 @@ if ($cveperiodo == "") {
 if (isset($_GET['accion'])) {
   switch ($_GET['accion']) {
     case 'delete':
-      delete_group($web);
+      delete_group();
       break;
-
     case 'add_group':
       add_group();
       break;
@@ -70,6 +69,9 @@ function showMessages()
       case 2:
         $web->simple_message('info', 'Se ha eliminado el grupo');
         break;
+      case 3:
+        $web->simple_message('danger', 'Ha ocurrido un error');
+        break;
     }
   }
 }
@@ -88,7 +90,7 @@ function add_group()
   switch ($step) {
     case '1':
       $web->DB->SetFetchMode(ADODB_FETCH_ASSOC);
-      $datos = array('data' => $web->getAll(array('cvesala', 'ubicacion'), null, 'sala', array('cvesala')));
+      $datos = array('data' => $web->getAll(array('cvesala', 'ubicacion'), array('disponible' => 't'), 'sala', array('cvesala')));
       for ($i = 0; $i < sizeof($datos['data']); $i++) {
         $datos['data'][$i]['cvesala'] =
           "<a href='grupos.php?accion=add_group&step=2&info=" . $datos['data'][$i]['cvesala'] . "'>" . $datos['data'][$i]['cvesala'] . "</a>";
@@ -285,7 +287,7 @@ function verificaciones($op, $elementos = null)
           break;
         case 2: //verfica que se seleccione alguna hora y que no haya sido modificada
           if ($_POST['datos']['horas' . $i . '_' . $j] != -1) {
-            $hora = $web->getAll('*', array($cvehoras => $_POST['datos']['horas' . $i . '_' . $j]), 'horas');
+            $hora = $web->getAll('*', array('cvehoras' => $_POST['datos']['horas' . $i . '_' . $j]), 'horas');
             if (!isset($hora[0])) {
               $web->simple_message('danger', 'No alteres la estructura de la interfaz');
               return false;
@@ -335,9 +337,9 @@ function verificaciones($op, $elementos = null)
   return true;
 }
 
-function delete_group($web)
+function delete_group()
 {
-  global $cveperiodo;
+  global $web, $cveperiodo;
 
   //se valida la contraseña
   switch ($web->valida_pass($_SESSION['cveUser'])) {
@@ -362,17 +364,21 @@ function delete_group($web)
   $web->DB->startTrans();
   $lecturas = $web->getLectura($cveperiodo, $cveletra[0]['cve']);
   for ($i = 0; $i < sizeof($lecturas); $i++) {
-    //funcion en postgres, elimina de evaluacion, lista_libros, lectura
-    $web->dbFunction('*', 'del_reading', array($lecturas[$i]['cvelectura']));
+    //elimina de evaluacion, lista_libros, lectura
+    $web->delete('evaluacion', array('cvelectura' => $lecturas[$i]['cvelectura']));
+    $web->delete('lista_libros', array('cvelectura' => $lecturas[$i]['cvelectura']));
+    $web->delete('lectura', array('cvelectura' => $lecturas[$i]['cvelectura']));
   }
 
   //funcion en postgres, elimina de msj, observación y laboral
-  $web->dbFunction('*', 'del_laboral', array($cveperiodo, $cveletra[0]['cve']));
+  $web->delete('msj', array('cveperiodo' => $cveperiodo, 'cveletra' => $cveletra[0]['cve']));
+  $web->delete('observacion', array('cveperiodo' => $cveperiodo, 'cveletra' => $cveletra[0]['cve']));
+  $web->delete('laboral', array('cveperiodo' => $cveperiodo, 'cveletra' => $cveletra[0]['cve']));
 
   if ($web->DB->HasFailedTrans()) {
-    $web->simple_message('danger', 'Ocurrió un error');
+    header('Location: grupos.php?a=3');die();
   }
 
   $web->DB->CompleteTrans();
-  header('Location: grupos.php?a=2');
+  header('Location: grupos.php?a=2');die();
 }

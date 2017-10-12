@@ -43,18 +43,19 @@ if (sizeof($grupos) == 3) {
 
 } else {
   $web->DB->SetFetchMode(ADODB_FETCH_ASSOC);
-  $datos = array('data' => $web->getEnableClass());
+  $salasDisponibles = $web->getAll(array('cvesala', 'ubicacion'), array('disponible' => 't'), 'sala', array('cvesala'));
+  // $web->debug($salasDisponibles, false);
 
+  $datos = array('data' => $salasDisponibles);
   for ($i = 0; $i < sizeof($datos['data']); $i++) {
-    $datos['data'][$i]['cvesala'] = "<a href='salas.php?accion=horario&info=" . $datos['data'][$i]['cvesala'] . "'>" . $datos['data'][$i]['cvesala'] . "</a>";
+    $datos['data'][$i]['cvesala'] = "<a href='salas.php?accion=horario&info=" . $datos['data'][$i]['cvesala'] . "'>" .
+      $datos['data'][$i]['cvesala'] . "</a>";
   }
 
   $web->DB->SetFetchMode(ADODB_FETCH_NUM);
   $datos = json_encode($datos);
-
-  $file = fopen("TextFiles/promosala.txt", "w");
+  $file  = fopen("TextFiles/promosala.txt", "w");
   fwrite($file, $datos);
-
   $web->smarty->assign('datos', $datos);
 }
 

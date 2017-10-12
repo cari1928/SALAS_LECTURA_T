@@ -49,9 +49,10 @@ if (isset($_GET['accion'])) {
 $web->iniClases('admin', "index libros");
 
 $web->DB->SetFetchMode(ADODB_FETCH_NUM);
-$datos = $web->getAll(array('cvelibro', 'autor', 'titulo', 'editorial', 'cantidad'), array('status' => 'existente'), 'libro', array('cvelibro'));
+$datos = $web->getAll(array(
+  'cvelibro', 'autor', 'titulo', 'editorial', 'cantidad'), array(
+  'status' => 'existente'), 'libro', array('cvelibro'));
 $datos = array('data' => $datos);
-
 //se preparan los campos extra (estado_credito, eliminar, actualizar y mostrar)
 for ($i = 0; $i < sizeof($datos['data']); $i++) {
   $datos['data'][$i][5] = "libros.php?accion=delete&info1=" . $datos['data'][$i][0];
