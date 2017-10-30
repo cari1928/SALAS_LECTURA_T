@@ -7,6 +7,7 @@ define('PATHLIB', PATHAPP . LIB);
 include PATHLIB . 'adodb/adodb.inc.php';
 include PATHLIB . 'smarty/libs/Smarty.class.php';
 include PATHLIB . 'phpmailer/PHPMailerAutoload.php';
+include PATHLIB . "simpleImage/SimpleImage.class.php"; //incluimos la clase
 
 //clases del sistema
 class Conexion
@@ -864,6 +865,29 @@ class Sistema extends Conexion
     echo $message;
     die();
   }
+  
+  /**
+   * Delete files in a directory matching a pattern in one line of code 
+   * IMPORTANTE: La ruta del archivo no debe incluir la extensión del mismo
+   */
+  public function delFile($dirFile)
+  {
+    array_map('unlink', glob($dirFile . ".*"));
+  }
+  
+  /**
+   *
+   */
+  function redimensionar($direccion, $nombre, $iniSize, $endSize)
+  {
+    $obj_simpleimage = new SimpleImage(); //creamos un objeto de la clase SimpleImage
+    $obj_simpleimage->load($direccion . $nombre); //leemos la imagen
+  
+    $var_nuevo_archivo = $nombre; //asignamos un nombre
+    $obj_simpleimage->resize($iniSize, $endSize);
+  
+    $obj_simpleimage->save($direccion . $var_nuevo_archivo); //guardamos los cambios efectuados en la imagen
+  }
 
 /*************************************************************************************************
  * QUERIES BASE DE DATOS
@@ -879,8 +903,7 @@ class Sistema extends Conexion
    */
   public function getAll($arrColumns, $arrWhere = null, $table, $arrOrder = null)
   {
-    $sql       = "SELECT " . $this->setColumns($arrColumns) . " FROM " . $table;
-    $whColumns = array();
+    $sql = "SELECT " . $this->setColumns($arrColumns) . " FROM " . $table;
     if (!is_null($arrWhere)) {
       $whColumns = $this->getFields($arrWhere);
       $sql .= " WHERE " . $this->setWhereColumns($whColumns);
@@ -889,8 +912,10 @@ class Sistema extends Conexion
       $sql .= " ORDER BY " . $this->setOrderColumns($arrOrder);
     }
 
-    // $this->debug($sql, false);
-    // $this->debug($this->getParameters($arrWhere, $whColumns), false);
+    // if($table == 'horario') {
+    //   $this->debug_line($sql, false);
+    //   $this->debug($this->getParameters($arrWhere, $whColumns), false);
+    // }
 
     return $this->DB->GetAll($sql, $this->getParameters($arrWhere, $whColumns));
   }
@@ -919,7 +944,7 @@ class Sistema extends Conexion
 
       $sql .= ($type == 1) ? $whColumns[$i] . "=?" : (($type == 2) ? $whColumns[$i] : "?");
       if ($i != count($whColumns) - 1) {
-        $sql .= ($type == 1) ? " AND " : ", ";
+        $sql .= ($type == 1 || $type == 3) ? ", " : " AND ";
       }
     }
     return $sql;
@@ -1027,8 +1052,8 @@ class Sistema extends Conexion
 
     $sql .= "(" . $this->setColumns($heaColumns) . ") VALUES(" . $this->setWhereColumns($cntColumns, 3) . ");";
 
-    // $this->debug($sql, false);
-    // $this->debug($cntColumns, false);
+    $this->debug($sql, false);
+    $this->debug($cntColumns, false);
 
     return $this->query($sql, $cntColumns);
   }

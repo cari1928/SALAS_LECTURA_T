@@ -16,65 +16,29 @@
 	<table id="example" class="display" cellspacing="0" width="100%">
 		<thead>
       <tr>
-        <th>CLAVE</th>
-        <th>AUTOR</th>
-        <th>TITULO</th>
-        <th>EDITORIAL</th>
-        <th>CANTIDAD</th>
-        <th>ELIMINAR</th>
-        <th>ACTUALIZAR</th>
+        <th><center>CLAVE</center></th>
+				<th><center>AUTOR</center></th>
+				<th><center>TITULO</center></th>
+				<th><center>EDITORIAL</center></th>
+				<th><center>CANTIDAD</center></th>
+				<th width="50"><center>PORTADA</center></th>
+				<th><center>ELIMINAR</center></th>
+				<th><center>ACTUALIZAR</center></th>
       </tr>
     </thead>
     <tfoot>
       <tr>
-        <th>CLAVE</th>
-        <th>AUTOR</th>
-        <th>TITULO</th>
-        <th>EDITORIAL</th>
-        <th>CANTIDAD</th>
-        <th>ELIMINAR</th>
-        <th>ACTUALIZAR</th>
+        <th><center>CLAVE</center></th>
+				<th><center>AUTOR</center></th>
+				<th><center>TITULO</center></th>
+				<th><center>EDITORIAL</center></th>
+				<th><center>CANTIDAD</center></th>
+				<th><center>PORTADA</center></th>
+				<th><center>ELIMINAR</center></th>
+				<th><center>ACTUALIZAR</center></th>
       </tr>
     </tfoot>
   </table>
-	
-	<script type="text/javascript">
-	  $(document).ready(function() {
-	  	var table = $('#example').DataTable( {
-	      "ajax": "TextFiles/libros.txt",
-	      "columnDefs": [ {
-	          "targets": -2,
-	          "data": null,
-	          "defaultContent": "<center><a href='#' class='delete'><img src='../Images/cancelar.png'></a></center>"
-	      } ]
-	    } );
-	    
-	    $('#example tbody').on( 'click', 'a.delete', function () {
-	      event.preventDefault();
-	      
-	      var data = table.row( $(this).parents('tr') ).data();
-				var url = data[5];
-				
-		    swal({
-		      title: "¿Seguro? Se borrará toda la información relacionada", 
-		      text: "Si está seguro ingrese la contraseña de seguridad", 
-		      type: "input",
-		      inputType: "password",
-		      showCancelButton: true,
-		      confirmButtonText: "Aceptar",
-		      cancelButtonText: "Cancelar"
-		    }, function(typedPassword) {
-		    	// console.log(typedPassword);
-		    	if(typedPassword != "") {
-		    		url += "&infoc=" + typedPassword;
-		      	window.open(url, '_self');	
-		      	return false;
-		    	}
-		    });
-	    } );
-	  } );
-	</script>
-
 {/if}
 
 {include file='footer.html'}

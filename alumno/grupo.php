@@ -23,34 +23,31 @@ if (file_exists($nombre_fichero)) {
 }
 
 if (isset($_GET['accion'])) {
-
   switch ($_GET['accion']) {
-
     case 'fileinput':
       fileinput();
       break;
-
     case 'form_libro':
       form_libro();
       break;
-
     case 'insert':
       insert();
       break;
-
     case 'down':
       down();
       break;
+    case 'del':
+      die('PENDIENTE');
+      break;
   }
-
 }
 
 if (!isset($_GET['info1'])) {
   die('Información incompleta'); //por alguna razón no funciona sin esto
-  message('danger', 'Información incompleta');
+  message('danger', 'Información incompleta 001');
 }
-$grupo = $_GET['info1'];
 
+$grupo = $_GET['info1'];
 $grupo_promotor = $web->getGroups($grupo, $cveperiodo, $_SESSION['cveUser']);
 if (!isset($grupo_promotor[0])) {
   message('danger', 'No existe el grupo en este periodo y/o no tiene permiso para acceder');
@@ -88,7 +85,6 @@ function message($alert, $msg)
 }
 
 /**
- * Ejecuta el case form_libro
  * Muestra el formulario para que el alumno seleccione sus libros
  */
 function form_libro()
@@ -137,6 +133,9 @@ function form_libro()
   die();
 }
 
+/**
+ * 
+ */
 function fileinput()
 {
   global $web, $cveperiodo;
@@ -150,16 +149,18 @@ function fileinput()
     message('danger', 'No existe el grupo');
   }
 
-  $dir_subida = $web->route .
-    $cveperiodo . "/" .
-    $letra_subida[0][0] . "/" .
-    $_SESSION['cveUser'] . "/";
+  $dir_subida = $web->route_periodos . $cveperiodo . "/" . $letra_subida[0][0] .
+  "/" . $_SESSION['cveUser'] . "/";
 
   if ($_FILES['datos']['size']['archivo'] > 1000000) {
     message('danger', 'El archivo es mayor a un MB.');
   }
-  if ($_FILES['datos']['type']['archivo'] != 'application/pdf') {
-    message('danger', 'Solo esta permitido subir archivos de tipo .pdf');
+  if ($_FILES['datos']['type']['archivo'] != 'application/pdf' &&
+    $_FILES['datos']['type']['archivo'] != "application/msword" &&
+    $_FILES['datos']['type']['archivo'] != "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
+    $_FILES['datos']['type']['archivo'] != "image/jpeg" &&
+    $_FILES['datos']['type']['archivo'] != "image/png") {
+    message('danger', 'Solo esta permitido subir archivos de tipo .pdf, .doc y .docx');
   }
   if (!isset($_POST['datos']['reporte'])) {
     message('danger', 'Información incompleta');
@@ -170,18 +171,28 @@ function fileinput()
     message('danger', 'El libro no existe');
   }
 
-  $nombre = $cvelibro_subida[0][2] . "_" . $_SESSION['cveUser'] . ".pdf";
-  if (move_uploaded_file($_FILES['datos']['tmp_name']['archivo'], $dir_subida . $nombre)) {
-    message('success', 'Se subió el reporte satisfactoriamente');
-  } else {
-    message('danger', 'Ocurrió un error mientras se subía el archivo');
+  $redirect = array(
+    'accion'=>'form_libro',
+    'info1'=> $_GET['info1'],
+    'info2'=> $letra_subida[0][0],
+    'e'=>3);
+  $nombre = $cvelibro_subida[0][2] . "_" . $_SESSION['cveUser'];
+  $web->delFile($dir_subida . $nombre); //elimina archivos con el mismo nombre
+  
+  $nombre .= $web->getExtension($_FILES['datos']['type']['archivo']);
+  if (!move_uploaded_file($_FILES['datos']['tmp_name']['archivo'], $dir_subida . $nombre)) {
+    $redirect['e'] = 4;
   }
+  header('Location: grupo.php?' . http_build_query($redirect));
 }
 
+/**
+ * 
+ */
 function insert()
 {
   global $web, $cveperiodo;
-
+  
   if (!isset($_POST['datos']['cvelibro']) ||
     !isset($_POST['datos']['cvelectura'])) {
     message("danger", "No alteres la estructura de la interfaz");
@@ -193,7 +204,6 @@ function insert()
 
   $cvelibro   = $_POST['datos']['cvelibro'];
   $cvelectura = $_POST['datos']['cvelectura'];
-
   $libro = $web->getBook($cvelibro);
   if (!isset($libro[0])) {
     message("danger", "No existe el libro seleccionado");
@@ -205,7 +215,7 @@ function insert()
   }
 
   $web->insertBookList($cvelibro, $cvelectura, $cveperiodo);
-  header('Location: grupo.php?accion=form_libro&info1=' . $cvelectura);
+  header('Location: grupo.php?accion=form_libro&info1=' . $cvelectura . "&info2=" . $lectura[0]['letra']);
 }
 
 /**
@@ -215,13 +225,14 @@ function existsReports($libros, $lectura)
 {
   global $web, $cveperiodo;
 
-  $dir_subida = $web->route .
-  $cveperiodo . "/" .
-  $web->getLetter($lectura[0][0])[0][0] . "/" .
-    $_SESSION['cveUser'] . "/";
-
+  $dir_subida = $web->route_periodos . $cveperiodo . "/" . 
+    $web->getLetter($lectura[0][0])[0][0] . "/" . $_SESSION['cveUser'] . "/";
+    
   for ($i = 0; $i < count($libros); $i++) {
-    if (file_exists($dir_subida . $libros[$i][0] . "_" . $_SESSION['cveUser'] . ".pdf")) {
+    $reporte = $dir_subida . $libros[$i][0] . "_" . $_SESSION['cveUser'];
+    if (file_exists($reporte.".pdf") || file_exists($reporte.".doc") 
+      || file_exists($reporte.".docx") || file_exists($reporte.".png") 
+      || file_exists($reporte.".jpg")) {
       $libros[$i][3]         = 1;
       $libros[$i]['reporte'] = 1;
     } else {
@@ -257,7 +268,7 @@ function down()
     }
     $dir  = $cveperiodo . "/" . $_GET['info2'] . "/" . $_SESSION['cveUser'] . "/";
     $file = $web->getFile($dir, $_GET['info3']);
-    $dir  = $web->route . $dir;
+    $dir  = $web->route_periodos . $dir;
   }
 
   header("Content-disposition: attachment; filename=" . $file);
@@ -279,6 +290,12 @@ function showMessages()
         break;
       case 2:
         $web->simple_message('danger', 'No modifique la estructura de la interfaz');
+        break;
+      case 3:
+        $web->simple_message('success', 'Se subió el reporte satisfactoriamente');
+        break;
+      case 4:
+        $web->simple_message('danger', 'Ocurrió un error mientras se subía el archivo');
         break;
     }
   }

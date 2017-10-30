@@ -2,8 +2,7 @@
 
 class GruposControllers extends Sistema
 {
-  public $route = "/home/slslctr/archivos/periodos/";
-
+  
   public function __construct()
   {
     parent::__construct();
@@ -135,5 +134,14 @@ class GruposControllers extends Sistema
     }
     return null;
   }
-
+  
+  /**
+   * 
+   */
+  public function getExtension($fullExt) {
+    return (preg_match('/pdf/', $fullExt)) ? ".pdf" : 
+      (preg_match('/msword/', $fullExt) ? ".doc" : 
+      (preg_match('/jpeg/', $fullExt) ? ".jpg" : 
+      (preg_match('/png/', $fullExt) ? ".png" : ".docx")));
+  }
 }

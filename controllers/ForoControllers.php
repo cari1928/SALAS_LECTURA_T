@@ -2,6 +2,9 @@
 
 class ForoControllers extends Sistema
 {
+  /**
+   * 
+   */
   public function getAllLibros()
   {
     $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);
@@ -11,6 +14,9 @@ class ForoControllers extends Sistema
     return $this->DB->GetAll($sql);
   }
 
+  /**
+   * 
+   */
   public function getLibro($cvelibro)
   {
     $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);
@@ -18,22 +24,43 @@ class ForoControllers extends Sistema
     return $this->DB->GetAll($sql, $cvelibro);
   }
 
+  /**
+   * 
+   */
   public function checkPortada($cvelibro)
   {
     if (strlen($cvelibro) == 0) {
       return 'no_disponible.jpg';
     }
-
-    $route = "/home/slslctr/Images/portadas/";
-    foreach (glob($route . $cvelibro . ".*") as $nombre_fichero) {
+    foreach (glob($this->route_images . "portadas/" . $cvelibro . ".*") as $nombre_fichero) {
       return $nombre_fichero;
     }
     return 'no_disponible.jpg';
   }
 
+  /**
+   * 
+   */
   public function insertLibro($params)
   {
     $sql = "INSERT INTO comentario(cvelibro, cveusuario, contenido) VALUES(?,?,?)";
     return $this->query($sql, $params);
+  }
+  
+  /**
+   * 
+   */
+  public function getComments($cvelibro) {
+    $sql = "SELECT * FROM comentario
+      INNER JOIN usuarios ON usuarios.cveusuario=comentario.cveusuario
+      WHERE cvelibro=? AND cverespuesta IS NULL";
+    return $this->DB->GetAll($sql, $cvelibro);
+  }
+  
+  public function getAnswers($cvelibro) {
+    $sql = "SELECT * FROM comentario
+      INNER JOIN usuarios ON usuarios.cveusuario=comentario.cveusuario
+      WHERE cvelibro=? AND cverespuesta IS NOT NULL";
+    return $this->DB->GetAll($sql, $cvelibro);
   }
 }

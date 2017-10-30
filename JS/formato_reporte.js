@@ -2,9 +2,9 @@ $(document).on('ready', function()
 {
   $("#file-1").fileinput(
   {
-    allowedFileExtensions: ["pdf", "docx"],
+    allowedFileExtensions: ["pdf", "docx", "jpg", "png"],
     browseClass: "btn btn-primary",
-    browseLabel: "Subir archivo...",
+    browseLabel: "Seleccionar Archivo...",
     browseIcon: "<i class=\"glyphicon glyphicon-folder-open\"></i> ",
     removeClass: "btn btn-danger",
     removeLabel: "Cancelar",

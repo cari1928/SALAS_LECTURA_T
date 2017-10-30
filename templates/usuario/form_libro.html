@@ -1,5 +1,6 @@
 {include file="header.html"}
 {$ruta}
+{if isset($msg)}{include file='../mensajes.html'}{/if}
 
 <style type="text/css">
 .box{
@@ -94,8 +95,6 @@
   <div class="main row">
     <nav class="col-xs-12 col-sm-12 col-md-10 col-lg-6 col-md-push-3">
       
-      {if isset($msg)}{include file='../mensajes.html'}{/if}
-      
       <form action="grupo.php?accion=insert" method="post">
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -119,11 +118,41 @@
 
 <!--Tabla de libros-->
 {if isset($libros)}
-  <div class="page-header">
-    <h2>Reporte</h2>
-  </div>
-  
   <form action="grupo.php?accion=fileinput&info1={$cvelectura}" method="post" enctype="multipart/form-data">
+    
+    <div class="page-header">
+      <h2>Listado de Libros</h2>
+      Para subir un reporte, selecciona el libro en la columna REPORTE y después sube el archivo.
+    </div>
+    <table class='table table-striped'>
+      <tr>
+        <th style="vertical-align:middle"><center>TITULO</center></th>
+        <th style="vertical-align:middle"><center>REPORTE</center></th>
+        <th style="vertical-align:middle"><center>OPCIONES</center></th>
+        <th style="vertical-align:middle"><center>ESTADO LIBRO</center></th>
+      </tr>
+      {foreach $libros as $libro}
+        <tr>
+          <td style="vertical-align:middle"><center>{$libro.titulo}</center></td>
+          <td style="vertical-align:middle"><center>
+            <input id="r4" type="radio" class="btn btn-default" value='{$libro.cvelibro}' name="datos[reporte]">
+          </center></td>
+          <td style="vertical-align:middle"><center>
+            {if {$libro.reporte} eq 1}
+              <a href="grupo.php?accion=down&info=2&info2={$grupo}&info3={$libro.cvelibro}"><img src="../Images/reporte.png" title="Descargar"></img></a>
+              <a href="grupo.php?accion=del&info={$grupo}&info2={$libro.cvelibro}"><img src="../Images/borrar.png" title="Eliminar"></img></a>
+            {else}
+              <img src="../Images/noexiste.png"></img>
+            {/if}
+          </center></td>
+          <td style="vertical-align:middle"><center>{$libro.estado}</center></td>
+        </tr>
+      {/foreach}
+    </table>
+    
+    <div class="page-header">
+      <h2>Reporte</h2>
+    </div>
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Subir reporte</h3>
@@ -134,31 +163,7 @@
         </div>
       </div>
     </div>
-    
-    <div class="page-header">
-      <h2>Lista de Libros</h2>
-    </div>
-    
-    <table class='table table-striped'>
-      <tr>
-        <th style="vertical-align:middle"><center>TITULO</center></th>
-        <th style="vertical-align:middle"><center>REPORTE</center></th>
-        <th style="vertical-align:middle"><center></center></th>
-        <th style="vertical-align:middle"><center>ESTADO LIBRO</center></th>
-      </tr>
-      {foreach $libros as $libro}
-        <tr>
-          <td style="vertical-align:middle"><center>{$libro.titulo}</center></td>
-          <td style="vertical-align:middle"><center>
-            <input id="r4" type="radio" class="btn btn-default" value='{$libro.cvelibro}' name="datos[reporte]">
-          </center></td>
-          <td style="vertical-align:middle"><center>
-            {if {$libro.reporte} eq 1}<a href="grupo.php?accion=down&info=2&info2={$grupo}&info3={$libro.cvelibro}"><img src="../Images/reporte.png"></img></a>{else}<img src="../Images/noexiste.png"></img>{/if}
-          </center></td>
-          <td style="vertical-align:middle"><center>{$libro.estado}</center></td>
-        </tr>
-      {/foreach}
-    </table>
+  
   </form>
 {/if}
 

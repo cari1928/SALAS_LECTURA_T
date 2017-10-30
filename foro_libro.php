@@ -10,25 +10,15 @@ if (!isset($_GET['info']) || !isset($_GET['action'])) {
 
 $web->iniClases(null, "index foros foro");
 
-$sql   = "SELECT * FROM libro WHERE cvelibro=?";
-$libro = $web->DB->GetAll($sql, $_GET['info']);
+$libro = $web->getAll('*', array('cvelibro'=> $_GET['info']), 'libro');
 if (!isset($libro[0])) {
-  header('Location: index.php?m=3'); //el libro no existe en nuestra base de datos
-  die();
+  header('Location: index.php?m=3'); die(); //el libro no existe en nuestra base de datos
 }
 
-$nombre_fichero      = "/home/slslctr/Images/portadas/" . $libro[0]['portada'];
+$nombre_fichero      = $web->route_images . "portadas/" . $libro[0]['portada'];
 $libro[0]['portada'] = (!file_exists($nombre_fichero)) ? "no_disponible.jpg" : $libro[0]['portada'];
-
-$sql = "SELECT * FROM comentario
-INNER JOIN usuarios ON usuarios.cveusuario=comentario.cveusuario
-WHERE cvelibro=? AND cverespuesta IS NULL";
-$comentarios = $web->DB->GetAll($sql, $_GET['info']);
-
-$sql = "SELECT * FROM comentario
-INNER JOIN usuarios ON usuarios.cveusuario=comentario.cveusuario
-WHERE cvelibro=? AND cverespuesta IS NOT NULL";
-$respuestas = $web->DB->GetAll($sql, $_GET['info']);
+$comentarios = $web->getComments($_GET['info']);
+$respuestas = $web->getAnswers($_GET['info']);
 
 if (isset($respuestas[0])) {
   foreach ($respuestas as $respuesta) {

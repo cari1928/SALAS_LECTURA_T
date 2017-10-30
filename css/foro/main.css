@@ -1698,7 +1698,7 @@ Blog with right sidebar
 .single-blog .post-overlay span a small{
   font-size: 16px;
   font-weight: 300;
-  margin-left: 5px;
+  margin-left: -85px;
 }
 
 .single-blog .post-overlay span:before{
