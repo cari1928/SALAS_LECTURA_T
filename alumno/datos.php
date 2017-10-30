@@ -1,6 +1,5 @@
 <?php
 include '../sistema.php';
-include "../lib/simpleImage/SimpleImage.class.php"; //incluimos la clase
 
 if ($_SESSION['roles'] != 'U') {
   $web->checklogin();

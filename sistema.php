@@ -39,6 +39,7 @@ class Sistema extends Conexion
   public $route_periodos = "/home/slslctr/archivos/periodos/";
   public $route_pdf      = "/home/slslctr/archivos/pdf/";
   public $route_images   = "/home/slslctr/Images/";
+  public $route_portadas   = "/home/slslctr/Images/portadas/";
 
   public function combo($query, $selected = null, $ruta = "", $parameters = array(), $redireccion = null)
   {

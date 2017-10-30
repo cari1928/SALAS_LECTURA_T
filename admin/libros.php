@@ -69,6 +69,9 @@ fwrite($file, $datos);
 showMessage(); // mostrar posibles mensajes
 
 $web->smarty->assign('datos', $datos);
+
+// $web->debug($datos);
+
 $web->smarty->assign('libros', true);
 $web->smarty->display("libros.html");
 /************************************************************************************

@@ -16,7 +16,7 @@ if (!isset($libro[0])) {
 }
 
 $nombre_fichero      = $web->route_images . "portadas/" . $libro[0]['portada'];
-$libro[0]['portada'] = (!file_exists($nombre_fichero)) ? "no_disponible.jpg" : $libro[0]['portada'];
+$libro[0]['portada'] = (!file_exists($nombre_fichero) || empty($libro[0]['portada'])) ? "no_disponible.jpg" : $libro[0]['portada'];
 $comentarios = $web->getComments($_GET['info']);
 $respuestas = $web->getAnswers($_GET['info']);
 

@@ -9,8 +9,8 @@ class ForoControllers extends Sistema
   {
     $this->DB->SetFetchMode(ADODB_FETCH_ASSOC);
     $sql = "SELECT DISTINCT sinopsis, titulo, autor, libro.cvelibro FROM libro
-    LEFT JOIN comentario ON libro.cvelibro = comentario.cvelibro
-    ORDER BY cvelibro";
+      LEFT JOIN comentario ON libro.cvelibro = comentario.cvelibro
+      ORDER BY cvelibro";
     return $this->DB->GetAll($sql);
   }
 
@@ -57,6 +57,9 @@ class ForoControllers extends Sistema
     return $this->DB->GetAll($sql, $cvelibro);
   }
   
+  /**
+   * 
+   */
   public function getAnswers($cvelibro) {
     $sql = "SELECT * FROM comentario
       INNER JOIN usuarios ON usuarios.cveusuario=comentario.cveusuario
