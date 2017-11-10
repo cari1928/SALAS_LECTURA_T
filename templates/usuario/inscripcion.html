@@ -28,16 +28,16 @@
   <script type="text/javascript">
     $(document).ready(function() {
       $('#example').DataTable( {
-          "ajax": "TextFiles/inscripcion.txt",
-          "columns": [
-              { "data": "letra" },
-              { "data": "nombre_grupo" },
-              { "data": "ubicacion" },
-              { "data": "nombre_promotor" }
-          ],
-          "columnDefs": [ {
-            "className": "dt-center", 
-            "targets": "_all"
+        "ajax": "TextFiles/inscripcion.txt",
+        "columns": [
+            { "data": "letra" },
+            { "data": "nombre_grupo" },
+            { "data": "ubicacion" },
+            { "data": "nombre_promotor" }
+        ],
+        "columnDefs": [ {
+          "className": "dt-center", 
+          "targets": "_all"
         }]
       } );
     } );

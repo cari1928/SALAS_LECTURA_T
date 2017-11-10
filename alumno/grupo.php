@@ -102,17 +102,30 @@ function form_libro()
 
   $web->iniClases('usuario', "index grupos libro");
 
+  //config tabla de libros
   //para no mostrar los libros que ya fueron registrados para ese alumno en ese periodo
-  $sql = "SELECT cvelibro, titulo FROM libro
-    WHERE status = ? and cvelibro NOT IN
-    (SELECT cvelibro FROM lista_libros
-      INNER JOIN lectura ON lectura.cvelectura = lista_libros.cvelectura
-      INNER JOIN abecedario ON abecedario.cve = lectura.cveletra
-      INNER JOIN laboral ON laboral.cveletra = abecedario.cve
-      WHERE nocontrol=? AND laboral.cveperiodo=? AND lectura.cvelectura=?)
-    ORDER BY titulo";
-  $combo = $web->combo($sql, null, '../', array('existente', $lectura[0]['nocontrol'], $cveperiodo, $_GET['info1']));
-
+  $libros = $web->getTableBooks(array($lectura[0]['nocontrol'], $cveperiodo, $_GET['info1']));
+  $datos = array('data' => $libros);
+  
+  // config de la columna portada
+  for ($i = 0; $i < sizeof($datos['data']); $i++) {
+    $datos['data'][$i]['titulo'] = "<a href='grupo.php?accion=insert&info=".$datos['data'][$i]['cvelibro']."&info2=".$_GET['info1']."' 
+      title='Seleccionar Libro'>".$datos['data'][$i]['titulo']."</a>";
+      
+    $datos['data'][$i][4] = "<center><a href='grupo.php?accion=insert&info=".$datos['data'][$i]['cvelibro']."&info2=".$_GET['info1']."'
+      title='Seleccionar Libro'><img width='50%' src='../Images/portadas/".$datos['data'][$i][4]."'></a></center>";
+      
+    unset($datos['data'][$i]['cvelibro']);
+    unset($datos['data'][$i][0]);
+  }
+  
+  $web->DB->SetFetchMode(ADODB_FETCH_NUM);
+  $datos = json_encode($datos);
+  
+  $file = fopen("TextFiles/libros.txt", "w");
+  fwrite($file, $datos);
+  
+  //mensaje sobre libros
   $libros = $web->getBooks($lectura[0]['nocontrol'], $_GET['info1']);
   if (!isset($libros[0])) {
     $web->simple_message('warning', 'No hay libros registrados');
@@ -125,10 +138,11 @@ function form_libro()
     $web->smarty->assign('libros', $libros);
   }
 
+  $web->smarty->assign('datos', $datos);
   $web->smarty->assign('upload', true);
   $web->smarty->assign('grupo', $_GET['info2']);
   $web->smarty->assign('cvelectura', $_GET['info1']);
-  $web->smarty->assign('cmb_libro', $combo);
+  $web->smarty->assign('form_libro', true);
   $web->smarty->display('form_libro.html');
   die();
 }
@@ -193,17 +207,15 @@ function insert()
 {
   global $web, $cveperiodo;
   
-  if (!isset($_POST['datos']['cvelibro']) ||
-    !isset($_POST['datos']['cvelectura'])) {
+  if (!isset($_GET['info']) || !isset($_GET['info2'])) {
     message("danger", "No alteres la estructura de la interfaz");
   }
-  if ($_POST['datos']['cvelibro'] == "" ||
-    $_POST['datos']['cvelectura'] == "") {
+  if ($_GET['info'] == "" || $_GET['info2'] == "") {
     message("danger", "Llena todos los campos");
   }
 
-  $cvelibro   = $_POST['datos']['cvelibro'];
-  $cvelectura = $_POST['datos']['cvelectura'];
+  $cvelibro   = $_GET['info'];
+  $cvelectura = $_GET['info2'];
   $libro = $web->getBook($cvelibro);
   if (!isset($libro[0])) {
     message("danger", "No existe el libro seleccionado");
@@ -224,12 +236,13 @@ function insert()
 function existsReports($libros, $lectura)
 {
   global $web, $cveperiodo;
-
+  
   $dir_subida = $web->route_periodos . $cveperiodo . "/" . 
     $web->getLetter($lectura[0][0])[0][0] . "/" . $_SESSION['cveUser'] . "/";
     
   for ($i = 0; $i < count($libros); $i++) {
     $reporte = $dir_subida . $libros[$i][0] . "_" . $_SESSION['cveUser'];
+    
     if (file_exists($reporte.".pdf") || file_exists($reporte.".doc") 
       || file_exists($reporte.".docx") || file_exists($reporte.".png") 
       || file_exists($reporte.".jpg")) {

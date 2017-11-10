@@ -405,7 +405,7 @@ class Sistema extends Conexion
       $datos_rs = $this->DB->GetAll($sql, array($_SESSION['cveUser'], $periodo));
     } else {
       //es un alumno
-      $sql = "SELECT letra, la.nombre, ubicacion
+      $sql = "SELECT DISTINCT letra, la.nombre, ubicacion
         FROM lectura le
         INNER JOIN abecedario abc ON abc.cve = le.cveletra
         INNER JOIN laboral la ON la.cveletra = abc.cve
@@ -552,9 +552,8 @@ class Sistema extends Conexion
 
     $sql      = "SELECT * FROM usuarios WHERE pass=? AND cveusuario=?";
     $datos_rs = $this->DB->GetAll($sql, array($contrasena, $email));
-
+    
     //falta verificar si la contraseña que esta insertando es la clave que se mando por correo
-
     if (!isset($datos_rs[0])) {
       return false;
     }
@@ -681,13 +680,15 @@ class Sistema extends Conexion
       $mail->MsgHTML($mensaje);
 
       $mail->Send();
-      $this->smarty->display('templates/admin/index.html');
       echo "<center><h3>Revisa tu correo electronico</h3></center>";
+      return true;
 
     } catch (phpmailerException $e) {
       echo $e->errorMessage(); //Pretty error messages from PHPMailer
+      return false;
     } catch (Exception $e) {
       echo $e->getMessage(); //Boring error messages from anything else!
+      return false;
     }
   }
 
@@ -1077,6 +1078,7 @@ class Sistema extends Conexion
 }
 
 include 'controllers/ForoControllers.php';
+include 'controllers/RegistrarControllers.php';
 include 'controllers/admin/LibrosControllers.php';
 include 'controllers/admin/ReporteControllers.php';
 include 'controllers/admin/PeriodosControllers.php';

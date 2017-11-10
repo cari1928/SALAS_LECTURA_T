@@ -19,10 +19,11 @@ class GruposControllers extends Sistema
   }
 
   /**
-   *
+   * Obtiene un listado de libros en base a nocontrol y cvelectura
    */
   public function getBooks($nocontrol, $cvelectura)
   {
+    $this->DB->SetFetchMode(ADODB_FETCH_BOTH);
     $sql = "SELECT libro.cvelibro, titulo, estado FROM lista_libros
       INNER JOIN estado ON estado.cveestado = lista_libros.cveestado
       INNER JOIN lectura ON lista_libros.cvelectura = lectura.cvelectura
@@ -143,5 +144,20 @@ class GruposControllers extends Sistema
       (preg_match('/msword/', $fullExt) ? ".doc" : 
       (preg_match('/jpeg/', $fullExt) ? ".jpg" : 
       (preg_match('/png/', $fullExt) ? ".png" : ".docx")));
+  }
+  
+  /**
+   * Obtiene un listado de libros en base a nocontrol, cveperiodo y cvelectura.
+   */
+  public function getTableBooks($arrData) {
+    $sql = "SELECT autor, titulo, editorial, cantidad, portada, cvelibro FROM libro
+      WHERE status='existente' AND cvelibro NOT IN
+        (SELECT cvelibro FROM lista_libros
+          INNER JOIN lectura ON lectura.cvelectura = lista_libros.cvelectura
+          INNER JOIN abecedario ON abecedario.cve = lectura.cveletra
+          INNER JOIN laboral ON laboral.cveletra = abecedario.cve
+          WHERE nocontrol=? AND laboral.cveperiodo=? AND lectura.cvelectura=?)
+      ORDER BY titulo";
+    return $this->DB->GetAll($sql, $arrData);
   }
 }

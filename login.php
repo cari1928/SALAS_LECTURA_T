@@ -1,12 +1,7 @@
 <?php
-
 include 'sistema.php';
 
-$web        = new Sistema;
-$email      = '';
-$contrasena = '';
-$msg        = '';
-
+$email  = $contrasena = $msg = '';
 $web->iniClases(null, "index login");
 
 if (isset($_POST['datos']['contrasena'])) {

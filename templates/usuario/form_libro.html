@@ -2,116 +2,56 @@
 {$ruta}
 {if isset($msg)}{include file='../mensajes.html'}{/if}
 
-<style type="text/css">
-.box{
-  margin: 25px auto;
-  width: 300px;
-  height: 50px;
-}
-
-.container-1{
-  width: 900px;
-  vertical-align: middle;
-  white-space: nowrap;
-  position: relative;
-  background: #004f7f;
-}
-
-.container-1 input#search{
-  width: 300px;
-  height: 50px;
-  background: #004f7f;
-  border: none;
-  font-size: 10pt;
-  float: left;
-  color: white;
-  padding-left: 45px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  
-  -webkit-transition: background .55s ease;
-  -moz-transition: background .55s ease;
-  -ms-transition: background .55s ease;
-  -o-transition: background .55s ease;
-  transition: background .55s ease;
-}
-
-.container-1 input#search::-webkit-input-placeholder {
-   color: #eaeff2;
-}
- 
-.container-1 input#search:-moz-placeholder {
-   color: #eaeff2;  
-}
- 
-.container-1 input#search::-moz-placeholder {  
-   color: #eaeff2;  
-}
- 
-.container-1 input#search:-ms-input-placeholder {  
-   color: #eaeff2;  
-}
-
-.container-1 #icon{
-  position: absolute;
-  top: 50%;
-  margin-left: 17px;
-  margin-top: 17px;
-  z-index: 1;
-  color: #eaeff2;
-}
-
-.container-1 input#search:hover, .container-1 input#search:focus, .container-1 input#search:active{
-  outline:none;
-  background: #337ab7;
-}
-</style>
-
-<!--<div class="box">-->
-<!--  <div class="container-1">-->
-<!--    <span class="glyphicon glyphicon-search" id="icon"></span>-->
-<!--    <input type="search" id="search" placeholder="Search..." />-->
-<!--  </div>-->
-<!--</div>-->
-
-<!--<div class="contenedor">-->
-<!--  <div class="ex1">-->
-<!--    <a href="#"><img src="../Images/portadas/prueba.jpg" width="130px"></img></a>-->
-<!--    <a href="#"><img src="../Images/portadas/prueba2.jpg" width="130px"></img></a>-->
-<!--    <a href="#"><img src="../Images/portadas/prueba2.jpg" width="130px"></img></a>-->
-<!--    <a href="#"><img src="../Images/portadas/prueba2.jpg" width="130px"></img></a>-->
-<!--    <a href="#"><img src="../Images/portadas/prueba2.jpg" width="130px"></img></a>-->
-<!--  </div>-->
-<!--</div>-->
-
-<!--ciclo mandar el número total y las claves, las imágenes están como cvelibro.jpg-->
-
 <div class="page-header">
   <h2>Selección de Libros</h2>
 </div>
 
 <div class="container-fluid">
   <div class="main row">
-    <nav class="col-xs-12 col-sm-12 col-md-10 col-lg-6 col-md-push-3">
-      
-      <form action="grupo.php?accion=insert" method="post">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Seleccionar Libro</h3>
-          </div>
-          <div class="panel-body">
-            <input type="hidden" name="datos[cvelectura]" value="{$cvelectura}">
-            <div class="form-group">
-              <label>Libro: </label>
-              {$cmb_libro}
-            </div>
-          </div>
-        </div>
-        <div class="form-group" align="right">
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
-      </form>
+      <nav class="col-xs-12 col-sm-12 col-md-10 col-lg-8 col-md-push-2">
+
+      {if isset($datos)}
+        <table id="example" class="display" cellspacing="0" width="100%">
+          <thead>
+            <tr>
+              <th><center>AUTOR</center></th>
+              <th><center>TITULO</center></th>
+              <th><center>EDITORIAL</center></th>
+              <th><center>CANTIDAD</center></th>
+              <th width="50"><center>PORTADA</center></th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <th><center>AUTOR</center></th>
+              <th><center>TITULO</center></th>
+              <th><center>EDITORIAL</center></th>
+              <th><center>CANTIDAD</center></th>
+              <th width="50"><center>PORTADA</center></th>
+            </tr>
+          </tfoot>
+        </table>
+        
+        <script type="text/javascript">
+          $(document).ready(function() {
+            $('#example').DataTable( {
+              "ajax": "TextFiles/libros.txt",
+              "columns": [
+                { "data": "autor" },
+                { "data": "titulo" },
+                { "data": "editorial" },
+                { "data": "cantidad" },
+                { "img": "portada" }
+              ],
+              "columnDefs": [ {
+                "className": "dt-center", 
+                "targets": "_all"
+              }]
+            } );
+          } );
+        </script>
+      {/if}
+
     </nav>
   </div>
 </div>
@@ -140,7 +80,7 @@
           <td style="vertical-align:middle"><center>
             {if {$libro.reporte} eq 1}
               <a href="grupo.php?accion=down&info=2&info2={$grupo}&info3={$libro.cvelibro}"><img src="../Images/reporte.png" title="Descargar"></img></a>
-              <a href="grupo.php?accion=del&info={$grupo}&info2={$libro.cvelibro}"><img src="../Images/borrar.png" title="Eliminar"></img></a>
+              <!--<a href="grupo.php?accion=del&info={$grupo}&info2={$libro.cvelibro}"><img src="../Images/borrar.png" title="Eliminar"></img></a>-->
             {else}
               <img src="../Images/noexiste.png"></img>
             {/if}

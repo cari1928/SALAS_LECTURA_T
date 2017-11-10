@@ -23,5 +23,5 @@ define('MAIL_SMTPSECURE', "ssl");
 define('MAIL_HOST', "smtp.gmail.com");
 define('MAIL_PORT', 465);
 define('MAIL_USERNAME', 'salaslecturaitc@gmail.com');
-define('MAIL_PASS', 'salas_lecturas_ITC'); //contraseña del correo de gmail
+define('MAIL_PASS', '?9szZM@/6n9&nc#fRe'); //contraseña del correo de gmail
 define("MAIL_SMTPDEBUG", 0);
